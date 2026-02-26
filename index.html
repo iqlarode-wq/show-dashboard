@@ -5,845 +5,600 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show Operations Dashboard</title>
     <style>
+/* ═══ V2 Dashboard CSS — Dark Theme, Collapsed Cards ═══ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #e0e0e0;
+    min-height: 100vh;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+}
+
+.container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+/* ─── Header ─── */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+.header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+}
+.header-meta {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+.header-stats {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+.stat-box {
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 6px 10px;
+    text-align: center;
+    min-width: 55px;
+    flex: 1;
+}
+.stat-box.stat-alert .stat-value { color: #ff6b6b; }
+.stat-box.stat-warn .stat-value { color: #ffc048; }
+.stat-label {
+    font-size: 10px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.stat-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+/* ─── Filter Bar ─── */
+.filter-bar {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.filter-btn {
+    background: rgba(255,255,255,0.08);
+    color: #ccc;
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+}
+.filter-btn:hover { background: rgba(255,255,255,0.14); }
+.filter-btn.active {
+    background: #4a9eff;
+    color: #fff;
+    border-color: #4a9eff;
+}
+
+/* ─── Search/Sort Bar ─── */
+.search-sort-bar {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 8px;
+}
+.search-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #ddd;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    width: 180px;
+    outline: none;
+}
+.search-input:focus { border-color: #4a9eff; }
+.search-input::placeholder { color: #666; }
+.sort-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: #ccc;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+}
+.sort-select option { background: #1e2a3a; color: #ddd; }
+
+/* ─── Alert Banner ─── */
+.alert-banner {
+    background: rgba(255,71,87,0.12);
+    border: 1px solid rgba(255,71,87,0.3);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+}
+.alert-title {
+    font-weight: 700;
+    color: #ff4757;
+    font-size: 14px;
+    margin-bottom: 6px;
+}
+.alert-item {
+    font-size: 13px;
+    color: #ffaaaa;
+    padding: 3px 0;
+}
+
+/* ─── Shows Grid ─── */
+.shows-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ─── Show Card ─── */
+.show-card {
+    background: #1e2a3a;
+    border-radius: 10px;
+    overflow: hidden;
+    border-left: 4px solid #2ed573;
+    transition: box-shadow 0.2s;
+}
+.show-card.critical { border-left-color: #ff4757; }
+.show-card.warning { border-left-color: #ffa502; }
+
+/* ─── Card Header (always visible, clickable) ─── */
+.card-header {
+    padding: 14px 16px 12px;
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    -webkit-user-select: none;
+}
+.card-header:hover {
+    background: rgba(255,255,255,0.03);
+}
+.card-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+.show-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.show-days {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.show-days.critical { background: rgba(255,71,87,0.2); color: #ff6b6b; }
+.show-days.warning { background: rgba(255,165,2,0.2); color: #ffc048; }
+.show-days.normal { background: rgba(46,213,115,0.15); color: #7bed9f; }
+
+.card-header-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 6px;
+    gap: 8px;
+}
+.show-date {
+    font-size: 13px;
+    color: #aaa;
+}
+.badge-group {
+    display: flex;
+    gap: 5px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+/* ─── Badges ─── */
+.badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.badge-travel { background: rgba(74,158,255,0.2); color: #7ab8ff; }
+.badge-remote { background: rgba(162,155,254,0.2); color: #b8b3fe; }
+.badge-confirmed { background: rgba(46,213,115,0.2); color: #7bed9f; }
+.badge-active { background: rgba(255,165,2,0.2); color: #ffc048; }
+.badge-closed { background: rgba(255,255,255,0.1); color: #999; }
+
+/* ─── Risk Chips ─── */
+.risk-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+}
+.chip {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+.chip-critical { background: rgba(255,71,87,0.18); color: #ff8a94; border: 1px solid rgba(255,71,87,0.25); }
+.chip-warning { background: rgba(255,165,2,0.15); color: #ffc048; border: 1px solid rgba(255,165,2,0.2); }
+.chip-normal { background: rgba(255,255,255,0.06); color: #aaa; border: 1px solid rgba(255,255,255,0.08); }
+
+/* ─── Next Action Line ─── */
+.next-action-line {
+    font-size: 13px;
+    margin-top: 8px;
+    padding: 5px 8px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.next-action-critical { color: #ff8a94; background: rgba(255,71,87,0.08); }
+.next-action-warning { color: #ffc048; background: rgba(255,165,2,0.06); }
+.next-action-normal { color: #7bed9f; }
+.na-icon {
+    font-weight: 700;
+    margin-right: 4px;
+}
+
+/* ─── Next Action Bar (expanded) ─── */
+.next-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+    gap: 10px;
+    flex-wrap: wrap;
+    background: rgba(255,255,255,0.04);
+}
+.next-action-bar.next-action-critical { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.15); }
+.next-action-bar.next-action-warning { background: rgba(255,165,2,0.06); border: 1px solid rgba(255,165,2,0.12); }
+.next-action-bar.next-action-normal { border: 1px solid rgba(255,255,255,0.06); }
+.na-bar-label { font-size: 12px; font-weight: 700; color: #999; margin-right: 4px; }
+.na-bar-text { font-size: 13px; color: #ddd; flex: 1; min-width: 0; }
+.na-bar-ctas { display: flex; gap: 6px; flex-shrink: 0; }
+.cta-btn {
+    display: inline-block;
+    padding: 5px 12px;
+    background: rgba(74,158,255,0.15);
+    color: #7ab8ff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+.cta-btn:hover { background: rgba(74,158,255,0.25); }
+
+/* ─── Expand Icon ─── */
+.expand-icon {
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 14px;
+    color: #666;
+    font-weight: 700;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    transition: transform 0.2s;
+}
+
+/* ─── Card Body (expandable) ─── */
+.card-body {
+    padding: 0 16px 14px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    animation: fadeIn 0.15s ease-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Accordion Sections ─── */
+.accordion-section {
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.accordion-section:last-child { border-bottom: none; }
+
+.accordion-section > summary {
+    padding: 10px 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #bbb;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.accordion-section > summary::-webkit-details-marker { display: none; }
+.accordion-section > summary::before {
+    content: "▸";
+    font-size: 11px;
+    color: #666;
+    transition: transform 0.15s;
+    display: inline-block;
+    width: 12px;
+}
+.accordion-section[open] > summary::before {
+    transform: rotate(90deg);
+}
+.accordion-section > summary:hover { color: #fff; }
+.accordion-content {
+    padding: 4px 4px 10px 18px;
+    font-size: 13px;
+}
+
+/* ─── Overview Grid ─── */
+.overview-grid { display: flex; flex-direction: column; gap: 4px; }
+.ov-row { display: flex; gap: 8px; }
+.ov-label { color: #888; min-width: 60px; flex-shrink: 0; font-size: 12px; }
+.ov-value { color: #ddd; }
+
+/* ─── Flags ─── */
+.flag {
+    padding: 5px 0;
+    font-size: 13px;
+}
+.flag-icon { font-weight: 700; margin-right: 4px; }
+.flag-critical { color: #ff8a94; }
+.flag-critical .flag-icon { color: #ff4757; }
+.flag-warning { color: #ffc048; }
+.flag-warning .flag-icon { color: #ffa502; }
+
+/* ─── Key Dates Grid ─── */
+.key-dates-grid { display: flex; flex-direction: column; gap: 4px; }
+.kd-item { font-size: 13px; }
+.kd-label { color: #888; margin-right: 4px; }
+.countdown-critical { color: #ff6b6b; font-weight: 600; }
+.countdown-warning { color: #ffc048; font-weight: 600; }
+.countdown-normal { color: #7bed9f; }
+
+/* ─── Crew ─── */
+.crew-list { display: flex; flex-direction: column; gap: 6px; }
+.crew-member {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 8px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 6px;
+}
+.crew-name { font-size: 13px; color: #ddd; font-weight: 500; }
+.crew-role { font-size: 11px; color: #888; }
+.crew-status {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 8px;
+}
+.status-confirmed { background: rgba(46,213,115,0.15); color: #7bed9f; }
+.status-pencilled { background: rgba(255,165,2,0.15); color: #ffc048; }
+.status-empty { background: rgba(255,71,87,0.12); color: #ff8a94; }
+
+/* ─── Tasks / Progress ─── */
+.progress-bar-container {
+    background: rgba(255,255,255,0.08);
+    border-radius: 6px;
+    height: 20px;
+    overflow: hidden;
+    margin-bottom: 4px;
+}
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    background: #2ed573;
+    transition: width 0.3s;
+    min-width: 30px;
+}
+.progress-bar-fill.critical { background: #ff4757; }
+.progress-bar-fill.warning { background: #ffa502; }
+.progress-text { font-size: 12px; color: #888; }
+
+/* Task Phase Breakdown */
+.task-phases { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+.task-phase { display: flex; align-items: center; gap: 6px; }
+.tp-label { font-size: 11px; color: #888; width: 60px; flex-shrink: 0; }
+.tp-bar-wrap { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; height: 8px; overflow: hidden; }
+.tp-bar { height: 100%; background: #4a9eff; border-radius: 4px; transition: width 0.3s; }
+.tp-pct { font-size: 11px; color: #999; width: 30px; text-align: right; }
+
+.task-button {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 6px 14px;
+    background: rgba(74,158,255,0.15);
+    color: #7ab8ff;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+}
+.task-button:hover { background: rgba(74,158,255,0.25); }
+
+/* ─── Emails Timeline ─── */
+.email-timeline-header {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+.email-meta {
+    font-size: 12px;
+    color: #888;
+    margin-bottom: 8px;
+}
+.email-thread-count { font-weight: 600; color: #bbb; margin-right: 8px; }
+.email-tl-entry {
+    padding: 4px 0;
+    border-left: 2px solid rgba(255,255,255,0.06);
+    padding-left: 10px;
+    margin-bottom: 4px;
+}
+.email-tl-date { font-size: 11px; color: #888; margin-right: 4px; }
+.email-tl-from { font-size: 12px; color: #7ab8ff; font-weight: 500; }
+.email-tl-text { font-size: 12px; color: #bbb; line-height: 1.4; margin-top: 2px; }
+.email-full-thread { margin-top: 8px; }
+.email-full-thread > summary {
+    font-size: 12px; color: #7ab8ff; cursor: pointer; padding: 4px 0;
+}
+.email-full-content { padding-top: 6px; }
+.email-stale {
+    background: rgba(255,71,87,0.1);
+    border: 1px solid rgba(255,71,87,0.2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #ff8a94;
+    margin-bottom: 8px;
+}
+.stale-icon { font-weight: 700; margin-right: 4px; color: #ff4757; }
+.email-entry {
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.email-entry:last-child { border-bottom: none; }
+.email-entry-header { font-size: 11px; color: #888; margin-bottom: 2px; }
+.email-date { color: #999; margin-right: 6px; }
+.email-people { color: #7ab8ff; }
+.email-entry-text { font-size: 13px; color: #ccc; line-height: 1.4; }
+.email-deadline {
+    padding: 4px 8px;
+    background: rgba(255,165,2,0.08);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #ffc048;
+    margin-bottom: 4px;
+}
+.deadline-icon { font-weight: 700; margin-right: 4px; color: #ffa502; }
+.email-unanswered {
+    padding: 4px 8px;
+    background: rgba(74,158,255,0.08);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #7ab8ff;
+    margin-bottom: 4px;
+}
+.unanswered-icon { font-weight: 700; margin-right: 4px; color: #4a9eff; }
+
+/* ─── Notes ─── */
+.note-item { margin-bottom: 4px; }
+.note-item details > summary {
+    font-size: 12px;
+    color: #999;
+    cursor: pointer;
+    padding: 4px 0;
+}
+.note-content {
+    font-size: 13px;
+    color: #ccc;
+    padding: 4px 0 4px 8px;
+    border-left: 2px solid rgba(255,255,255,0.08);
+    line-height: 1.5;
+}
+
+/* ─── Service Tags ─── */
+.service-tag {
+    display: inline-block;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    color: #bbb;
+    margin-right: 4px;
+}
+
+/* ─── Dropbox ─── */
+.dropbox-row { margin-top: 6px; }
+.dropbox-link {
+    color: #7ab8ff;
+    text-decoration: none;
+    font-size: 13px;
+}
+.dropbox-link:hover { text-decoration: underline; }
+
+/* ─── Empty section ─── */
+.empty-section {
+    font-size: 13px;
+    color: #888;
+    font-style: italic;
+    padding: 6px 0;
+}
+
+/* ─── Mobile-first touch targets ─── */
+.card-header { min-height: 44px; }
+.filter-btn { min-height: 36px; }
+.accordion-section > summary { min-height: 44px; display: flex; align-items: center; }
+.cta-btn { min-height: 36px; display: inline-flex; align-items: center; }
+
+/* ─── Responsive ─── */
+@media (min-width: 640px) {
+    .container { padding: 24px; }
+    .header h1 { font-size: 26px; }
+    .shows-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    .stat-box { min-width: 70px; padding: 8px 12px; }
+    .stat-value { font-size: 22px; }
+    .filter-bar { gap: 6px; }
+}
+
+@media (min-width: 1100px) {
+    .container { padding: 32px; max-width: 1100px; }
+    .shows-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+}
 
-
-
-
-
-
-
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            padding: 16px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            margin-bottom: 24px;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 12px;
-            border-left: 4px solid #00d4ff;
-        }
-
-        .header h1 {
-            font-size: 30px;
-            margin-bottom: 12px;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .header-meta {
-            font-size: 15px;
-            color: #a0a0a0;
-            margin-bottom: 16px;
-        }
-
-        .header-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 12px;
-            margin-top: 12px;
-        }
-
-        .filter-bar {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-            padding-top: 12px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .filter-btn {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.15);
-            color: #a0a0a0;
-            padding: 8px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .filter-btn:hover {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-        }
-
-        .filter-btn.active {
-            background: #00d4ff;
-            border-color: #00d4ff;
-            color: #0a0a0a;
-            font-weight: 600;
-        }
-
-        .stat-box {
-            background: rgba(0, 0, 0, 0.5);
-            padding: 12px 16px;
-            border-radius: 8px;
-            border-left: 3px solid #00d4ff;
-        }
-
-        .stat-label {
-            font-size: 13px;
-            color: #a0a0a0;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 4px;
-        }
-
-        .stat-value {
-            font-size: 26px;
-            font-weight: 700;
-            color: #00d4ff;
-        }
-
-        /* Alert Banner */
-        .alert-banner {
-            background: linear-gradient(135deg, #3d2020 0%, #2e1a1a 100%);
-            border: 1px solid rgba(200, 100, 100, 0.4);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 24px;
-            border-left: 4px solid #c07070;
-        }
-
-        .alert-title {
-            font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        .alert-content {
-            font-size: 15px;
-            color: #f0f0f0;
-            line-height: 1.5;
-        }
-
-        .alert-item {
-            margin-bottom: 8px;
-        }
-
-        .alert-item:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Shows Grid */
-        .shows-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        @media (max-width: 1024px) {
-            .shows-grid {
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            }
-        }
-
-        @media (max-width: 640px) {
-            .shows-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Show Card */
-        .show-card {
-            background: rgba(30, 40, 60, 0.8);
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            backdrop-filter: blur(10px);
-        }
-
-        .show-card:hover {
-            border-color: rgba(0, 212, 255, 0.3);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .show-card.critical {
-            border-left: 4px solid #c07070;
-            background: rgba(35, 22, 22, 0.9);
-        }
-
-        .show-card.warning {
-            border-left: 4px solid #ffbb33;
-            background: rgba(40, 35, 20, 0.9);
-        }
-
-        .show-card.normal {
-            border-left: 4px solid #44bb77;
-            background: rgba(20, 40, 30, 0.9);
-        }
-
-        /* Show Header */
-        .show-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-            gap: 12px;
-        }
-
-        .show-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #ffffff;
-            flex: 1;
-        }
-
-        .badge-group {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-            white-space: nowrap;
-        }
-
-        .badge-travel {
-            background: rgba(0, 150, 200, 0.3);
-            color: #00d4ff;
-            border: 1px solid rgba(0, 212, 255, 0.5);
-        }
-
-        .badge-remote {
-            background: rgba(100, 100, 200, 0.3);
-            color: #a0a0ff;
-            border: 1px solid rgba(150, 150, 255, 0.5);
-        }
-
-        .badge-confirmed {
-            background: rgba(68, 187, 119, 0.2);
-            color: #44bb77;
-            border: 1px solid rgba(68, 187, 119, 0.4);
-        }
-
-        .badge-active {
-            background: rgba(255, 187, 51, 0.2);
-            color: #ffbb33;
-            border: 1px solid rgba(255, 187, 51, 0.4);
-        }
-
-        .badge-closed {
-            background: rgba(100, 100, 100, 0.3);
-            color: #999999;
-            border: 1px solid rgba(150, 150, 150, 0.4);
-        }
-
-        /* Show Meta */
-        .show-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 12px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 12px;
-        }
-
-        .show-date {
-            font-size: 13px;
-            color: #a0a0a0;
-        }
-
-        .show-days {
-            font-size: 15px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 6px;
-            background: rgba(0, 0, 0, 0.3);
-        }
-
-        .show-days.critical {
-            color: #d08888;
-            background: rgba(200, 100, 100, 0.15);
-        }
-
-        .show-days.warning {
-            color: #ffbb33;
-            background: rgba(255, 187, 51, 0.2);
-        }
-
-        .show-days.normal {
-            color: #44bb77;
-            background: rgba(68, 187, 119, 0.2);
-        }
-
-        /* Show Details */
-        .show-section {
-            margin-bottom: 16px;
-        }
-
-        .show-section:last-child {
-            margin-bottom: 0;
-        }
-
-        .section-label {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #888888;
-            margin-bottom: 6px;
-            font-weight: 600;
-        }
-
-        .section-content {
-            font-size: 15px;
-            line-height: 1.5;
-            color: #e0e0e0;
-        }
-
-        .venue-city {
-            color: #a0a0a0;
-            font-size: 14px;
-        }
-
-        /* Crew List */
-        .crew-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .crew-member {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            padding: 8px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .crew-name {
-            font-weight: 500;
-            color: #e0e0e0;
-        }
-
-        .crew-role {
-            color: #a0a0a0;
-            font-size: 13px;
-        }
-
-        .crew-status {
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-size: 11px;
-            font-weight: 600;
-            text-transform: uppercase;
-            white-space: nowrap;
-        }
-
-        .status-confirmed {
-            background: rgba(68, 187, 119, 0.3);
-            color: #44bb77;
-            border: 1px solid rgba(68, 187, 119, 0.4);
-        }
-
-        .status-pencilled {
-            background: rgba(255, 187, 51, 0.3);
-            color: #ffbb33;
-            border: 1px solid rgba(255, 187, 51, 0.4);
-        }
-
-        .status-empty {
-            background: rgba(200, 100, 100, 0.2);
-            color: #c08080;
-            border: 1px solid rgba(200, 100, 100, 0.3);
-        }
-
-        /* Notes Section */
-        .notes-section {
-            margin-bottom: 16px;
-        }
-
-        .notes-label {
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #888888;
-            margin-bottom: 8px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .notes-count {
-            display: inline-block;
-            padding: 2px 6px;
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-            margin-left: 4px;
-        }
-
-        .notes-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .note-item details {
-            background: rgba(0, 0, 0, 0.3);
-            border-left: 3px solid rgba(0, 212, 255, 0.3);
-            border-radius: 6px;
-            overflow: hidden;
-        }
-
-        .note-item details[open] {
-            background: rgba(0, 0, 0, 0.4);
-        }
-
-        .note-item summary {
-            padding: 8px 10px;
-            cursor: pointer;
-            user-select: none;
-            font-size: 12px;
-            color: #a0a0a0;
-            text-transform: small-caps;
-            font-weight: 500;
-            letter-spacing: 0.3px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: color 0.2s ease;
-        }
-
-        .note-item summary::before {
-            content: '▶';
-            display: inline-block;
-            transition: transform 0.2s ease;
-            font-size: 10px;
-        }
-
-        .note-item details[open] summary::before {
-            transform: rotate(90deg);
-        }
-
-        .note-item summary:hover {
-            color: #00d4ff;
-        }
-
-        .note-content {
-            padding: 10px 10px 10px 16px;
-            font-size: 13px;
-            color: #d0d0d0;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            line-height: 1.4;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .note-content strong {
-            color: #00d4ff;
-        }
-
-        .note-item.client details {
-            border-left-color: rgba(68, 187, 119, 0.4);
-        }
-
-        .note-item.pm details {
-            border-left-color: rgba(255, 187, 51, 0.4);
-        }
-
-        .note-item.head-pm details {
-            border-left-color: rgba(0, 212, 255, 0.5);
-        }
-
-        .note-item.internal details {
-            border-left-color: rgba(255, 68, 68, 0.3);
-        }
-
-        .note-item.event-details details {
-            border-left-color: rgba(150, 150, 255, 0.3);
-        }
-
-        .note-item.email details {
-            border-left-color: rgba(100, 200, 150, 0.3);
-        }
-
-        /* Progress Bar */
-        .progress-section {
-            margin-top: auto;
-        }
-
-        .progress-bar-container {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            height: 24px;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 6px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00d4ff 0%, #00a8cc 100%);
-            border-radius: 7px;
-            transition: width 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 30px;
-            color: #ffffff;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .progress-bar-fill.warning {
-            background: linear-gradient(90deg, #ffbb33 0%, #ff9800 100%);
-        }
-
-        .progress-bar-fill.critical {
-            background: linear-gradient(90deg, #c07070 0%, #995555 100%);
-        }
-
-        .progress-text {
-            font-size: 13px;
-            color: #a0a0a0;
-            text-align: center;
-        }
-
-        /* Services */
-        .services-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .service-tag {
-            display: inline-block;
-            padding: 4px 10px;
-            background: rgba(0, 212, 255, 0.2);
-            color: #00d4ff;
-            border-radius: 6px;
-            font-size: 13px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        /* Flags */
-        .flags-list {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .flag {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            padding: 8px;
-            background: rgba(200, 100, 100, 0.08);
-            border-radius: 6px;
-            border-left: 2px solid #c07070;
-            font-size: 13px;
-            color: #c09090;
-            line-height: 1.4;
-        }
-
-        /* Email Summary */
-        .email-summary {
-            margin-bottom: 16px;
-        }
-
-        .email-summary-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .email-summary-meta {
-            font-size: 11px;
-            color: #888;
-        }
-
-        .email-thread-count {
-            display: inline-block;
-            padding: 2px 6px;
-            background: rgba(100, 200, 150, 0.2);
-            color: #64c896;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: 600;
-        }
-
-        .email-summary-body {
-            background: rgba(0, 0, 0, 0.25);
-            border-left: 3px solid rgba(100, 200, 150, 0.4);
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 13px;
-            color: #d0d0d0;
-            line-height: 1.5;
-        }
-
-        .email-entry {
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-        }
-
-        .email-entry:last-of-type {
-            border-bottom: none;
-        }
-
-        .email-entry-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 4px;
-            gap: 8px;
-        }
-
-        .email-date {
-            font-size: 12px;
-            color: #64c896;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .email-people {
-            font-size: 12px;
-            color: #a0a0a0;
-            text-align: right;
-        }
-
-        .email-entry-text {
-            font-size: 13px;
-            color: #d0d0d0;
-            line-height: 1.4;
-        }
-
-        .email-deadline {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            margin-top: 8px;
-            padding: 6px 10px;
-            background: rgba(255, 187, 51, 0.1);
-            border-left: 2px solid #ffbb33;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #ffcc66;
-        }
-
-        .email-deadline .deadline-icon {
-            flex-shrink: 0;
-        }
-
-        .email-unanswered {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            margin-top: 6px;
-            padding: 6px 10px;
-            background: rgba(200, 100, 100, 0.08);
-            border-left: 2px solid #c07070;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #d09090;
-        }
-
-        .email-unanswered .unanswered-icon {
-            flex-shrink: 0;
-        }
-
-        .email-stale {
-            display: flex;
-            align-items: flex-start;
-            gap: 6px;
-            padding: 8px 10px;
-            margin-bottom: 6px;
-            background: rgba(255, 150, 50, 0.1);
-            border-left: 2px solid #ff9632;
-            border-radius: 4px;
-            font-size: 13px;
-            color: #ffb060;
-            font-weight: 600;
-        }
-
-        .email-stale .stale-icon {
-            flex-shrink: 0;
-        }
-
-        /* Key Dates */
-        .key-dates-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .key-date-item {
-            font-size: 14px;
-            color: #d0d0d0;
-            padding: 4px 8px;
-            background: rgba(0, 0, 0, 0.15);
-            border-radius: 4px;
-        }
-
-        .key-date-label {
-            color: #a0a0a0;
-            font-weight: 600;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-        }
-
-        .countdown-critical {
-            color: #d08888;
-            font-weight: 700;
-        }
-
-        .countdown-warning {
-            color: #ffbb33;
-            font-weight: 600;
-        }
-
-        .countdown-normal {
-            color: #64c896;
-            font-weight: 500;
-        }
-
-        /* Task Button */
-        .task-button {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 8px 16px;
-            background: rgba(0, 212, 255, 0.15);
-            color: #00d4ff;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            text-align: center;
-        }
-
-        .task-button:hover {
-            background: rgba(0, 212, 255, 0.25);
-            border-color: rgba(0, 212, 255, 0.5);
-            color: #00ffff;
-        }
-
-        .flag-icon {
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        /* Dropbox Path */
-        .dropbox-path {
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            border-radius: 6px;
-            font-size: 11px;
-            color: #a0a0a0;
-            word-break: break-all;
-            font-family: 'Courier New', monospace;
-            border-left: 2px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .dropbox-link {
-            color: #00d4ff;
-            text-decoration: none;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .dropbox-link:hover {
-            color: #00ffff;
-            text-decoration: underline;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 640px) {
-            body {
-                padding: 12px;
-            }
-
-            .header {
-                padding: 16px;
-            }
-
-            .header h1 {
-                font-size: 24px;
-            }
-
-            .header-stats {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .show-card {
-                padding: 16px;
-            }
-
-            .show-title {
-                font-size: 16px;
-            }
-
-            .badge-group {
-                justify-content: flex-start;
-                width: 100%;
-                margin-top: 8px;
-            }
-
-            .show-header {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .note-item summary {
-                font-size: 11px;
-            }
-
-            .note-content {
-                font-size: 11px;
-                padding: 8px 8px 8px 12px;
-            }
-        }
-    
-    
-    
-    
-    
-    
-    
-    
     </style>
 </head>
 <body>
@@ -853,1272 +608,984 @@
             <div class="header-meta">Generated: February 26, 2026</div>
             <div class="header-stats">
                 <div class="stat-box">
-                    <div class="stat-label">Total Shows</div>
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Next 14d</div>
+                </div>
+                <div class="stat-box stat-alert">
                     <div class="stat-value">8</div>
+                    <div class="stat-label">At Risk</div>
+                </div>
+                <div class="stat-box stat-warn">
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Silent</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">This Week</div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">No Crew</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Critical Alerts</div>
-                    <div class="stat-value">0</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-label">Pencilled</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">Confirmed</div>
-                    <div class="stat-value">3</div>
+                    <div class="stat-value">1%</div>
+                    <div class="stat-label">Tasks Med.</div>
                 </div>
             </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all" onclick="filterShows('all')">All (8)</button>
-                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel</button>
-                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote</button>
+                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (8)</button>
+                <button class="filter-btn" data-filter="next14" onclick="filterShows('next14')">Next 14d</button>
+                <button class="filter-btn" data-filter="no-crew" onclick="filterShows('no-crew')">No Crew</button>
+                <button class="filter-btn" data-filter="silent" onclick="filterShows('silent')">Silent</button>
+                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (3)</button>
+                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (5)</button>
+            </div>
+            <div class="search-sort-bar">
+                <input type="text" class="search-input" placeholder="Search shows..." oninput="searchShows(this.value)">
+                <select class="sort-select" onchange="sortShows(this.value)">
+                    <option value="risk">Sort: Risk</option>
+                    <option value="date">Sort: Date</option>
+                    <option value="email">Sort: Email Age</option>
+                </select>
             </div>
         </div>
 
 
         <div class="shows-grid">
-            <div class="show-card warning" data-labor="remote">
-                <div class="show-header">
-                    <div class="show-title">CRT - Boston Scientific #359986</div>
-                    <div class="badge-group">
-                        <span class="badge badge-remote">Remote</span>
-                        <span class="badge badge-confirmed">Confirmed</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Mar 6 – 9</span>
-                    <span class="show-days warning">8 days</span>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Flags</div>
-                    <div class="flags-list">
-                        <div class="flag">
-                            <span class="flag-icon">⚠️</span>
-                            <span>Show in 8 days, tasks only 1% complete</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">1 emails</span>
-                            Last: Jan 26, 2026 (31 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-stale">
-                            <span class="stale-icon">🔇</span>
-                            <span>Thread silent for 31 days — may need a follow-up</span>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 26, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kevin Barry</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — CRT 2026 booth #205 at Washington Hilton. Booth needs (3) 55&quot; monitors on plinths, (2) 65&quot; monitors, (3) monitor arms, (8) NUCs. Tech suite needs (6) 55&quot; monitors with stands. Contact: Katelyn Wann (Sparks).</div>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No follow-up emails since initial request — content, shipping, and logistics unaddressed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 50 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (2)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Zac Edwards</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Kevin Barry</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Account Manager</div>
-                    <div class="section-content">Kevin Barry</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Key Dates</div>
-                    <div class="key-dates-list">
-                        <div class="key-date-item"><span class='key-date-label'>Load-In:</span> Mar 6 <span class='countdown-normal'>(8d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show Start:</span> Mar 7 <span class='countdown-normal'>(9d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show End:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Load-Out:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">The Washington Hilton <span class="venue-city">Washington, DC</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content">Sparks / Boston Scientific</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content"><strong>Needs:</strong> <strong>BOOTH:</strong> (3) 55&quot; Monitors - Plinths, (2) 65&quot; Monitors - IVUS &amp; Hospitality, (3) Monitors for Monitor Arms, (8) NUCS, Install &amp; Dismantle Labor   <strong>TECH SUITE:</strong> (6) 55&quot; Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS, <strong>Expectations:</strong> Katelyn Wann - kwann@wearesparks.com + countertop monitor adds </div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">/fuse technical group/department - exhibits/2026 shows/sparks/boston scientific/spx boston scientific @ crt 2026 #205</a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-crt.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card normal" data-labor="travel">
-                <div class="show-header">
-                    <div class="show-title">RSAC - AuditBoard #359999</div>
-                    <div class="badge-group">
-                        <span class="badge badge-travel">Travel</span>
-                        <span class="badge badge-confirmed">Confirmed</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Mar 18 – 24</span>
-                    <span class="show-days normal">20 days</span>
-                </div>
-
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">24 emails</span>
-                            Last: Feb 25, 2026 (1 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 26, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — AuditBoard @ RSAC, 20x20 booth at Moscone Center. LED wall, 75&quot; monitor, rigging, production rigger. Contact: Ashley Moss (Sparks).</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 28, 2026</span>
-                                <span class="email-people">Kathryn Parker → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Sends RSA quote. Notes custom rigging only needed if LED is on ceiling — if that goes away, rigging and rigger drop off quote.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 9, 2026</span>
-                                <span class="email-people">Ashley Moss → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Confirms it&#x27;s a GO — LED portion only, client using own monitors. Project #353488. Asks for deadline date for AV files/testing.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 9, 2026</span>
-                                <span class="email-people">Kathryn Parker → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Confirms monitors removed, quote confirmed. Iqral looping in on CC. Says file deadline depends on how much custom content.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 10, 2026</span>
-                                <span class="email-people">Kathryn Parker → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Sends revised quote with 75&quot; mounted to LED wall kept in, 43s removed. Then re-sends with mounting gear corrected.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 11, 2026</span>
-                                <span class="email-people">Ashley Moss → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Freeman Rigging needs an overhead placement drawing to scale for the LED. Sparks team not far enough along to provide yet — asks Fuse to help with a .dwg.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 12, 2026</span>
-                                <span class="email-people">Ashley Moss → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">May not need the drawing after all — her team did a preliminary .dwg. Shares it overlayed on booth. Then confirms: quote is APPROVED.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 12, 2026</span>
-                                <span class="email-people">Dan Sonnenberg → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Asks about monitor height. Suggests shrinking the closet 6&quot; rather than redoing the flown LED wall.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 12, 2026</span>
-                                <span class="email-people">Ashley Moss → Dan Sonnenberg</span>
-                            </div>
-                            <div class="email-entry-text">Monitor is 57&quot; from bottom to floor. Can&#x27;t shrink the closet — it&#x27;s already a major contention point with client. Then reverses: will make closet tweaks. Still needs updated .dwg with monitor support details.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 18, 2026</span>
-                                <span class="email-people">Ashley Moss → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Requests LED content specs and pixel map to share with client.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 18, 2026</span>
-                                <span class="email-people">Ashley Moss → Dan Sonnenberg</span>
-                            </div>
-                            <div class="email-entry-text">Reports conflicts from detailing team — floor-based mount in Fuse model conflicts with controls. Needs resolution.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 18, 2026</span>
-                                <span class="email-people">Dan Sonnenberg → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Asks if everything fits in the booth as drawn — hasn&#x27;t seen a combined detail drawing yet. Also asks what Ashley wants done about the 75&quot; height given the info she provided Friday.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 18, 2026</span>
-                                <span class="email-people">Kevin Barry → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Sends pixel maps to Ashley. Tells her to reach out with any questions.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 20, 2026</span>
-                                <span class="email-people">Ashley Moss → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Asks for pricing to add (2) iPads with desktop stands.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 20, 2026</span>
-                                <span class="email-people">Kevin Barry → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Quotes 2 iPad Pros with desktop stands at $700 total.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 23, 2026</span>
-                                <span class="email-people">Ashley Moss → Kevin Barry</span>
-                            </div>
-                            <div class="email-entry-text">Confirms: please add the 2 iPads and desktop stands.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 25, 2026</span>
-                                <span class="email-people">Kathryn Parker → Ashley Moss</span>
-                            </div>
-                            <div class="email-entry-text">Confirms iPads added, revised quote attached.</div>
-                        </div>
-                        <div class="email-deadline">
-                            <span class="deadline-icon">📅</span>
-                            <span>LED content specs &amp; pixel map — sent Feb 18 (Kevin Barry)</span>
-                        </div>
-                        <div class="email-deadline">
-                            <span class="deadline-icon">📅</span>
-                            <span>Combined detail drawing needed to confirm everything fits in 20x20 booth</span>
-                        </div>
-                        <div class="email-deadline">
-                            <span class="deadline-icon">📅</span>
-                            <span>2 iPads + desktop stands added to quote (confirmed Feb 25)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Combined detail drawing — Dan flagged this hasn&#x27;t been produced yet</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>What to do about the 75&quot; monitor height — Dan asked, waiting on Ashley</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 50 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (2)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Iqral La Rode</div>
-                                <div class="crew-role">Project Manager</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Michael Mathews</div>
-                                <div class="crew-role">Production Rigger</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Account Manager</div>
-                    <div class="section-content">Kathryn Parker</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Key Dates</div>
-                    <div class="key-dates-list">
-                        <div class="key-date-item"><span class='key-date-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(21d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(28d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Moscone Center <span class="venue-city">San Francisco, CA</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content">Sparks / AuditBoard</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-                        <span class="service-tag">Video</span>
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42&quot; Monitors (1) ‎70-80&quot; Monitor *for now, a computer for all 5, <strong>Expectations:</strong> 20x20 booth</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">/fuse technical group/department - exhibits/2026 shows/sparks/auditboard/spx auditboard @ rsac 2026 #1749</a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-rsac.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card warning" data-labor="remote">
-                <div class="show-header">
-                    <div class="show-title">USCAP - Leica Biosystems #360524</div>
-                    <div class="badge-group">
-                        <span class="badge badge-remote">Remote</span>
-                        <span class="badge badge-active">Quoted</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Mar 20 – 26</span>
-                    <span class="show-days normal">22 days</span>
-                </div>
-
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">2 emails</span>
-                            Last: Feb 6, 2026 (20 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 5, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — IMP Leica Biosystems @ USCAP, Henry B. Gonzalez Convention Center, San Antonio. Needs LED wall 7x4 Alluvision, (2) 55&quot; touch + (2) 43&quot; non-touch monitors with Mini-PCs, fabric retractor with Leica logo, lighting/laser effects. Quote #360524.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 6, 2026</span>
-                                <span class="email-people">Kathryn Parker → George Jordan / Sean Bonchonsky (Impact XM)</span>
-                            </div>
-                            <div class="email-entry-text">Quote sent to Impact XM. Notes presentation audio was added even though not in original request — assumes announcements during product reveal. Quote attached.</div>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No response from Impact XM on quote (sent Feb 6)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Fabric retractor source TBD — IXM or retractor company?</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Lighting/laser effect feasibility not confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 44 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (1)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">David Devore</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Henry B. Gonzalez Convention Center <span class="venue-city">San Antonio, TX</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content"></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-                        <span class="service-tag">Custom Fab</span>
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content">LED Wall 7x4 Alluvision, touch monitors, fabric retractor, lighting/laser effects</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link"></a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-uscap.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card normal" data-labor="travel">
-                <div class="show-header">
-                    <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
-                    <div class="badge-group">
-                        <span class="badge badge-travel">Travel</span>
-                        <span class="badge badge-confirmed">Confirmed</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Apr 5 – 13</span>
-                    <span class="show-days normal">38 days</span>
-                </div>
-
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">4 emails</span>
-                            Last: Jan 30, 2026 (27 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 29, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kevin Barry</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — SPX Bausch &amp; Lomb @ ASCRS 2026 #907, Walter E. Washington Convention Center. Needs LED screens: 3x5 wall + 4x5 floor. Quote #360440.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 30, 2026</span>
-                                <span class="email-people">Dan Sonnenberg → Gina Calvanese / Sparks</span>
-                            </div>
-                            <div class="email-entry-text">Quote sent to Sparks with attached quote for B&amp;L @ ASCRS.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 30, 2026</span>
-                                <span class="email-people">Gina Calvanese → Dan Sonnenberg</span>
-                            </div>
-                            <div class="email-entry-text">Client thinking very tall LED totems — 12-16 ft tall. Not sure on exact height.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 30, 2026</span>
-                                <span class="email-people">Gina Calvanese → Dan Sonnenberg</span>
-                            </div>
-                            <div class="email-entry-text">Correction — mixed up with golf quote. Braxton will update on actual needs.</div>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>LED totem specs still TBD — Braxton to update (Jan 30)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No further emails since Jan 30 — status of quote approval unknown</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 50 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (8)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Jonathan (Johnny) Jordan</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">*Iqral La Rode</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">*Dan Sonnenberg</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">*Kevin Barry</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Aaron Swetland</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Not Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">*Luke Irvine</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-confirmed">Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Candida Boggs</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Away</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Zac Edwards</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Empty</span>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Walter E. Washington Convention Center <span class="venue-city">Washington, DC</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content">Sparks / Bausch &amp; Lomb</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content">LED SCREENS: 3x5 wall 4x5 floor</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link"></a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-ascrs.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card warning" data-labor="remote">
-                <div class="show-header">
-                    <div class="show-title">Modex - Honeywell #360175</div>
-                    <div class="badge-group">
-                        <span class="badge badge-remote">Remote</span>
-                        <span class="badge badge-active">Quoted</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Apr 8 – 17</span>
-                    <span class="show-days normal">41 days</span>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Flags</div>
-                    <div class="flags-list">
-                        <div class="flag">
-                            <span class="flag-icon">⚠️</span>
-                            <span>Not yet confirmed, crew only pencilled</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">2 emails</span>
-                            Last: Feb 24, 2026 (2 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 29, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — Honeywell @ Modex, 50x50 booth #B12512 at Georgia World Congress Center. LED wall at front of booth plus significant number of demo screens. Quote #360175.</div>
-                        </div>
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 24, 2026</span>
-                                <span class="email-people">Kathryn Parker → Ashley Thompson / Ali Cooley (Honeywell)</span>
-                            </div>
-                            <div class="email-entry-text">Quote sent to Honeywell. Notes upgrade from 2.6mm to 2.0mm LED tiles for better resolution. Includes local labor since Atlanta-based. Content upload link provided.</div>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Awaiting Honeywell response to quote (sent Feb 24)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>LED screen sizes and monitor quantities still TBD</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 50 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (2)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Tavis Parker</div>
-                                <div class="crew-role">Project Manager</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Eric Petty</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Account Manager</div>
-                    <div class="section-content">Dan Sonnenberg</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Key Dates</div>
-                    <div class="key-dates-list">
-                        <div class="key-date-item"><span class='key-date-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(42d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Georgia World Congress Center <span class="venue-city">Atlanta, GA</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content">Honeywell</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-                        <span class="service-tag">Video</span>
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">/fuse technical group/department - exhibits/2026 shows/honeywell/honeywell/honeywell @ modex 2026 #b12512</a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-modex.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card critical" data-labor="remote">
-                <div class="show-header">
-                    <div class="show-title">PSS - Honeywell EU + META #360177</div>
-                    <div class="badge-group">
-                        <span class="badge badge-remote">Remote</span>
-                        <span class="badge badge-active">Active</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Apr 10 – 16</span>
-                    <span class="show-days normal">43 days</span>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Flags</div>
-                    <div class="flags-list">
-                        <div class="flag">
-                            <span class="flag-icon">🚨</span>
-                            <span>No crew at all, not confirmed</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">1 emails</span>
-                            Last: Jan 29, 2026 (28 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Jan 29, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — Honeywell EU + META PSS 2026 at Hilton Istanbul. Onsite production support for general session, breakouts, special events, solutions room. Hoping to partner with hotel for AV equipment. Quote #360177.</div>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No follow-up since initial request — hotel AV partnership status unknown</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Team/crew needs undefined — no positions created</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 0%;">0%</div>
-                    </div>
-                    <div class="progress-text">0 of 8 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (0)</div>
-                    <div class="crew-list">
-                        <div style="padding: 12px 8px; color: #ff8888;">
-                            ❌ No crew assigned, no positions created
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Account Manager</div>
-                    <div class="section-content">Dan Sonnenberg</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Key Dates</div>
-                    <div class="key-dates-list">
-                        <div class="key-date-item"><span class='key-date-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(43d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-                        <div class="key-date-item"><span class='key-date-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Hilton Istanbul <span class="venue-city">Istanbul, Turkey</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content">Honeywell</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts, special events, solutions room (very similar to the US&amp;C event), <strong>Expectations:</strong> hopefully partner with the hotel for the AV equipment and looking more for a team to help with the production onsite of the event.</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">/fuse technical group/department - exhibits/2026 shows/honeywell/honeywell/honeywell eu + meta pss 2026</a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-pss.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card warning" data-labor="remote">
-                <div class="show-header">
-                    <div class="show-title">HRS - Impulse Dynamics #360937</div>
-                    <div class="badge-group">
-                        <span class="badge badge-remote">Remote</span>
-                        <span class="badge badge-active">Needs Quote</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">Apr 20 – 27</span>
-                    <span class="show-days normal">53 days</span>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Flags</div>
-                    <div class="flags-list">
-                        <div class="flag">
-                            <span class="flag-icon">⚠️</span>
-                            <span>Not yet confirmed, crew only pencilled</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">1 emails</span>
-                            Last: Feb 13, 2026 (13 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 13, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker / Sparks</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — SPX Impulse Dynamics @ HRS 2026, McCormick Place Lakeside Center, Chicago. Needs LED 8x4 curved Topaz + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV. Quote #360937.</div>
-                        </div>
-                        <div class="email-deadline">
-                            <span class="deadline-icon">📅</span>
-                            <span>Quote needed by Feb 15 (status: Needs Quote)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No follow-up since initial request — quote not yet sent</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Curved LED wall specs + 2 wall options need clarification</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Meeting room AV requirements undefined</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 68 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (2)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Stephen Rowell</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Will Johnson </div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">McCormick Place Lakeside Center <span class="venue-city">Chicago, IL</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content"></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content">LED 8x4 curved Topaz + 2 wall options, presentation audio, lighting, meeting room AV</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link"></a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-hrs.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
-
-            <div class="show-card normal" data-labor="travel">
-                <div class="show-header">
-                    <div class="show-title">AUA - Novartis #361092</div>
-                    <div class="badge-group">
-                        <span class="badge badge-travel">Travel</span>
-                        <span class="badge badge-active">None</span>
-                    </div>
-                </div>
-
-                <div class="show-meta">
-                    <span class="show-date">May 11 – 18</span>
-                    <span class="show-days normal">74 days</span>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Flags</div>
-                    <div class="flags-list">
-                        <div class="flag">
-                            <span class="flag-icon">⚠️</span>
-                            <span>Not yet confirmed, crew only pencilled</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="email-summary">
-                    <div class="email-summary-header">
-                        <div class="section-label">Email Summary</div>
-                        <div class="email-summary-meta">
-                            <span class="email-thread-count">1 emails</span>
-                            Last: Feb 17, 2026 (9 days ago)
-                        </div>
-                    </div>
-                    <div class="email-summary-body">
-                        <div class="email-entry">
-                            <div class="email-entry-header">
-                                <span class="email-date">Feb 17, 2026</span>
-                                <span class="email-people">Fuse Integrations → Kathryn Parker</span>
-                            </div>
-                            <div class="email-entry-text">Event request form — IMP Novartis @ AUA 2026, Walter E. Washington Convention Center. LED 36&#x27; on 2 faces + 11&#x27; returns (two each side), 57.6&quot; high (3 tiles) + 2 LED walls + LED squared arch + circular interactive piece + monitors/NUCs. Quote #361092.</div>
-                        </div>
-                        <div class="email-deadline">
-                            <span class="deadline-icon">📅</span>
-                            <span>Quote needed by Feb 19 (past due)</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>No follow-up since initial request — quote status unknown</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>Circular interactive piece specs undefined</span>
-                        </div>
-                        <div class="email-unanswered">
-                            <span class="unanswered-icon">❓</span>
-                            <span>LED squared arch details need clarification</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Task Progress</div>
-                    <div class="progress-bar-container">
-                        <div class="progress-bar-fill critical" style="width: 1%;">1%</div>
-                    </div>
-                    <div class="progress-text">0 of 50 tasks complete</div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Crew (8)</div>
-                    <div class="crew-list">
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Justice Simpson</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Away</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Candida Boggs</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Not Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Maxwell Bordelon</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Bryant Mendez</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Not Confirmed</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Jonathan (Johnny) Jordan</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">*Iqral La Rode</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">Joel Gray</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Pencilled</span>
-                        </div>
-                        <div class="crew-member">
-                            <div>
-                                <div class="crew-name">David Devore</div>
-                                <div class="crew-role">Crew</div>
-                            </div>
-                            <span class="crew-status status-pencilled">Away</span>
-                        </div>
-                    </div>
-                </div>
-
-
-
-                <div class="show-section">
-                    <div class="section-label">Venue</div>
-                    <div class="section-content">Walter E. Washington Convention Center <span class="venue-city">Washington, DC</span></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Client</div>
-                    <div class="section-content"></div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Services</div>
-                    <div class="services-list">
-
-                    </div>
-                </div>
-
-                <div class="notes-section">
-                    <div class="notes-label">Notes <span class="notes-count">(1)</span></div>
-                    <div class="notes-list">
-                        <div class="note-item client">
-                            <details>
-                                <summary>Client Notes</summary>
-                                <div class="note-content">LED on multiple faces + monitors/NUCs + circular interactive piece</div>
-                            </details>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="show-section">
-                    <div class="section-label">Dropbox Folder</div>
-                    <div class="dropbox-path"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link"></a></div>
-                </div>
-                <div class="show-section" style="margin-top: auto; padding-top: 8px;">
-                    <a href="tasks-aua.html" class="task-button">Open Task Checklist</a>
-                </div>
-            </div>
+<div class="show-card warning" data-labor="remote" data-risk="5" data-days="8" data-email-age="31" data-crew-state="ok">
+    <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
+        <div class="card-header-top">
+            <div class="show-title">CRT - Boston Scientific #359986</div>
+            <span class="show-days warning">8d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Mar 6 – 9</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-critical">Thread silent 31d</span> <span class="chip chip-warning">1 unanswered</span> <span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No follow-up emails since initial request — content, shipping, and logistics una</div>
+        <span class="expand-icon" id="icon-recBggRLeCvC52Syi">+</span>
+    </div>
+    <div class="card-body" id="body-recBggRLeCvC52Syi" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No follow-up emails since initial request — content, shipping, and logistics una</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-crt.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Show in 8 days, tasks only 1% complete</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">The Washington Hilton — Washington, DC</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / Boston Scientific</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
+</div></div>
+        </details>
+        <details class="accordion-section">
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-normal'>(8d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-normal'>(9d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (2)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-crt.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (1)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 26, 2026 (31d ago) &bull; 1 emails</div>
+<div class="email-stale"><span class="stale-icon">!!</span> Thread silent for 31 days — may need a follow-up</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up emails since initial request — content, shipping, and logistics unaddressed</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Jan 26, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — CRT 2026 booth #205 at Washington Hilton. Booth needs (3) 55&quot; monitors on plinths, (2) 65&quot...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (1 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 26, 2026</span> <span class="email-people">Fuse Integrations → Kevin Barry</span></div>
+    <div class="email-entry-text">Event request form — CRT 2026 booth #205 at Washington Hilton. Booth needs (3) 55&quot; monitors on plinths, (2) 65&quot; monitors, (3) monitor arms, (8) NUCs. Tech suite needs (6) 55&quot; monitors with stands. Contact: Katelyn Wann (Sparks).</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> <strong>BOOTH:</strong> (3) 55&quot; Monitors - Plinths, (2) 65&quot; Monitors - IVUS &amp; Hospitality, (3) Monitors for Monitor Arms, (8) NUCS, Install &amp; Dismantle Labor   <strong>TECH SUITE:</strong> (6) 55&quot; Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS, <strong>Expectations:</strong> Katelyn Wann - kwann@wearesparks.com + countertop monitor adds </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card critical" data-labor="remote" data-risk="5" data-days="43" data-email-age="28" data-crew-state="none">
+    <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
+        <div class="card-header-top">
+            <div class="show-title">PSS - Honeywell EU + META #360177</div>
+            <span class="show-days normal">43d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Apr 10 – 16</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Active</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 28d</span> <span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 0%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
+        <span class="expand-icon" id="icon-rec424142uv4EMt94">+</span>
+    </div>
+    <div class="card-body" id="body-rec424142uv4EMt94" style="display:none;">
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-pss.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Hilton Istanbul — Istanbul, Turkey</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Honeywell</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
+</div></div>
+        </details>
+        <details class="accordion-section">
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(43d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (0% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0%;">0%</div></div>
+        <div class="progress-text">0 of 8 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-pss.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (1)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 29, 2026 (28d ago) &bull; 1 emails</div>
+<div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — hotel AV partnership status unknown</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Team/crew needs undefined — no positions created</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — Honeywell EU + META PSS 2026 at Hilton Istanbul. Onsite production support for general session, bre...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (1 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
+    <div class="email-entry-text">Event request form — Honeywell EU + META PSS 2026 at Hilton Istanbul. Onsite production support for general session, breakouts, special events, solutions room. Hoping to partner with hotel for AV equipment. Quote #360177.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts, special events, solutions room (very similar to the US&amp;C event), <strong>Expectations:</strong> hopefully partner with the hotel for the AV equipment and looking more for a team to help with the production onsite of the event.</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card warning" data-labor="remote" data-risk="4" data-days="53" data-email-age="13" data-crew-state="pencilled">
+    <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
+        <div class="card-header-top">
+            <div class="show-title">HRS - Impulse Dynamics #360937</div>
+            <span class="show-days normal">53d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Apr 20 – 27</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Needs Quote</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span> <span class="chip chip-critical">Quote past due</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No follow-up since initial request — quote not yet sent</div>
+        <span class="expand-icon" id="icon-recrw32m5ciX8gWbt">+</span>
+    </div>
+    <div class="card-body" id="body-recrw32m5ciX8gWbt" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No follow-up since initial request — quote not yet sent</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-hrs.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">McCormick Place Lakeside Center — Chicago, IL</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+</div></div>
+        </details>
+        
+        <details class="accordion-section">
+    <summary>Crew (2)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Will Johnson </div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 68 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1%;"></div></div><span class="tp-pct">1%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-hrs.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (1)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (13d ago) &bull; 1 emails</div>
+<div class="email-deadline"><span class="deadline-icon">!!</span> Quote needed by Feb 15 (status: Needs Quote)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — quote not yet sent</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Curved LED wall specs + 2 wall options need clarification</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Meeting room AV requirements undefined</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — SPX Impulse Dynamics @ HRS 2026, McCormick Place Lakeside Center, Chicago. Needs LED 8x4 curved Top...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (1 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker / Sparks</span></div>
+    <div class="email-entry-text">Event request form — SPX Impulse Dynamics @ HRS 2026, McCormick Place Lakeside Center, Chicago. Needs LED 8x4 curved Topaz + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV. Quote #360937.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content">LED 8x4 curved Topaz + 2 wall options, presentation audio, lighting, meeting room AV</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card normal" data-labor="travel" data-risk="4" data-days="74" data-email-age="9" data-crew-state="pencilled">
+    <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
+        <div class="card-header-top">
+            <div class="show-title">AUA - Novartis #361092</div>
+            <span class="show-days normal">74d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">May 11 – 18</span>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">4 pencilled</span> <span class="chip chip-warning">4 unconfirmed</span> <span class="chip chip-critical">Quote past due</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Quote needed by Feb 19 (past due)</div>
+        <span class="expand-icon" id="icon-recq49LuQliCAooZ0">+</span>
+    </div>
+    <div class="card-body" id="body-recq49LuQliCAooZ0" style="display:none;">
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Quote needed by Feb 19 (past due)</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-aua.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+</div></div>
+        </details>
+        
+        <details class="accordion-section">
+    <summary>Crew (8)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Away</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Not Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Maxwell Bordelon</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Bryant Mendez</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Not Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Joel Gray</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">David Devore</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Away</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-aua.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (1)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (9d ago) &bull; 1 emails</div>
+<div class="email-deadline"><span class="deadline-icon">!!</span> Quote needed by Feb 19 (past due)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — quote status unknown</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Circular interactive piece specs undefined</div><div class="email-unanswered"><span class="unanswered-icon">?</span> LED squared arch details need clarification</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — IMP Novartis @ AUA 2026, Walter E. Washington Convention Center. LED 36&#x27; on 2 faces + 11&#x27;...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (1 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
+    <div class="email-entry-text">Event request form — IMP Novartis @ AUA 2026, Walter E. Washington Convention Center. LED 36&#x27; on 2 faces + 11&#x27; returns (two each side), 57.6&quot; high (3 tiles) + 2 LED walls + LED squared arch + circular interactive piece + monitors/NUCs. Quote #361092.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content">LED on multiple faces + monitors/NUCs + circular interactive piece</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card normal" data-labor="travel" data-risk="3" data-days="20" data-email-age="1" data-crew-state="ok">
+    <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
+        <div class="card-header-top">
+            <div class="show-title">RSAC - AuditBoard #359999</div>
+            <span class="show-days normal">20d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Mar 18 – 24</span>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">Quote past due</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18</div>
+        <span class="expand-icon" id="icon-rec1hmHTQF3PSBEHZ">+</span>
+    </div>
+    <div class="card-body" id="body-rec1hmHTQF3PSBEHZ" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-rsac.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Moscone Center — San Francisco, CA</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / AuditBoard</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kathryn Parker</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
+</div></div>
+        </details>
+        <details class="accordion-section">
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(21d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(28d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (2)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Michael Mathews</div><div class="crew-role">Production Rigger</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-rsac.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (24)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (1d ago) &bull; 24 emails</div>
+<div class="email-deadline"><span class="deadline-icon">!!</span> LED content specs &amp; pixel map — sent Feb 18 (Kevin Barry)</div><div class="email-deadline"><span class="deadline-icon">!!</span> Combined detail drawing needed to confirm everything fits in 20x20 booth</div><div class="email-deadline"><span class="deadline-icon">!!</span> 2 iPads + desktop stands added to quote (confirmed Feb 25)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Combined detail drawing — Dan flagged this hasn&#x27;t been produced yet</div><div class="email-unanswered"><span class="unanswered-icon">?</span> What to do about the 75&quot; monitor height — Dan asked, waiting on Ashley</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Jan 26, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — AuditBoard @ RSAC, 20x20 booth at Moscone Center. LED wall, 75&quot; monitor, rigging, production r...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Jan 28, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Sends RSA quote. Notes custom rigging only needed if LED is on ceiling — if that goes away, rigging and rigger drop off ...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 9, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Confirms it&#x27;s a GO — LED portion only, client using own monitors. Project #353488. Asks for deadline date for AV fi...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 9, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Confirms monitors removed, quote confirmed. Iqral looping in on CC. Says file deadline depends on how much custom conten...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Sends revised quote with 75&quot; mounted to LED wall kept in, 43s removed. Then re-sends with mounting gear corrected.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 11, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Freeman Rigging needs an overhead placement drawing to scale for the LED. Sparks team not far enough along to provide ye...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">May not need the drawing after all — her team did a preliminary .dwg. Shares it overlayed on booth. Then confirms: quote...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
+    <div class="email-tl-text">Asks about monitor height. Suggests shrinking the closet 6&quot; rather than redoing the flown LED wall.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Monitor is 57&quot; from bottom to floor. Can&#x27;t shrink the closet — it&#x27;s already a major contention point with...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Requests LED content specs and pixel map to share with client.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Reports conflicts from detailing team — floor-based mount in Fuse model conflicts with controls. Needs resolution.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
+    <div class="email-tl-text">Asks if everything fits in the booth as drawn — hasn&#x27;t seen a combined detail drawing yet. Also asks what Ashley wa...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Kevin Barry</span>
+    <div class="email-tl-text">Sends pixel maps to Ashley. Tells her to reach out with any questions.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Asks for pricing to add (2) iPads with desktop stands.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">Kevin Barry</span>
+    <div class="email-tl-text">Quotes 2 iPad Pros with desktop stands at $700 total.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from">Ashley Moss</span>
+    <div class="email-tl-text">Confirms: please add the 2 iPads and desktop stands.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Confirms iPads added, revised quote attached.</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (17 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 26, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
+    <div class="email-entry-text">Event request form — AuditBoard @ RSAC, 20x20 booth at Moscone Center. LED wall, 75&quot; monitor, rigging, production rigger. Contact: Ashley Moss (Sparks).</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 28, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
+    <div class="email-entry-text">Sends RSA quote. Notes custom rigging only needed if LED is on ceiling — if that goes away, rigging and rigger drop off quote.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 9, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
+    <div class="email-entry-text">Confirms it&#x27;s a GO — LED portion only, client using own monitors. Project #353488. Asks for deadline date for AV files/testing.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 9, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
+    <div class="email-entry-text">Confirms monitors removed, quote confirmed. Iqral looping in on CC. Says file deadline depends on how much custom content.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
+    <div class="email-entry-text">Sends revised quote with 75&quot; mounted to LED wall kept in, 43s removed. Then re-sends with mounting gear corrected.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 11, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
+    <div class="email-entry-text">Freeman Rigging needs an overhead placement drawing to scale for the LED. Sparks team not far enough along to provide yet — asks Fuse to help with a .dwg.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
+    <div class="email-entry-text">May not need the drawing after all — her team did a preliminary .dwg. Shares it overlayed on booth. Then confirms: quote is APPROVED.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Dan Sonnenberg → Ashley Moss</span></div>
+    <div class="email-entry-text">Asks about monitor height. Suggests shrinking the closet 6&quot; rather than redoing the flown LED wall.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Ashley Moss → Dan Sonnenberg</span></div>
+    <div class="email-entry-text">Monitor is 57&quot; from bottom to floor. Can&#x27;t shrink the closet — it&#x27;s already a major contention point with client. Then reverses: will make closet tweaks. Still needs updated .dwg with monitor support details.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
+    <div class="email-entry-text">Requests LED content specs and pixel map to share with client.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Ashley Moss → Dan Sonnenberg</span></div>
+    <div class="email-entry-text">Reports conflicts from detailing team — floor-based mount in Fuse model conflicts with controls. Needs resolution.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Dan Sonnenberg → Ashley Moss</span></div>
+    <div class="email-entry-text">Asks if everything fits in the booth as drawn — hasn&#x27;t seen a combined detail drawing yet. Also asks what Ashley wants done about the 75&quot; height given the info she provided Friday.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Kevin Barry → Ashley Moss</span></div>
+    <div class="email-entry-text">Sends pixel maps to Ashley. Tells her to reach out with any questions.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
+    <div class="email-entry-text">Asks for pricing to add (2) iPads with desktop stands.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">Kevin Barry → Ashley Moss</span></div>
+    <div class="email-entry-text">Quotes 2 iPad Pros with desktop stands at $700 total.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people">Ashley Moss → Kevin Barry</span></div>
+    <div class="email-entry-text">Confirms: please add the 2 iPads and desktop stands.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
+    <div class="email-entry-text">Confirms iPads added, revised quote attached.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42&quot; Monitors (1) ‎70-80&quot; Monitor *for now, a computer for all 5, <strong>Expectations:</strong> 20x20 booth</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card normal" data-labor="travel" data-risk="3" data-days="38" data-email-age="27" data-crew-state="pencilled">
+    <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
+        <div class="card-header-top">
+            <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
+            <span class="show-days normal">38d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Apr 5 – 13</span>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 27d</span> <span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span> <span class="chip chip-warning">3 unconfirmed</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> LED totem specs still TBD — Braxton to update (Jan 30)</div>
+        <span class="expand-icon" id="icon-recp7a04etMXiXE7w">+</span>
+    </div>
+    <div class="card-body" id="body-recp7a04etMXiXE7w" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> LED totem specs still TBD — Braxton to update (Jan 30)</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-ascrs.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / Bausch &amp; Lomb</span></div>
+</div></div>
+        </details>
+        
+        <details class="accordion-section">
+    <summary>Crew (8)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Dan Sonnenberg</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Kevin Barry</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Not Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Luke Irvine</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Away</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Empty</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-ascrs.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (4)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 30, 2026 (27d ago) &bull; 4 emails</div>
+<div class="email-unanswered"><span class="unanswered-icon">?</span> LED totem specs still TBD — Braxton to update (Jan 30)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No further emails since Jan 30 — status of quote approval unknown</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — SPX Bausch &amp; Lomb @ ASCRS 2026 #907, Walter E. Washington Convention Center. Needs LED screens:...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
+    <div class="email-tl-text">Quote sent to Sparks with attached quote for B&amp;L @ ASCRS.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Gina Calvanese</span>
+    <div class="email-tl-text">Client thinking very tall LED totems — 12-16 ft tall. Not sure on exact height.</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Gina Calvanese</span>
+    <div class="email-tl-text">Correction — mixed up with golf quote. Braxton will update on actual needs.</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (4 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kevin Barry</span></div>
+    <div class="email-entry-text">Event request form — SPX Bausch &amp; Lomb @ ASCRS 2026 #907, Walter E. Washington Convention Center. Needs LED screens: 3x5 wall + 4x5 floor. Quote #360440.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Dan Sonnenberg → Gina Calvanese / Sparks</span></div>
+    <div class="email-entry-text">Quote sent to Sparks with attached quote for B&amp;L @ ASCRS.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Gina Calvanese → Dan Sonnenberg</span></div>
+    <div class="email-entry-text">Client thinking very tall LED totems — 12-16 ft tall. Not sure on exact height.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Gina Calvanese → Dan Sonnenberg</span></div>
+    <div class="email-entry-text">Correction — mixed up with golf quote. Braxton will update on actual needs.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content">LED SCREENS: 3x5 wall 4x5 floor</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card warning" data-labor="remote" data-risk="2" data-days="22" data-email-age="20" data-crew-state="ok">
+    <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
+        <div class="card-header-top">
+            <div class="show-title">USCAP - Leica Biosystems #360524</div>
+            <span class="show-days normal">22d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Mar 20 – 26</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Quoted</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 20d</span> <span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No response from Impact XM on quote (sent Feb 6)</div>
+        <span class="expand-icon" id="icon-recmhpSJCbtCUL5Ci">+</span>
+    </div>
+    <div class="card-body" id="body-recmhpSJCbtCUL5Ci" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No response from Impact XM on quote (sent Feb 6)</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-uscap.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Henry B. Gonzalez Convention Center — San Antonio, TX</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Custom Fab</span></span></div>
+</div></div>
+        </details>
+        
+        <details class="accordion-section">
+    <summary>Crew (1)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">David Devore</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 44 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-uscap.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (2)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 6, 2026 (20d ago) &bull; 2 emails</div>
+<div class="email-unanswered"><span class="unanswered-icon">?</span> No response from Impact XM on quote (sent Feb 6)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Fabric retractor source TBD — IXM or retractor company?</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Lighting/laser effect feasibility not confirmed</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Feb 5, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — IMP Leica Biosystems @ USCAP, Henry B. Gonzalez Convention Center, San Antonio. Needs LED wall 7x4 ...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 6, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Quote sent to Impact XM. Notes presentation audio was added even though not in original request — assumes announcements ...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (2 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 5, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
+    <div class="email-entry-text">Event request form — IMP Leica Biosystems @ USCAP, Henry B. Gonzalez Convention Center, San Antonio. Needs LED wall 7x4 Alluvision, (2) 55&quot; touch + (2) 43&quot; non-touch monitors with Mini-PCs, fabric retractor with Leica logo, lighting/laser effects. Quote #360524.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 6, 2026</span> <span class="email-people">Kathryn Parker → George Jordan / Sean Bonchonsky (Impact XM)</span></div>
+    <div class="email-entry-text">Quote sent to Impact XM. Notes presentation audio was added even though not in original request — assumes announcements during product reveal. Quote attached.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content">LED Wall 7x4 Alluvision, touch monitors, fabric retractor, lighting/laser effects</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card warning" data-labor="remote" data-risk="1" data-days="41" data-email-age="2" data-crew-state="pencilled">
+    <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
+        <div class="card-header-top">
+            <div class="show-title">Modex - Honeywell #360175</div>
+            <span class="show-days normal">41d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Apr 8 – 17</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Quoted</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Awaiting Honeywell response to quote (sent Feb 24)</div>
+        <span class="expand-icon" id="icon-recVHqaYbYwOR10kS">+</span>
+    </div>
+    <div class="card-body" id="body-recVHqaYbYwOR10kS" style="display:none;">
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Awaiting Honeywell response to quote (sent Feb 24)</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-modex.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Georgia World Congress Center — Atlanta, GA</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Honeywell</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
+</div></div>
+        </details>
+        <details class="accordion-section">
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(42d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (2)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">Project Manager</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Eric Petty</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
+</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-modex.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (2)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 24, 2026 (2d ago) &bull; 2 emails</div>
+<div class="email-unanswered"><span class="unanswered-icon">?</span> Awaiting Honeywell response to quote (sent Feb 24)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> LED screen sizes and monitor quantities still TBD</div>
+<div class="email-tl-entry">
+    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Event request form — Honeywell @ Modex, 50x50 booth #B12512 at Georgia World Congress Center. LED wall at front of booth...</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
+    <div class="email-tl-text">Quote sent to Honeywell. Notes upgrade from 2.6mm to 2.0mm LED tiles for better resolution. Includes local labor since A...</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (2 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
+    <div class="email-entry-text">Event request form — Honeywell @ Modex, 50x50 booth #B12512 at Georgia World Congress Center. LED wall at front of booth plus significant number of demo screens. Quote #360175.</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people">Kathryn Parker → Ashley Thompson / Ali Cooley (Honeywell)</span></div>
+    <div class="email-entry-text">Quote sent to Honeywell. Notes upgrade from 2.6mm to 2.0mm LED tiles for better resolution. Includes local labor since Atlanta-based. Content upload link provided.</div>
+</div></div>
+</details></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
         </div>
     </div>
     <script>
-    function filterShows(type) {
-        var btns = document.querySelectorAll('.filter-btn');
-        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-        document.querySelector('[data-filter="' + type + '"]').classList.add('active');
-        var cards = document.querySelectorAll('.show-card');
-        for (var j = 0; j < cards.length; j++) {
-            if (type === 'all' || cards[j].dataset.labor === type) {
-                cards[j].style.display = '';
-            } else {
-                cards[j].style.display = 'none';
-            }
+
+    function toggleCard(id) {
+        var body = document.getElementById('body-' + id);
+        var icon = document.getElementById('icon-' + id);
+        if (!body) return;
+        if (body.style.display === 'none' || body.style.display === '') {
+            body.style.display = 'block';
+            if (icon) icon.textContent = '\u2212';
+        } else {
+            body.style.display = 'none';
+            if (icon) icon.textContent = '+';
         }
     }
+
+    var currentFilter = 'all';
+
+    function filterShows(type) {
+        currentFilter = type;
+        var btns = document.querySelectorAll('.filter-btn');
+        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+        var activeBtn = document.querySelector('[data-filter="' + type + '"]');
+        if (activeBtn) activeBtn.classList.add('active');
+
+        var cards = document.querySelectorAll('.show-card');
+        for (var j = 0; j < cards.length; j++) {
+            var card = cards[j];
+            var show = true;
+
+            if (type === 'all') {
+                show = true;
+            } else if (type === 'travel') {
+                show = card.dataset.labor === 'travel';
+            } else if (type === 'remote') {
+                show = card.dataset.labor === 'remote';
+            } else if (type === 'at-risk') {
+                show = parseInt(card.dataset.risk) > 0;
+            } else if (type === 'next14') {
+                show = parseInt(card.dataset.days) <= 14;
+            } else if (type === 'no-crew') {
+                show = card.dataset.crewState === 'none';
+            } else if (type === 'silent') {
+                show = parseInt(card.dataset.emailAge) > 14;
+            }
+
+            // Also apply search filter
+            var searchVal = document.querySelector('.search-input').value.toLowerCase();
+            if (show && searchVal) {
+                var title = card.querySelector('.show-title');
+                var text = title ? title.textContent.toLowerCase() : '';
+                if (text.indexOf(searchVal) === -1) show = false;
+            }
+
+            card.style.display = show ? '' : 'none';
+        }
+    }
+
+    function searchShows(query) {
+        // Re-apply current filter (which also applies search)
+        filterShows(currentFilter);
+    }
+
+    function sortShows(field) {
+        var grid = document.querySelector('.shows-grid');
+        var cards = Array.prototype.slice.call(grid.querySelectorAll('.show-card'));
+
+        cards.sort(function(a, b) {
+            if (field === 'risk') {
+                return parseInt(b.dataset.risk) - parseInt(a.dataset.risk);
+            } else if (field === 'date') {
+                return parseInt(a.dataset.days) - parseInt(b.dataset.days);
+            } else if (field === 'email') {
+                return parseInt(b.dataset.emailAge) - parseInt(a.dataset.emailAge);
+            }
+            return 0;
+        });
+
+        for (var i = 0; i < cards.length; i++) {
+            grid.appendChild(cards[i]);
+        }
+    }
+
+    function expandAll() {
+        var cards = document.querySelectorAll('.show-card');
+        for (var i = 0; i < cards.length; i++) {
+            var body = cards[i].querySelector('.card-body');
+            var icon = cards[i].querySelector('.expand-icon');
+            if (body) body.style.display = 'block';
+            if (icon) icon.textContent = '\u2212';
+        }
+    }
+
+    function collapseAll() {
+        var cards = document.querySelectorAll('.show-card');
+        for (var i = 0; i < cards.length; i++) {
+            var body = cards[i].querySelector('.card-body');
+            var icon = cards[i].querySelector('.expand-icon');
+            if (body) body.style.display = 'none';
+            if (icon) icon.textContent = '+';
+        }
+    }
+
     </script>
 </body>
 </html>
