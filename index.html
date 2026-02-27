@@ -605,26 +605,26 @@ body {
     <div class="container">
         <div class="header">
             <h1>Show Operations Dashboard</h1>
-            <div class="header-meta">Generated: February 26, 2026</div>
+            <div class="header-meta">Generated: February 27, 2026</div>
             <div class="header-stats">
                 <div class="stat-box">
                     <div class="stat-value">1</div>
                     <div class="stat-label">Next 14d</div>
                 </div>
                 <div class="stat-box stat-alert">
-                    <div class="stat-value">8</div>
+                    <div class="stat-value">7</div>
                     <div class="stat-label">At Risk</div>
                 </div>
                 <div class="stat-box stat-warn">
-                    <div class="stat-value">4</div>
+                    <div class="stat-value">1</div>
                     <div class="stat-label">Silent</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">1</div>
+                    <div class="stat-value">6</div>
                     <div class="stat-label">No Crew</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">4</div>
+                    <div class="stat-value">1</div>
                     <div class="stat-label">Pencilled</div>
                 </div>
                 <div class="stat-box">
@@ -634,12 +634,12 @@ body {
             </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all" onclick="filterShows('all')">All (8)</button>
-                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (8)</button>
+                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (7)</button>
                 <button class="filter-btn" data-filter="next14" onclick="filterShows('next14')">Next 14d</button>
                 <button class="filter-btn" data-filter="no-crew" onclick="filterShows('no-crew')">No Crew</button>
                 <button class="filter-btn" data-filter="silent" onclick="filterShows('silent')">Silent</button>
-                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (3)</button>
-                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (5)</button>
+                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (6)</button>
+                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (2)</button>
             </div>
             <div class="search-sort-bar">
                 <input type="text" class="search-input" placeholder="Search shows..." oninput="searchShows(this.value)">
@@ -651,30 +651,37 @@ body {
             </div>
         </div>
 
+    <div class="alert-banner">
+        <div class="alert-title">!! CRITICAL: High Priority Shows Starting This Week</div>
+        <div class="alert-content">
+        <div class="alert-item"><strong>CRT - Boston Scientific #359986:</strong> Starts Mar 06 (7 days) — Tasks 1% complete (0 of 50 tasks)</div>
+        </div>
+    </div>
 
         <div class="shows-grid">
-<div class="show-card warning" data-labor="remote" data-risk="5" data-days="8" data-email-age="31" data-crew-state="ok">
+<div class="show-card critical" data-labor="remote" data-risk="6" data-days="7" data-email-age="8" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
             <div class="show-title">CRT - Boston Scientific #359986</div>
-            <span class="show-days warning">8d</span>
+            <span class="show-days warning">7d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 6 – 9</span>
             <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Thread silent 31d</span> <span class="chip chip-warning">1 unanswered</span> <span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No follow-up emails since initial request — content, shipping, and logistics una</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recBggRLeCvC52Syi">+</span>
     </div>
     <div class="card-body" id="body-recBggRLeCvC52Syi" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No follow-up emails since initial request — content, shipping, and logistics una</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-crt.html" class="cta-btn">Open Checklist</a></div>
 </div>
         <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Show in 8 days, tasks only 1% complete</div>
+    <summary>Flags / Risks (2)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+<div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 7 days, tasks barely started (&lt;1% complete)</div>
 </div>
 </details>
         <details class="accordion-section" open>
@@ -687,21 +694,14 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-normal'>(8d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-normal'>(9d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-normal'>(11d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-warning'>(7d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-normal'>(8d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-normal'>(10d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-normal'>(10d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (2)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -715,18 +715,42 @@ body {
         <a href="tasks-crt.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 26, 2026 (31d ago) &bull; 1 emails</div>
-<div class="email-stale"><span class="stale-icon">!!</span> Thread silent for 31 days — may need a follow-up</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up emails since initial request — content, shipping, and logistics unaddressed</div>
+    <summary>Emails (5)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 19, 2026 (8d ago) &bull; 5 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Jan 26, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — CRT 2026 booth #205 at Washington Hilton. Booth needs (3) 55&quot; monitors on plinths, (2) 65&quot...</div>
+    <span class="email-tl-date">Feb 19, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
-    <summary>View full excerpts (1 messages)</summary>
+    <summary>View full excerpts (5 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 26, 2026</span> <span class="email-people">Fuse Integrations → Kevin Barry</span></div>
-    <div class="email-entry-text">Event request form — CRT 2026 booth #205 at Washington Hilton. Booth needs (3) 55&quot; monitors on plinths, (2) 65&quot; monitors, (3) monitor arms, (8) NUCs. Tech suite needs (6) 55&quot; monitors with stands. Contact: Katelyn Wann (Sparks).</div>
+    <div class="email-entry-header"><span class="email-date">Feb 19, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -741,26 +765,30 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="3" data-days="20" data-email-age="1" data-crew-state="ok">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="19" data-email-age="2" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
         <div class="card-header-top">
             <div class="show-title">RSAC - AuditBoard #359999</div>
-            <span class="show-days normal">20d</span>
+            <span class="show-days normal">19d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 18 – 24</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">Quote past due</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-rec1hmHTQF3PSBEHZ">+</span>
     </div>
     <div class="card-body" id="body-rec1hmHTQF3PSBEHZ" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-rsac.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
@@ -772,21 +800,14 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(21d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(28d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(25d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(20d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(27d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (2)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Michael Mathews</div><div class="crew-role">Production Rigger</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -801,113 +822,41 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (24)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (1d ago) &bull; 24 emails</div>
-<div class="email-deadline"><span class="deadline-icon">!!</span> LED content specs &amp; pixel map — sent Feb 18 (Kevin Barry)</div><div class="email-deadline"><span class="deadline-icon">!!</span> Combined detail drawing needed to confirm everything fits in 20x20 booth</div><div class="email-deadline"><span class="deadline-icon">!!</span> 2 iPads + desktop stands added to quote (confirmed Feb 25)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Floor-based mount conflicts with controls — needs resolution (Dan/Ashley, Feb 18)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Combined detail drawing — Dan flagged this hasn&#x27;t been produced yet</div><div class="email-unanswered"><span class="unanswered-icon">?</span> What to do about the 75&quot; monitor height — Dan asked, waiting on Ashley</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (2d ago) &bull; 24 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Jan 26, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — AuditBoard @ RSAC, 20x20 booth at Moscone Center. LED wall, 75&quot; monitor, rigging, production r...</div>
+    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Jan 28, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Sends RSA quote. Notes custom rigging only needed if LED is on ceiling — if that goes away, rigging and rigger drop off ...</div>
+    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 9, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Confirms it&#x27;s a GO — LED portion only, client using own monitors. Project #353488. Asks for deadline date for AV fi...</div>
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 9, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Confirms monitors removed, quote confirmed. Iqral looping in on CC. Says file deadline depends on how much custom conten...</div>
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Sends revised quote with 75&quot; mounted to LED wall kept in, 43s removed. Then re-sends with mounting gear corrected.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 11, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Freeman Rigging needs an overhead placement drawing to scale for the LED. Sparks team not far enough along to provide ye...</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">May not need the drawing after all — her team did a preliminary .dwg. Shares it overlayed on booth. Then confirms: quote...</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
-    <div class="email-tl-text">Asks about monitor height. Suggests shrinking the closet 6&quot; rather than redoing the flown LED wall.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Monitor is 57&quot; from bottom to floor. Can&#x27;t shrink the closet — it&#x27;s already a major contention point with...</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Requests LED content specs and pixel map to share with client.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Reports conflicts from detailing team — floor-based mount in Fuse model conflicts with controls. Needs resolution.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
-    <div class="email-tl-text">Asks if everything fits in the booth as drawn — hasn&#x27;t seen a combined detail drawing yet. Also asks what Ashley wa...</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Kevin Barry</span>
-    <div class="email-tl-text">Sends pixel maps to Ashley. Tells her to reach out with any questions.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Asks for pricing to add (2) iPads with desktop stands.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">Kevin Barry</span>
-    <div class="email-tl-text">Quotes 2 iPad Pros with desktop stands at $700 total.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from">Ashley Moss</span>
-    <div class="email-tl-text">Confirms: please add the 2 iPads and desktop stands.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Confirms iPads added, revised quote attached.</div>
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
-    <summary>View full excerpts (17 messages)</summary>
+    <summary>View full excerpts (5 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 26, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
-    <div class="email-entry-text">Event request form — AuditBoard @ RSAC, 20x20 booth at Moscone Center. LED wall, 75&quot; monitor, rigging, production rigger. Contact: Ashley Moss (Sparks).</div>
+    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 28, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
-    <div class="email-entry-text">Sends RSA quote. Notes custom rigging only needed if LED is on ceiling — if that goes away, rigging and rigger drop off quote.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 9, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
-    <div class="email-entry-text">Confirms it&#x27;s a GO — LED portion only, client using own monitors. Project #353488. Asks for deadline date for AV files/testing.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 9, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
-    <div class="email-entry-text">Confirms monitors removed, quote confirmed. Iqral looping in on CC. Says file deadline depends on how much custom content.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
-    <div class="email-entry-text">Sends revised quote with 75&quot; mounted to LED wall kept in, 43s removed. Then re-sends with mounting gear corrected.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 11, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
-    <div class="email-entry-text">Freeman Rigging needs an overhead placement drawing to scale for the LED. Sparks team not far enough along to provide yet — asks Fuse to help with a .dwg.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
-    <div class="email-entry-text">May not need the drawing after all — her team did a preliminary .dwg. Shares it overlayed on booth. Then confirms: quote is APPROVED.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Dan Sonnenberg → Ashley Moss</span></div>
-    <div class="email-entry-text">Asks about monitor height. Suggests shrinking the closet 6&quot; rather than redoing the flown LED wall.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Ashley Moss → Dan Sonnenberg</span></div>
-    <div class="email-entry-text">Monitor is 57&quot; from bottom to floor. Can&#x27;t shrink the closet — it&#x27;s already a major contention point with client. Then reverses: will make closet tweaks. Still needs updated .dwg with monitor support details.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
-    <div class="email-entry-text">Requests LED content specs and pixel map to share with client.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Ashley Moss → Dan Sonnenberg</span></div>
-    <div class="email-entry-text">Reports conflicts from detailing team — floor-based mount in Fuse model conflicts with controls. Needs resolution.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Dan Sonnenberg → Ashley Moss</span></div>
-    <div class="email-entry-text">Asks if everything fits in the booth as drawn — hasn&#x27;t seen a combined detail drawing yet. Also asks what Ashley wants done about the 75&quot; height given the info she provided Friday.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Kevin Barry → Ashley Moss</span></div>
-    <div class="email-entry-text">Sends pixel maps to Ashley. Tells her to reach out with any questions.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">Ashley Moss → Kathryn Parker</span></div>
-    <div class="email-entry-text">Asks for pricing to add (2) iPads with desktop stands.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">Kevin Barry → Ashley Moss</span></div>
-    <div class="email-entry-text">Quotes 2 iPad Pros with desktop stands at $700 total.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people">Ashley Moss → Kevin Barry</span></div>
-    <div class="email-entry-text">Confirms: please add the 2 iPads and desktop stands.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people">Kathryn Parker → Ashley Moss</span></div>
-    <div class="email-entry-text">Confirms iPads added, revised quote attached.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -922,41 +871,49 @@ body {
     </div>
 </div>
 
-<div class="show-card warning" data-labor="remote" data-risk="2" data-days="22" data-email-age="20" data-crew-state="ok">
+<div class="show-card critical" data-labor="travel" data-risk="5" data-days="21" data-email-age="21" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
             <div class="show-title">USCAP - Leica Biosystems #360524</div>
-            <span class="show-days normal">22d</span>
+            <span class="show-days normal">21d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 20 – 26</span>
-            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Quoted</span></div>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 20d</span> <span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No response from Impact XM on quote (sent Feb 6)</div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 21d</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recmhpSJCbtCUL5Ci">+</span>
     </div>
     <div class="card-body" id="body-recmhpSJCbtCUL5Ci" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No response from Impact XM on quote (sent Feb 6)</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-uscap.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
     <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Henry B. Gonzalez Convention Center — San Antonio, TX</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
     <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Custom Fab</span></span></div>
 </div></div>
         </details>
-        
         <details class="accordion-section">
-    <summary>Crew (1)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 21 <span class='countdown-normal'>(22d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 25 <span class='countdown-normal'>(26d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-normal'>(26d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -971,23 +928,23 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (2)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 6, 2026 (20d ago) &bull; 2 emails</div>
-<div class="email-unanswered"><span class="unanswered-icon">?</span> No response from Impact XM on quote (sent Feb 6)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Fabric retractor source TBD — IXM or retractor company?</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Lighting/laser effect feasibility not confirmed</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 06, 2026 (21d ago) &bull; 2 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 5, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — IMP Leica Biosystems @ USCAP, Henry B. Gonzalez Convention Center, San Antonio. Needs LED wall 7x4 ...</div>
+    <span class="email-tl-date">Feb 06, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 6, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Quote sent to Impact XM. Notes presentation audio was added even though not in original request — assumes announcements ...</div>
+    <span class="email-tl-date">Feb 05, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (2 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 5, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
-    <div class="email-entry-text">Event request form — IMP Leica Biosystems @ USCAP, Henry B. Gonzalez Convention Center, San Antonio. Needs LED wall 7x4 Alluvision, (2) 55&quot; touch + (2) 43&quot; non-touch monitors with Mini-PCs, fabric retractor with Leica logo, lighting/laser effects. Quote #360524.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 06, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 6, 2026</span> <span class="email-people">Kathryn Parker → George Jordan / Sean Bonchonsky (Impact XM)</span></div>
-    <div class="email-entry-text">Quote sent to Impact XM. Notes presentation audio was added even though not in original request — assumes announcements during product reveal. Quote attached.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 05, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -995,30 +952,30 @@ body {
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content">LED Wall 7x4 Alluvision, touch monitors, fabric retractor, lighting/laser effects</div></details>
+    <div class="note-content"><strong>Needs:</strong> 1.Basic booth AV – (2) 55 Touch with Mini-PC (2) 43 Non-Touch with stand to flank the sides of the new piece of equipment with Mini-PC, Keyboard and Mice Not sure if we will need PCs for them or if we can use media players or the built in OS on the monitors LED Wall – 7 wide x 4 high LED wall using Alluvision frame.  We discussed 1.55 tiles. Fabric retractor Fabric itself Needs to have a Leica logo on the front. Needs to cover the entire counter and items on top of it. Is this something IXM provides or is this something that comes from the company that does the retractor? Lighting/Laser effect shown in the deck on Page 18 and anything that is associated with that (Truss, Rigging.  Do we provide that?), <strong>Expectations:</strong> https://impactunlimited477-my.sharepoint.com/:p:/g/personal/gjordan_impact-xm_com/IQDtLK5ALISlS45kmm5npHKOATK8m71EZMokSl82XakrVwg?rtime=FPscedhk3kg</div></details>
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="3" data-days="38" data-email-age="27" data-crew-state="pencilled">
+<div class="show-card normal" data-labor="travel" data-risk="1" data-days="37" data-email-age="999" data-crew-state="pencilled">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
             <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
-            <span class="show-days normal">38d</span>
+            <span class="show-days normal">37d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 5 – 13</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 27d</span> <span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span> <span class="chip chip-warning">3 unconfirmed</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> LED totem specs still TBD — Braxton to update (Jan 30)</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 pencilled</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recp7a04etMXiXE7w">+</span>
     </div>
     <div class="card-body" id="body-recp7a04etMXiXE7w" style="display:none;">
         <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> LED totem specs still TBD — Braxton to update (Jan 30)</div>
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-ascrs.html" class="cta-btn">Open Checklist</a></div>
 </div>
         
@@ -1027,42 +984,22 @@ body {
             <div class="accordion-content"><div class="overview-grid">
     <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
     <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / Bausch &amp; Lomb</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
 </div></div>
         </details>
-        
         <details class="accordion-section">
-    <summary>Crew (8)</summary>
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 6 <span class='countdown-normal'>(38d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 10 <span class='countdown-normal'>(42d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 12 <span class='countdown-normal'>(44d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(44d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (1)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">Crew</div></div>
+    <div><div class="crew-name">J</div><div class="crew-role">—</div></div>
     <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Dan Sonnenberg</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Kevin Barry</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Luke Irvine</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Away</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Empty</span>
 </div></div></div>
 </details>
         <details class="accordion-section">
@@ -1077,36 +1014,100 @@ body {
         <a href="tasks-ascrs.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (4)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 30, 2026 (27d ago) &bull; 4 emails</div>
-<div class="email-unanswered"><span class="unanswered-icon">?</span> LED totem specs still TBD — Braxton to update (Jan 30)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No further emails since Jan 30 — status of quote approval unknown</div>
+    <summary>Emails</summary>
+    <div class="accordion-content"><div class="empty-section">No email data</div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Notes & Links</summary>
+    <div class="accordion-content"><div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor, <strong>Expectations:</strong> </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</details>
+    </div>
+</div>
+
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="40" data-email-age="1" data-crew-state="none">
+    <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
+        <div class="card-header-top">
+            <div class="show-title">Modex - Honeywell #360175</div>
+            <span class="show-days normal">40d</span>
+        </div>
+        <div class="card-header-meta">
+            <span class="show-date">Apr 8 – 17</span>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">Quoted</span></div>
+        </div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
+        <span class="expand-icon" id="icon-recVHqaYbYwOR10kS">+</span>
+    </div>
+    <div class="card-body" id="body-recVHqaYbYwOR10kS" style="display:none;">
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-modex.html" class="cta-btn">Open Checklist</a></div>
+</div>
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
+        <details class="accordion-section" open>
+            <summary>Overview</summary>
+            <div class="accordion-content"><div class="overview-grid">
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Georgia World Congress Center — Atlanta, GA</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Honeywell</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
+</div></div>
+        </details>
+        <details class="accordion-section">
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(41d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(45d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Tasks (1% complete)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+</div>
+        <a href="tasks-modex.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
+</details>
+        <details class="accordion-section">
+    <summary>Emails (3)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 26, 2026 (1d ago) &bull; 3 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — SPX Bausch &amp; Lomb @ ASCRS 2026 #907, Walter E. Washington Convention Center. Needs LED screens:...</div>
+    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Dan Sonnenberg</span>
-    <div class="email-tl-text">Quote sent to Sparks with attached quote for B&amp;L @ ASCRS.</div>
+    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Gina Calvanese</span>
-    <div class="email-tl-text">Client thinking very tall LED totems — 12-16 ft tall. Not sure on exact height.</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Jan 30, 2026</span> <span class="email-tl-from">Gina Calvanese</span>
-    <div class="email-tl-text">Correction — mixed up with golf quote. Braxton will update on actual needs.</div>
+    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
-    <summary>View full excerpts (4 messages)</summary>
+    <summary>View full excerpts (3 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kevin Barry</span></div>
-    <div class="email-entry-text">Event request form — SPX Bausch &amp; Lomb @ ASCRS 2026 #907, Walter E. Washington Convention Center. Needs LED screens: 3x5 wall + 4x5 floor. Quote #360440.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Dan Sonnenberg → Gina Calvanese / Sparks</span></div>
-    <div class="email-entry-text">Quote sent to Sparks with attached quote for B&amp;L @ ASCRS.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Gina Calvanese → Dan Sonnenberg</span></div>
-    <div class="email-entry-text">Client thinking very tall LED totems — 12-16 ft tall. Not sure on exact height.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 30, 2026</span> <span class="email-people">Gina Calvanese → Dan Sonnenberg</span></div>
-    <div class="email-entry-text">Correction — mixed up with golf quote. Braxton will update on actual needs.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -1114,35 +1115,24 @@ body {
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content">LED SCREENS: 3x5 wall 4x5 floor</div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
     </div>
 </div>
 
-<div class="show-card warning" data-labor="remote" data-risk="1" data-days="41" data-email-age="2" data-crew-state="pencilled">
-    <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
-        <div class="card-header-top">
-            <div class="show-title">Modex - Honeywell #360175</div>
-            <span class="show-days normal">41d</span>
-        </div>
-        <div class="card-header-meta">
-            <span class="show-date">Apr 8 – 17</span>
-            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Quoted</span></div>
-        </div>
-        <div class="risk-chips"><span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span></div>
-<div class="show-card critical" data-labor="remote" data-risk="5" data-days="43" data-email-age="28" data-crew-state="none">
+<div class="show-card critical" data-labor="remote" data-risk="3" data-days="42" data-email-age="999" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
         <div class="card-header-top">
             <div class="show-title">PSS - Honeywell EU + META #360177</div>
-            <span class="show-days normal">43d</span>
+            <span class="show-days normal">42d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 10 – 16</span>
             <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Active</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 28d</span> <span class="chip chip-warning">2 unanswered</span> <span class="chip chip-critical">Tasks 0%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 0%</span> <span class="chip chip-critical">No crew</span></div>
         <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-rec424142uv4EMt94">+</span>
     </div>
@@ -1166,10 +1156,10 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(43d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(42d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(45d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
@@ -1187,20 +1177,8 @@ body {
         <a href="tasks-pss.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Jan 29, 2026 (28d ago) &bull; 1 emails</div>
-<div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — hotel AV partnership status unknown</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Team/crew needs undefined — no positions created</div>
-<div class="email-tl-entry">
-    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — Honeywell EU + META PSS 2026 at Hilton Istanbul. Onsite production support for general session, bre...</div>
-</div>
-<details class="email-full-thread">
-    <summary>View full excerpts (1 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
-    <div class="email-entry-text">Event request form — Honeywell EU + META PSS 2026 at Hilton Istanbul. Onsite production support for general session, breakouts, special events, solutions room. Hoping to partner with hotel for AV equipment. Quote #360177.</div>
-</div></div>
-</details></div>
+    <summary>Emails</summary>
+    <div class="accordion-content"><div class="empty-section">No email data</div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1213,48 +1191,49 @@ body {
     </div>
 </div>
 
-<div class="show-card warning" data-labor="remote" data-risk="4" data-days="53" data-email-age="13" data-crew-state="pencilled">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="52" data-email-age="14" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
         <div class="card-header-top">
             <div class="show-title">HRS - Impulse Dynamics #360937</div>
-            <span class="show-days normal">53d</span>
+            <span class="show-days normal">52d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 20 – 27</span>
-            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-active">Needs Quote</span></div>
+            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">Needs Quote</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">2 pencilled</span> <span class="chip chip-critical">Quote past due</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> No follow-up since initial request — quote not yet sent</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recrw32m5ciX8gWbt">+</span>
     </div>
     <div class="card-body" id="body-recrw32m5ciX8gWbt" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> No follow-up since initial request — quote not yet sent</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-hrs.html" class="cta-btn">Open Checklist</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
 </div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
     <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">McCormick Place Lakeside Center — Chicago, IL</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span> <span class="service-tag">Audio</span></span></div>
 </div></div>
         </details>
-        
         <details class="accordion-section">
-    <summary>Crew (2)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Will Johnson </div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div></div></div>
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 21 <span class='countdown-normal'>(53d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 24 <span class='countdown-normal'>(56d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 26 <span class='countdown-normal'>(58d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 26 <span class='countdown-normal'>(58d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -1269,17 +1248,17 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (13d ago) &bull; 1 emails</div>
-<div class="email-deadline"><span class="deadline-icon">!!</span> Quote needed by Feb 15 (status: Needs Quote)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — quote not yet sent</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Curved LED wall specs + 2 wall options need clarification</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Meeting room AV requirements undefined</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (14d ago) &bull; 1 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — SPX Impulse Dynamics @ HRS 2026, McCormick Place Lakeside Center, Chicago. Needs LED 8x4 curved Top...</div>
+    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (1 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker / Sparks</span></div>
-    <div class="email-entry-text">Event request form — SPX Impulse Dynamics @ HRS 2026, McCormick Place Lakeside Center, Chicago. Needs LED 8x4 curved Topaz + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV. Quote #360937.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -1287,77 +1266,53 @@ body {
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content">LED 8x4 curved Topaz + 2 wall options, presentation audio, lighting, meeting room AV</div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV, <strong>Expectations:</strong> </div></details>
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="4" data-days="74" data-email-age="9" data-crew-state="pencilled">
+<div class="show-card normal" data-labor="travel" data-risk="0" data-days="73" data-email-age="10" data-crew-state="ok">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
             <div class="show-title">AUA - Novartis #361092</div>
-            <span class="show-days normal">74d</span>
+            <span class="show-days normal">73d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">May 11 – 18</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">3 unanswered</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">4 pencilled</span> <span class="chip chip-warning">4 unconfirmed</span> <span class="chip chip-critical">Quote past due</span></div>
-        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Quote needed by Feb 19 (past due)</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 unconfirmed</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recq49LuQliCAooZ0">+</span>
     </div>
     <div class="card-body" id="body-recq49LuQliCAooZ0" style="display:none;">
-        <div class="next-action-bar next-action-critical">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Quote needed by Feb 19 (past due)</div>
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-aua.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
-</div>
-</details>
+        
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
     <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value"></span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
+    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
 </div></div>
         </details>
-        
         <details class="accordion-section">
-    <summary>Crew (8)</summary>
+    <summary>Key Dates</summary>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> May 12 <span class='countdown-normal'>(74d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> May 15 <span class='countdown-normal'>(77d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> May 17 <span class='countdown-normal'>(79d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(79d)</span></div></div></div>
+</details>
+        <details class="accordion-section">
+    <summary>Crew (1)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Away</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Maxwell Bordelon</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Bryant Mendez</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Joel Gray</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">Crew</div></div>
+    <div><div class="crew-name">J</div><div class="crew-role">—</div></div>
     <span class="crew-status status-pencilled">Away</span>
 </div></div></div>
 </details>
@@ -1374,17 +1329,17 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (9d ago) &bull; 1 emails</div>
-<div class="email-deadline"><span class="deadline-icon">!!</span> Quote needed by Feb 19 (past due)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> No follow-up since initial request — quote status unknown</div><div class="email-unanswered"><span class="unanswered-icon">?</span> Circular interactive piece specs undefined</div><div class="email-unanswered"><span class="unanswered-icon">?</span> LED squared arch details need clarification</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (10d ago) &bull; 1 emails</div>
+
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — IMP Novartis @ AUA 2026, Walter E. Washington Convention Center. LED 36&#x27; on 2 faces + 11&#x27;...</div>
+    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from"></span>
+    <div class="email-tl-text"></div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (1 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
-    <div class="email-entry-text">Event request form — IMP Novartis @ AUA 2026, Walter E. Washington Convention Center. LED 36&#x27; on 2 faces + 11&#x27; returns (two each side), 57.6&quot; high (3 tiles) + 2 LED walls + LED squared arch + circular interactive piece + monitors/NUCs. Quote #361092.</div>
+    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people"> → </span></div>
+    <div class="email-entry-text"></div>
 </div></div>
 </details></div>
 </details>
@@ -1392,93 +1347,9 @@ body {
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content">LED on multiple faces + monitors/NUCs + circular interactive piece</div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36&#x27; on 2 faces, 11&#x27; on returns (two on each side), 57.6&quot; high (3 tiles) + 2 LED walls (1 one on medical side) + LED squared arch 2 tiles x 1 tile, circular interactive piece, + monitors/nucs, <strong>Expectations:</strong> </div></details>
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
-</details>
-    </div>
-</div>
-
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Awaiting Honeywell response to quote (sent Feb 24)</div>
-        <span class="expand-icon" id="icon-recVHqaYbYwOR10kS">+</span>
-    </div>
-    <div class="card-body" id="body-recVHqaYbYwOR10kS" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Awaiting Honeywell response to quote (sent Feb 24)</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-modex.html" class="cta-btn">Open Checklist</a></div>
-</div>
-        <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
-</div>
-</details>
-        <details class="accordion-section" open>
-            <summary>Overview</summary>
-            <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Georgia World Congress Center — Atlanta, GA</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Honeywell</span></div>
-    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
-</div></div>
-        </details>
-        <details class="accordion-section">
-    <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(42d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(46d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(49d)</span></div></div></div>
-</details>
-        <details class="accordion-section">
-    <summary>Crew (2)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Eric Petty</div><div class="crew-role">Crew</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div></div></div>
-</details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-    <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-</div>
-        <a href="tasks-modex.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
-</details>
-        <details class="accordion-section">
-    <summary>Emails (2)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 24, 2026 (2d ago) &bull; 2 emails</div>
-<div class="email-unanswered"><span class="unanswered-icon">?</span> Awaiting Honeywell response to quote (sent Feb 24)</div><div class="email-unanswered"><span class="unanswered-icon">?</span> LED screen sizes and monitor quantities still TBD</div>
-<div class="email-tl-entry">
-    <span class="email-tl-date">Jan 29, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Event request form — Honeywell @ Modex, 50x50 booth #B12512 at Georgia World Congress Center. LED wall at front of booth...</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from">Kathryn Parker</span>
-    <div class="email-tl-text">Quote sent to Honeywell. Notes upgrade from 2.6mm to 2.0mm LED tiles for better resolution. Includes local labor since A...</div>
-</div>
-<details class="email-full-thread">
-    <summary>View full excerpts (2 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Jan 29, 2026</span> <span class="email-people">Fuse Integrations → Kathryn Parker</span></div>
-    <div class="email-entry-text">Event request form — Honeywell @ Modex, 50x50 booth #B12512 at Georgia World Congress Center. LED wall at front of booth plus significant number of demo screens. Quote #360175.</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people">Kathryn Parker → Ashley Thompson / Ali Cooley (Honeywell)</span></div>
-    <div class="email-entry-text">Quote sent to Honeywell. Notes upgrade from 2.6mm to 2.0mm LED tiles for better resolution. Includes local labor since Atlanta-based. Content upload link provided.</div>
-</div></div>
-</details></div>
-</details>
-        <details class="accordion-section">
-    <summary>Notes & Links</summary>
-    <div class="accordion-content"><div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
     </div>
 </div>
