@@ -605,14 +605,14 @@ body {
     <div class="container">
         <div class="header">
             <h1>Show Operations Dashboard</h1>
-            <div class="header-meta">Generated: February 27, 2026</div>
+            <div class="header-meta">Generated: March 03, 2026</div>
             <div class="header-stats">
                 <div class="stat-box">
                     <div class="stat-value">1</div>
                     <div class="stat-label">Next 14d</div>
                 </div>
                 <div class="stat-box stat-alert">
-                    <div class="stat-value">7</div>
+                    <div class="stat-value">6</div>
                     <div class="stat-label">At Risk</div>
                 </div>
                 <div class="stat-box stat-warn">
@@ -620,7 +620,7 @@ body {
                     <div class="stat-label">Silent</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">4</div>
                     <div class="stat-label">No Crew</div>
                 </div>
                 <div class="stat-box">
@@ -634,7 +634,7 @@ body {
             </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all" onclick="filterShows('all')">All (8)</button>
-                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (7)</button>
+                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (6)</button>
                 <button class="filter-btn" data-filter="next14" onclick="filterShows('next14')">Next 14d</button>
                 <button class="filter-btn" data-filter="no-crew" onclick="filterShows('no-crew')">No Crew</button>
                 <button class="filter-btn" data-filter="silent" onclick="filterShows('silent')">Silent</button>
@@ -654,34 +654,33 @@ body {
     <div class="alert-banner">
         <div class="alert-title">!! CRITICAL: High Priority Shows Starting This Week</div>
         <div class="alert-content">
-        <div class="alert-item"><strong>CRT - Boston Scientific #359986:</strong> Starts Mar 06 (7 days) — Tasks 1% complete (0 of 50 tasks)</div>
+        <div class="alert-item"><strong>CRT - Boston Scientific #359986:</strong> Starts Mar 06 (3 days) — Tasks 1% complete (0 of 50 tasks)</div>
         </div>
     </div>
 
         <div class="shows-grid">
-<div class="show-card critical" data-labor="remote" data-risk="6" data-days="7" data-email-age="8" data-crew-state="none">
+<div class="show-card critical" data-labor="remote" data-risk="3" data-days="3" data-email-age="12" data-crew-state="ok">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
             <div class="show-title">CRT - Boston Scientific #359986</div>
-            <span class="show-days warning">7d</span>
+            <span class="show-days critical">3d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 6 – 9</span>
             <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
-        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recBggRLeCvC52Syi">+</span>
     </div>
     <div class="card-body" id="body-recBggRLeCvC52Syi" style="display:none;">
-        <div class="next-action-bar next-action-critical">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-crt.html" class="cta-btn">Open Checklist</a></div>
 </div>
         <details class="accordion-section" open>
-    <summary>Flags / Risks (2)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
-<div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 7 days, tasks barely started (&lt;1% complete)</div>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 3 days, tasks barely started (&lt;1% complete)</div>
 </div>
 </details>
         <details class="accordion-section" open>
@@ -694,14 +693,17 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-warning'>(7d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-normal'>(8d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-normal'>(10d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-normal'>(10d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-critical'>(3d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-warning'>(4d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-warning'>(6d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-warning'>(6d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (0)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
+    <summary>Crew (1)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -716,41 +718,41 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (5)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 19, 2026 (8d ago) &bull; 5 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 19, 2026 (12d ago) &bull; 5 emails</div>
 
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 19, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 19, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ ACC 2026 #</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (5 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 19, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 19, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kevin Barry Quote Needed By 2026-02-19 Quote: 361184 - SPX Boston Sci</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-20 Quote: 361165 - SPX Boston</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-15 Quote: 360941 - SPX Boston</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-14 Quote: 360877 - SPX Boston</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">K. Parker → Zdicker</span></div>
+    <div class="email-entry-text">Zayna, Quote attached. Please look it over and let us know if you have any questions. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 12, 2026, at 11:2</div>
 </div></div>
 </details></div>
 </details>
@@ -765,11 +767,11 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="19" data-email-age="2" data-crew-state="none">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="15" data-email-age="6" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
         <div class="card-header-top">
             <div class="show-title">RSAC - AuditBoard #359999</div>
-            <span class="show-days normal">19d</span>
+            <span class="show-days normal">15d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 18 – 24</span>
@@ -800,10 +802,10 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(20d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(27d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-normal'>(16d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(20d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(23d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(20d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
@@ -822,41 +824,155 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (24)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (2d ago) &bull; 24 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (6d ago) &bull; 24 emails</div>
 
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">K. Barry</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">K. Barry</span>
+    <div class="email-tl-text">RE: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 11, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">A. Moss</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
 </div>
 <details class="email-full-thread">
-    <summary>View full excerpts (5 messages)</summary>
+    <summary>View full excerpts (24 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
+    <div class="email-entry-text">Added. Revised attached. Thanks Ashley! Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 23, 2026, at 4:27 PM, Ashley Moss wrote: Please add these 2 iPa</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people">A. Moss → K. Barry</span></div>
+    <div class="email-entry-text">Please add these 2 iPads and desktop stands. thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.com\*\* [[link] This email and any attachments a</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Hi all- If we were to add (2) iPads and desktop stands for these, what would that cost be? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.co</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">K. Barry → A. Moss</span></div>
+    <div class="email-entry-text">2 ipad Pros with desktop stands would be $700 total Thanks, Kevin Kevin Barry\*\* [Fuse Technical Group]([link] M: +1 (516) 547-2935\*\* &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Good morning, Can you please send me the required specs and pixel map for the LED content to share with the client? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@weare</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
+    <div class="email-entry-text">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared. Dan Sonnenberg \*\* [Fuse</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
+    <div class="email-entry-text">Hi All, I did just receive the below from my team... Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
+    <div class="email-entry-text">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do? Dan Sonnenberg\*\*  [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">K. Barry → A. Moss</span></div>
+    <div class="email-entry-text">Pixel maps attached. If they have any questions just let us know. Thanks, Kevin Kevin Barry\*\*  [Fuse Technical Group]([link] M: +1 (516) 547-2935 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need. That said, this is the FUSE LED array .dwg overlayed on</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
+    <div class="email-entry-text">Should we shrink the closet the 6” rather than fully redo the flown led wall? Dan Sonnenberg [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
+    <div class="email-entry-text">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry. Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wear</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
+    <div class="email-entry-text">Disregard, we will make the tweaks to the closet. That said, we do still need an updated dwg with the monitor support details please. Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@we</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
+    <div class="email-entry-text">Ok, did we get a height for that monitor? I don’t think I saw that yet. Dan Sonnenberg\*\*  [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
+    <div class="email-entry-text">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor Ashley Moss On Feb 11, 2026, at 8:09 PM, Dan Sonnenberg wrote: Ok, did we get a height for that moni</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
+    <div class="email-entry-text">Dan, Any chance you have an ETA for getting us an updated dwg with the monitor support details ? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearespa</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">This is approved BTw! Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.com\*\* [[link] This email and any attachments are intended only for the person or ent</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 11, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Hi FUSE team- Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
+    <div class="email-entry-text">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On F</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
+    <div class="email-entry-text">Missed that mounting gear - one more time- attached. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 10, 2026, at 9:34 AM, Kathryn Parker wrote: Ashley</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Hi All, This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however. Thanks, Ashley Moss Senior Account Mana</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
+    <div class="email-entry-text">Hi Kathryn and Dan- This one is a go, however, only the LED portion. Again, they plan to use their own monitors. Project # 353488. What date can I tell the client that you need AV files for testing pu</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
+    <div class="email-entry-text">\*\*Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :) Date for files depends how muc</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
+    <div class="email-entry-text">\*\*Cancelled out! Sent briskly from my iPhone Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 9, 2026, at 14:16, Ashley Moss wrote: Hi All, This one is not going fo</div>
 </div></div>
 </details></div>
 </details>
@@ -871,30 +987,26 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="5" data-days="21" data-email-age="21" data-crew-state="none">
+<div class="show-card normal" data-labor="travel" data-risk="0" data-days="17" data-email-age="999" data-crew-state="ok">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
             <div class="show-title">USCAP - Leica Biosystems #360524</div>
-            <span class="show-days normal">21d</span>
+            <span class="show-days normal">17d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 20 – 26</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 21d</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
-        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recmhpSJCbtCUL5Ci">+</span>
     </div>
     <div class="card-body" id="body-recmhpSJCbtCUL5Ci" style="display:none;">
-        <div class="next-action-bar next-action-critical">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-uscap.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
-</div>
-</details>
+        
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
@@ -906,14 +1018,17 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 21 <span class='countdown-normal'>(22d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(24d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 25 <span class='countdown-normal'>(26d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-normal'>(26d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 21 <span class='countdown-normal'>(18d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-normal'>(20d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 25 <span class='countdown-normal'>(22d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-normal'>(22d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (0)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
+    <summary>Crew (1)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
+    <div><div class="crew-name">David Devore</div><div class="crew-role">Project Manager</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -927,26 +1042,11 @@ body {
         <a href="tasks-uscap.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (2)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 06, 2026 (21d ago) &bull; 2 emails</div>
+    <summary>Emails (0)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: N/A &bull; 0 emails</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 06, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 05, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (2 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 06, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 05, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
-</div></div>
-</details></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -959,17 +1059,17 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="1" data-days="37" data-email-age="999" data-crew-state="pencilled">
+<div class="show-card normal" data-labor="travel" data-risk="0" data-days="33" data-email-age="1" data-crew-state="ok">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
             <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
-            <span class="show-days normal">37d</span>
+            <span class="show-days normal">33d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 5 – 13</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 pencilled</span></div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recp7a04etMXiXE7w">+</span>
     </div>
@@ -990,16 +1090,20 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 6 <span class='countdown-normal'>(38d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 10 <span class='countdown-normal'>(42d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 12 <span class='countdown-normal'>(44d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(44d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 6 <span class='countdown-normal'>(34d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 10 <span class='countdown-normal'>(38d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 12 <span class='countdown-normal'>(40d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(40d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (1)</summary>
+    <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">J</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
+    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
 </div></div></div>
 </details>
         <details class="accordion-section">
@@ -1014,8 +1118,32 @@ body {
         <a href="tasks-ascrs.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails</summary>
-    <div class="accordion-content"><div class="empty-section">No email data</div></div>
+    <summary>Emails (3)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Mar 02, 2026 (1d ago) &bull; 3 emails</div>
+
+<div class="email-tl-entry">
+    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">B. Jacocks</span>
+    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">Mray</span>
+    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
+</div><div class="email-tl-entry">
+    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">Jlipitz</span>
+    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
+</div>
+<details class="email-full-thread">
+    <summary>View full excerpts (3 messages)</summary>
+    <div class="email-full-content"><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">B. Jacocks → G. Calvanese</span></div>
+    <div class="email-entry-text">Hi Gina, Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan ac</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">Mray → B. Jacocks</span></div>
+    <div class="email-entry-text">[@Jason Lipitz](mailto:jlipitz@wearesparks.com) Can you please share all the video files for this one when you have it? Thanks, Melissa Ray Sr Account Manager 1-770-378-1851 (phone) mray@wearesparks.c</div>
+</div><div class="email-entry">
+    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">Jlipitz → Mray</span></div>
+    <div class="email-entry-text">Team: I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams. Thanks, Jason Jason Lipitz Lead Graphic Production Artist 215-</div>
+</div></div>
+</details></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1028,11 +1156,11 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="40" data-email-age="1" data-crew-state="none">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="36" data-email-age="5" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
         <div class="card-header-top">
             <div class="show-title">Modex - Honeywell #360175</div>
-            <span class="show-days normal">40d</span>
+            <span class="show-days normal">36d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 8 – 17</span>
@@ -1063,10 +1191,10 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(41d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(45d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(37d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(41d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(44d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(44d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
@@ -1085,29 +1213,29 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (3)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 26, 2026 (1d ago) &bull; 3 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 26, 2026 (5d ago) &bull; 3 emails</div>
 
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from">A. Cooley</span>
+    <div class="email-tl-text">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
 </div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from">K. Parker</span>
+    <div class="email-tl-text">Quote Request: Honeywell @ Modex 2026 #B12512</div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (3 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people">K. Parker → A. Thompson</span></div>
+    <div class="email-entry-text">\*\*Hi all, just wanted to make sure you received this. Thanks! Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 24, 2026, at 2:01 PM, Kathryn Parker wr</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people">A. Cooley → K. Parker</span></div>
+    <div class="email-entry-text">We have received, thank you! When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in</div>
 </div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people">K. Parker → A. Thompson</span></div>
+    <div class="email-entry-text">Ashley and Ali, Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pi</div>
 </div></div>
 </details></div>
 </details>
@@ -1122,11 +1250,11 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="remote" data-risk="3" data-days="42" data-email-age="999" data-crew-state="none">
+<div class="show-card critical" data-labor="remote" data-risk="3" data-days="38" data-email-age="999" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
         <div class="card-header-top">
             <div class="show-title">PSS - Honeywell EU + META #360177</div>
-            <span class="show-days normal">42d</span>
+            <span class="show-days normal">38d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 10 – 16</span>
@@ -1156,10 +1284,10 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(42d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(45d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(48d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(38d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(41d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(44d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(44d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
@@ -1177,8 +1305,11 @@ body {
         <a href="tasks-pss.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails</summary>
-    <div class="accordion-content"><div class="empty-section">No email data</div></div>
+    <summary>Emails (0)</summary>
+    <div class="accordion-content"><div class="email-timeline-header">Last: N/A &bull; 0 emails</div>
+
+
+</div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1191,17 +1322,17 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="52" data-email-age="14" data-crew-state="none">
+<div class="show-card critical" data-labor="travel" data-risk="5" data-days="48" data-email-age="18" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
         <div class="card-header-top">
             <div class="show-title">HRS - Impulse Dynamics #360937</div>
-            <span class="show-days normal">52d</span>
+            <span class="show-days normal">48d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 20 – 27</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">Needs Quote</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 18d</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
         <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recrw32m5ciX8gWbt">+</span>
     </div>
@@ -1226,10 +1357,10 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 21 <span class='countdown-normal'>(53d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 24 <span class='countdown-normal'>(56d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 26 <span class='countdown-normal'>(58d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 26 <span class='countdown-normal'>(58d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 21 <span class='countdown-normal'>(49d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 24 <span class='countdown-normal'>(52d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 26 <span class='countdown-normal'>(54d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 26 <span class='countdown-normal'>(54d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
@@ -1248,17 +1379,17 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (14d ago) &bull; 1 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (18d ago) &bull; 1 emails</div>
 
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (1 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-15 Quote: 360937 - SPX Impulse</div>
 </div></div>
 </details></div>
 </details>
@@ -1273,17 +1404,17 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="0" data-days="73" data-email-age="10" data-crew-state="ok">
+<div class="show-card normal" data-labor="travel" data-risk="1" data-days="69" data-email-age="14" data-crew-state="pencilled">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
             <div class="show-title">AUA - Novartis #361092</div>
-            <span class="show-days normal">73d</span>
+            <span class="show-days normal">69d</span>
         </div>
         <div class="card-header-meta">
             <span class="show-date">May 11 – 18</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 unconfirmed</span></div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 pencilled</span> <span class="chip chip-warning">2 unconfirmed</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
         <span class="expand-icon" id="icon-recq49LuQliCAooZ0">+</span>
     </div>
@@ -1292,7 +1423,11 @@ body {
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-aua.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
@@ -1304,16 +1439,24 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> May 12 <span class='countdown-normal'>(74d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> May 15 <span class='countdown-normal'>(77d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> May 17 <span class='countdown-normal'>(79d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(79d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> May 12 <span class='countdown-normal'>(70d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show Start:</span> May 15 <span class='countdown-normal'>(73d)</span></div>
+<div class="kd-item"><span class='kd-label'>Show End:</span> May 17 <span class='countdown-normal'>(75d)</span></div>
+<div class="kd-item"><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(75d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (1)</summary>
+    <summary>Crew (3)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">J</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">—</div></div>
     <span class="crew-status status-pencilled">Away</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">—</div></div>
+    <span class="crew-status status-pencilled">Not Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Maxwell Bordelon</div><div class="crew-role">—</div></div>
+    <span class="crew-status status-pencilled">Pencilled</span>
 </div></div></div>
 </details>
         <details class="accordion-section">
@@ -1329,17 +1472,17 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (10d ago) &bull; 1 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (14d ago) &bull; 1 emails</div>
 
 <div class="email-tl-entry">
-    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from"></span>
-    <div class="email-tl-text"></div>
+    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
+    <div class="email-tl-text">Fuse Form - IMP Novartis @ AUA 2026 #</div>
 </div>
 <details class="email-full-thread">
     <summary>View full excerpts (1 messages)</summary>
     <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people"> → </span></div>
-    <div class="email-entry-text"></div>
+    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people">Fuse Integrations → F. Exhibits</span></div>
+    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-19 Quote: 361092 - IMP Novarti</div>
 </div></div>
 </details></div>
 </details>
