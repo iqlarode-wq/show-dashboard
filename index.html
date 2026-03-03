@@ -462,33 +462,13 @@ body {
 }
 .task-button:hover { background: rgba(74,158,255,0.25); }
 
-/* ─── Emails Timeline ─── */
+/* ─── Email Inbox ─── */
 .email-timeline-header {
     font-size: 13px;
     color: #aaa;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     font-weight: 500;
 }
-.email-meta {
-    font-size: 12px;
-    color: #888;
-    margin-bottom: 8px;
-}
-.email-thread-count { font-weight: 600; color: #bbb; margin-right: 8px; }
-.email-tl-entry {
-    padding: 4px 0;
-    border-left: 2px solid rgba(255,255,255,0.06);
-    padding-left: 10px;
-    margin-bottom: 4px;
-}
-.email-tl-date { font-size: 11px; color: #888; margin-right: 4px; }
-.email-tl-from { font-size: 12px; color: #7ab8ff; font-weight: 500; }
-.email-tl-text { font-size: 12px; color: #bbb; line-height: 1.4; margin-top: 2px; }
-.email-full-thread { margin-top: 8px; }
-.email-full-thread > summary {
-    font-size: 12px; color: #7ab8ff; cursor: pointer; padding: 4px 0;
-}
-.email-full-content { padding-top: 6px; }
 .email-stale {
     background: rgba(255,71,87,0.1);
     border: 1px solid rgba(255,71,87,0.2);
@@ -496,18 +476,82 @@ body {
     padding: 6px 10px;
     font-size: 12px;
     color: #ff8a94;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 .stale-icon { font-weight: 700; margin-right: 4px; color: #ff4757; }
-.email-entry {
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.04);
+.email-inbox {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
-.email-entry:last-child { border-bottom: none; }
-.email-entry-header { font-size: 11px; color: #888; margin-bottom: 2px; }
-.email-date { color: #999; margin-right: 6px; }
-.email-people { color: #7ab8ff; }
-.email-entry-text { font-size: 13px; color: #ccc; line-height: 1.4; }
+.email-msg {
+    border-radius: 6px;
+    background: rgba(255,255,255,0.02);
+    overflow: hidden;
+}
+.email-msg[open] {
+    background: rgba(255,255,255,0.04);
+}
+.email-msg-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    list-style: none;
+    border-left: 3px solid transparent;
+    transition: border-color 0.15s;
+}
+.email-msg-header::-webkit-details-marker { display: none; }
+.email-msg-header::marker { display: none; content: ""; }
+.email-msg[open] > .email-msg-header {
+    border-left-color: #4a9eff;
+    background: rgba(74,158,255,0.06);
+}
+.email-msg-header:hover {
+    background: rgba(255,255,255,0.04);
+}
+.email-msg-from {
+    color: #7ab8ff;
+    font-weight: 600;
+    white-space: nowrap;
+    min-width: 90px;
+    flex-shrink: 0;
+    font-size: 12px;
+}
+.email-msg-subject {
+    color: #ccc;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.email-msg-date {
+    color: #666;
+    font-size: 11px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.email-msg-body {
+    padding: 8px 10px 12px 16px;
+    border-left: 3px solid #4a9eff;
+    margin-left: 0;
+}
+.email-msg-meta {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.email-msg-content {
+    font-size: 13px;
+    color: #bbb;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
 .email-deadline {
     padding: 4px 8px;
     background: rgba(255,165,2,0.08);
@@ -612,7 +656,7 @@ body {
                     <div class="stat-label">Next 14d</div>
                 </div>
                 <div class="stat-box stat-alert">
-                    <div class="stat-value">6</div>
+                    <div class="stat-value">8</div>
                     <div class="stat-label">At Risk</div>
                 </div>
                 <div class="stat-box stat-warn">
@@ -620,11 +664,11 @@ body {
                     <div class="stat-label">Silent</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">4</div>
+                    <div class="stat-value">8</div>
                     <div class="stat-label">No Crew</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">1</div>
+                    <div class="stat-value">0</div>
                     <div class="stat-label">Pencilled</div>
                 </div>
                 <div class="stat-box">
@@ -634,7 +678,7 @@ body {
             </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all" onclick="filterShows('all')">All (8)</button>
-                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (6)</button>
+                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (8)</button>
                 <button class="filter-btn" data-filter="next14" onclick="filterShows('next14')">Next 14d</button>
                 <button class="filter-btn" data-filter="no-crew" onclick="filterShows('no-crew')">No Crew</button>
                 <button class="filter-btn" data-filter="silent" onclick="filterShows('silent')">Silent</button>
@@ -659,7 +703,7 @@ body {
     </div>
 
         <div class="shows-grid">
-<div class="show-card critical" data-labor="remote" data-risk="3" data-days="3" data-email-age="12" data-crew-state="ok">
+<div class="show-card critical" data-labor="remote" data-risk="6" data-days="3" data-email-age="12" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
             <div class="show-title">CRT - Boston Scientific #359986</div>
@@ -669,18 +713,19 @@ body {
             <span class="show-date">Mar 6 – 9</span>
             <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recBggRLeCvC52Syi">+</span>
     </div>
     <div class="card-body" id="body-recBggRLeCvC52Syi" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-crt.html" class="cta-btn">Open Checklist</a></div>
 </div>
         <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 3 days, tasks barely started (&lt;1% complete)</div>
+    <summary>Flags / Risks (2)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+<div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 3 days, tasks barely started (&lt;1% complete)</div>
 </div>
 </details>
         <details class="accordion-section" open>
@@ -699,11 +744,8 @@ body {
 <div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-warning'>(6d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (1)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -718,43 +760,59 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (5)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 19, 2026 (12d ago) &bull; 5 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 19, 2026 (12d ago) &bull; 5 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 19, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ ACC 2026 #</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</span>
+    <span class="email-msg-date">Feb 19, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kevin Barry<br>Quote Needed By<br>2026-02-19<br>Quote: 361184 - SPX Boston Scientific @ OEIS 2026 407<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ OEIS 2026 407<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:OEIS 2026<br>Booth Number: 407<br>Venue: Caesars Palace<br>Venue Address: 3570 S Las Vegas Blvd ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (5 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 19, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kevin Barry Quote Needed By 2026-02-19 Quote: 361184 - SPX Boston Sci</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-20 Quote: 361165 - SPX Boston</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-15 Quote: 360941 - SPX Boston</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-14 Quote: 360877 - SPX Boston</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">K. Parker → Zdicker</span></div>
-    <div class="email-entry-text">Zayna, Quote attached. Please look it over and let us know if you have any questions. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 12, 2026, at 11:2</div>
-</div></div>
-</details></div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ ACC 2026 #</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-20<br>Quote: 361165 - SPX Boston Scientific @ ACC 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ACC 2026 Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ACC 2026<br>Booth Number:<br>Venue: New Orleans Ernest N. Morial Convention Center<br>Venue Address: 900 Convention Center Blvd ,<br>New Orleans Louisiana 70130<br>City: New Orleans<br>Load In</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</span>
+    <span class="email-msg-date">Feb 13, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360941 - SPX Boston Scientific @ ASMBS 2026 1205<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ASMBS 2026 1205<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ASMBS 2026<br>Booth Number: 1205<br>Venue: Henry B. Gonzalez Convention Center<br>Venue Address: 900 E. Market St. ,<br>San Antonio TX 78205<br>City: San Antonio<br>Load In</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-14<br>Quote: 360877 - SPX Boston Scientific @ AACE 2026 914<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ AACE 2026 914<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:AACE 2026<br>Booth Number: 914<br>Venue: Caesars Forum<br>Venue Address: 3911 S Koval Ln ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; Z. Dicker</div>
+    <div class="email-msg-content">Zayna,<br>Quote attached. Please look it over and let us know if you have any questions.</div>
+</div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -824,157 +882,249 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (24)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 25, 2026 (6d ago) &bull; 24 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 25, 2026 (6d ago) &bull; 24 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 25, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 23, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 20, 2026</span> <span class="email-tl-from">K. Barry</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 18, 2026</span> <span class="email-tl-from">K. Barry</span>
-    <div class="email-tl-text">RE: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">D. Sonnenberg</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 12, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 11, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 10, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">A. Moss</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 09, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 25, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
+    <div class="email-msg-content">Added. Revised attached. Thanks Ashley!</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (24 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 25, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
-    <div class="email-entry-text">Added. Revised attached. Thanks Ashley! Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 23, 2026, at 4:27 PM, Ashley Moss wrote: Please add these 2 iPa</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 23, 2026</span> <span class="email-people">A. Moss → K. Barry</span></div>
-    <div class="email-entry-text">Please add these 2 iPads and desktop stands. thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.com\*\* [[link] This email and any attachments a</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Hi all- If we were to add (2) iPads and desktop stands for these, what would that cost be? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.co</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 20, 2026</span> <span class="email-people">K. Barry → A. Moss</span></div>
-    <div class="email-entry-text">2 ipad Pros with desktop stands would be $700 total Thanks, Kevin Kevin Barry\*\* [Fuse Technical Group]([link] M: +1 (516) 547-2935\*\* &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Good morning, Can you please send me the required specs and pixel map for the LED content to share with the client? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@weare</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
-    <div class="email-entry-text">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared. Dan Sonnenberg \*\* [Fuse</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
-    <div class="email-entry-text">Hi All, I did just receive the below from my team... Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
-    <div class="email-entry-text">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do? Dan Sonnenberg\*\*  [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 18, 2026</span> <span class="email-people">K. Barry → A. Moss</span></div>
-    <div class="email-entry-text">Pixel maps attached. If they have any questions just let us know. Thanks, Kevin Kevin Barry\*\*  [Fuse Technical Group]([link] M: +1 (516) 547-2935 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need. That said, this is the FUSE LED array .dwg overlayed on</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
-    <div class="email-entry-text">Should we shrink the closet the 6” rather than fully redo the flown led wall? Dan Sonnenberg [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
-    <div class="email-entry-text">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry. Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wear</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
-    <div class="email-entry-text">Disregard, we will make the tweaks to the closet. That said, we do still need an updated dwg with the monitor support details please. Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@we</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">D. Sonnenberg → A. Moss</span></div>
-    <div class="email-entry-text">Ok, did we get a height for that monitor? I don’t think I saw that yet. Dan Sonnenberg\*\*  [Fuse Technical Group]([link] M: +1 (817) 894-4096 &lt;[link] &lt;[link] &lt;[link] &lt;[link]</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
-    <div class="email-entry-text">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor Ashley Moss On Feb 11, 2026, at 8:09 PM, Dan Sonnenberg wrote: Ok, did we get a height for that moni</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → D. Sonnenberg</span></div>
-    <div class="email-entry-text">Dan, Any chance you have an ETA for getting us an updated dwg with the monitor support details ? Thanks, Ashley Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearespa</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 12, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">This is approved BTw! Ashley Moss Senior Account Manager 1-336-209-2525 (phone) amoss@wearesparks.com wearesparks.com\*\* [[link] This email and any attachments are intended only for the person or ent</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 11, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Hi FUSE team- Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
-    <div class="email-entry-text">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On F</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 10, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
-    <div class="email-entry-text">Missed that mounting gear - one more time- attached. Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 10, 2026, at 9:34 AM, Kathryn Parker wrote: Ashley</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Hi All, This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however. Thanks, Ashley Moss Senior Account Mana</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">A. Moss → K. Parker</span></div>
-    <div class="email-entry-text">Hi Kathryn and Dan- This one is a go, however, only the LED portion. Again, they plan to use their own monitors. Project # 353488. What date can I tell the client that you need AV files for testing pu</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
-    <div class="email-entry-text">\*\*Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :) Date for files depends how muc</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 09, 2026</span> <span class="email-people">K. Parker → A. Moss</span></div>
-    <div class="email-entry-text">\*\*Cancelled out! Sent briskly from my iPhone Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 9, 2026, at 14:16, Ashley Moss wrote: Hi All, This one is not going fo</div>
-</div></div>
-</details></div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 23, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Barry</div>
+    <div class="email-msg-content">Please add these 2 iPads and desktop stands.</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 20, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Hi all-<br>If we were to add (2) iPads and desktop stands for these, what would that cost be?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Barry</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 20, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Barry &rarr; A. Moss</div>
+    <div class="email-msg-content">2 ipad Pros with desktop stands would be $700 total<br>Thanks, Kevin</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Good morning,<br>Can you please send me the required specs and pixel map for the LED content to share with the client?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">D. Sonnenberg</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
+    <div class="email-msg-content">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
+    <div class="email-msg-content">Hi All,<br>I did just receive the below from my team...<br>Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and the stand they&#x27;re using is set to a height of 76&quot; however our design deck shows the height of the monitor at 96&quot;. The design deck shows a screen size of 110&quot; as well . Do we have a spec for that monitor and can we lower it 20&quot; to a 76&quot; centerline?<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">D. Sonnenberg</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
+    <div class="email-msg-content">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Barry</span>
+    <span class="email-msg-subject">RE: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 18, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Barry &rarr; A. Moss</div>
+    <div class="email-msg-content">Pixel maps attached. If they have any questions just let us know.<br>Thanks, Kevin</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need.<br>That said, this is the FUSE LED array .dwg overlayed on the booth for RSAC. It extends past the confine of the booth. We will need to shrink the array by (1) run of tiles.<br>Can you please adjust and send us a new .dwg file?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">D. Sonnenberg</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
+    <div class="email-msg-content">Should we shrink the closet the 6” rather than fully redo the flown led wall?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
+    <div class="email-msg-content">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
+    <div class="email-msg-content">Disregard, we will make the tweaks to the closet.<br>That said, we do still need an updated dwg with the monitor support details please.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">D. Sonnenberg</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
+    <div class="email-msg-content">Ok, did we get a height for that monitor? I don’t think I saw that yet.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
+    <div class="email-msg-content">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor<br>Ashley Moss</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
+    <div class="email-msg-content">Dan,<br>Any chance you have an ETA for getting us an updated dwg with the monitor support details ?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 12, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">This is approved BTw!<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 11, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Hi FUSE team-<br>Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so wondering if you all could assist with this? They still won&#x27;t provide a quote until they have this.<br>If so, what additional information do you need me to provide?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 10, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
+    <div class="email-msg-content">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed.</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
+    <span class="email-msg-date">Feb 10, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
+    <div class="email-msg-content">Missed that mounting gear - one more time- attached.</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</span>
+    <span class="email-msg-date">Feb 9, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Hi All,<br>This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however.</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Moss</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
+    <span class="email-msg-date">Feb 9, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
+    <div class="email-msg-content">Hi Kathryn and Dan-<br>This one is a go, however, only the LED portion. Again, they plan to use their own monitors.<br>Project 353488.<br>What date can I tell the client that you need AV files for testing purposes for the backwall and overhead canopy?</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
+    <span class="email-msg-date">Feb 9, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
+    <div class="email-msg-content">Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :)<br>Date for files depends how much time they want for any needed revisions. Usually 2 weeks before show is standard :)</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</span>
+    <span class="email-msg-date">Feb 9, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
+    <div class="email-msg-content">Cancelled out!<br>Sent briskly from my iPhone<br>Kathryn Parker</div>
+</div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -987,7 +1137,7 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="0" data-days="17" data-email-age="999" data-crew-state="ok">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="17" data-email-age="999" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
             <div class="show-title">USCAP - Leica Biosystems #360524</div>
@@ -997,16 +1147,20 @@ body {
             <span class="show-date">Mar 20 – 26</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recmhpSJCbtCUL5Ci">+</span>
     </div>
     <div class="card-body" id="body-recmhpSJCbtCUL5Ci" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-uscap.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
@@ -1024,11 +1178,8 @@ body {
 <div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-normal'>(22d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (1)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -1042,11 +1193,8 @@ body {
         <a href="tasks-uscap.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (0)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: N/A &bull; 0 emails</div>
-
-
-</div>
+    <summary>Emails</summary>
+    <div class="accordion-content"><div class="empty-section">No email data</div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1059,7 +1207,7 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="0" data-days="33" data-email-age="1" data-crew-state="ok">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="33" data-email-age="1" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
             <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
@@ -1069,16 +1217,20 @@ body {
             <span class="show-date">Apr 5 – 13</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recp7a04etMXiXE7w">+</span>
     </div>
     <div class="card-body" id="body-recp7a04etMXiXE7w" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-ascrs.html" class="cta-btn">Open Checklist</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
@@ -1096,15 +1248,8 @@ body {
 <div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(40d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (2)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">*Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -1119,31 +1264,39 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (3)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Mar 02, 2026 (1d ago) &bull; 3 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Mar 2, 2026 (1d ago) &bull; 3 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">B. Jacocks</span>
-    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">Mray</span>
-    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Mar 02, 2026</span> <span class="email-tl-from">Jlipitz</span>
-    <div class="email-tl-text">Re: Bausch and Lomb Vision Expo Controls</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">B. Jacocks</span>
+    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
+    <span class="email-msg-date">Mar 2, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">B. Jacocks &rarr; G. Calvanese</div>
+    <div class="email-msg-content">Hi Gina,<br>Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan accordingly.</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (3 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">B. Jacocks → G. Calvanese</span></div>
-    <div class="email-entry-text">Hi Gina, Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan ac</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">Mray → B. Jacocks</span></div>
-    <div class="email-entry-text">[@Jason Lipitz](mailto:jlipitz@wearesparks.com) Can you please share all the video files for this one when you have it? Thanks, Melissa Ray Sr Account Manager 1-770-378-1851 (phone) mray@wearesparks.c</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Mar 02, 2026</span> <span class="email-people">Jlipitz → Mray</span></div>
-    <div class="email-entry-text">Team: I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams. Thanks, Jason Jason Lipitz Lead Graphic Production Artist 215-</div>
-</div></div>
-</details></div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">M. Ray</span>
+    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
+    <span class="email-msg-date">Mar 2, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">M. Ray &rarr; B. Jacocks</div>
+    <div class="email-msg-content">[@Jason Lipitz](mailto:jlipitz@</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">J. Lipitz</span>
+    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
+    <span class="email-msg-date">Mar 2, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">J. Lipitz &rarr; M. Ray</div>
+    <div class="email-msg-content">Team:<br>I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams.</div>
+</div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1213,31 +1366,39 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (3)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 26, 2026 (5d ago) &bull; 3 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 26, 2026 (5d ago) &bull; 3 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 26, 2026</span> <span class="email-tl-from">A. Cooley</span>
-    <div class="email-tl-text">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
-</div><div class="email-tl-entry">
-    <span class="email-tl-date">Feb 24, 2026</span> <span class="email-tl-from">K. Parker</span>
-    <div class="email-tl-text">Quote Request: Honeywell @ Modex 2026 #B12512</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Re: Quote Request: Honeywell @ Modex 2026 #B12512</span>
+    <span class="email-msg-date">Feb 26, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Thompson</div>
+    <div class="email-msg-content">Hi all, just wanted to make sure you received this.<br>Thanks!</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (3 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people">K. Parker → A. Thompson</span></div>
-    <div class="email-entry-text">\*\*Hi all, just wanted to make sure you received this. Thanks! Best, Kathryn Kathryn Parker Fuse Technical Group &lt;[link] &lt;[link] &lt;[link] &lt;[link] &lt;[link] On Feb 24, 2026, at 2:01 PM, Kathryn Parker wr</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 26, 2026</span> <span class="email-people">A. Cooley → K. Parker</span></div>
-    <div class="email-entry-text">We have received, thank you! When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in</div>
-</div><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 24, 2026</span> <span class="email-people">K. Parker → A. Thompson</span></div>
-    <div class="email-entry-text">Ashley and Ali, Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pi</div>
-</div></div>
-</details></div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">A. Cooley</span>
+    <span class="email-msg-subject">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</span>
+    <span class="email-msg-date">Feb 26, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">A. Cooley &rarr; K. Parker</div>
+    <div class="email-msg-content">We have received, thank you!<br>When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in sourcing?<br>Thank you!<br>Ali Cooley</div>
+</div>
+</details><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">K. Parker</span>
+    <span class="email-msg-subject">Quote Request: Honeywell @ Modex 2026 #B12512</span>
+    <span class="email-msg-date">Feb 24, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">K. Parker &rarr; A. Thompson</div>
+    <div class="email-msg-content">Ashley and Ali,<br>Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pixel count. We also included local labor on this since this is Atlanta and we’re able to provide.<br>Lastly, in the form below the second link can be utilized for sending us any content you’d like us to review before show site.<br>Please reach out with any questions.</div>
+</div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1305,11 +1466,8 @@ body {
         <a href="tasks-pss.html" class="cta-btn" style="margin-top:6px;">Open Checklist</a></div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (0)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: N/A &bull; 0 emails</div>
-
-
-</div>
+    <summary>Emails</summary>
+    <div class="accordion-content"><div class="empty-section">No email data</div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1379,19 +1537,19 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 13, 2026 (18d ago) &bull; 1 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 13, 2026 (18d ago) &bull; 1 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 13, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</span>
+    <span class="email-msg-date">Feb 13, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360937 - SPX Impulse Dynamics @ HRS 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Impulse Dynamics @ HRS 2026 Client: Sparks<br>End Client: Impulse Dynamics<br>Event Name:HRS 2026<br>Booth Number:<br>Venue: McCormick Place Lakeside Center<br>Venue Address: 2301 S. Lake Shore Drive ,<br>Chicago IL 60616<br>City: Chicago<br>Load In</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (1 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 13, 2026</span> <span class="email-people">Fuse Integrations → SPX Ops</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-15 Quote: 360937 - SPX Impulse</div>
-</div></div>
-</details></div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
@@ -1404,7 +1562,7 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="1" data-days="69" data-email-age="14" data-crew-state="pencilled">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="69" data-email-age="14" data-crew-state="none">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
             <div class="show-title">AUA - Novartis #361092</div>
@@ -1414,18 +1572,18 @@ body {
             <span class="show-date">May 11 – 18</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 pencilled</span> <span class="chip chip-warning">2 unconfirmed</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
+        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
         <span class="expand-icon" id="icon-recq49LuQliCAooZ0">+</span>
     </div>
     <div class="card-body" id="body-recq49LuQliCAooZ0" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
+        <div class="next-action-bar next-action-critical">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
     <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="tasks-aua.html" class="cta-btn">Open Checklist</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
 </div>
 </details>
         <details class="accordion-section" open>
@@ -1445,19 +1603,8 @@ body {
 <div class="kd-item"><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(75d)</span></div></div></div>
 </details>
         <details class="accordion-section">
-    <summary>Crew (3)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-pencilled">Away</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Candida Boggs</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Maxwell Bordelon</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div></div></div>
+    <summary>Crew (0)</summary>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Tasks (1% complete)</summary>
@@ -1472,19 +1619,19 @@ body {
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last: Feb 17, 2026 (14d ago) &bull; 1 emails</div>
+    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 17, 2026 (14d ago) &bull; 1 messages</div>
 
-<div class="email-tl-entry">
-    <span class="email-tl-date">Feb 17, 2026</span> <span class="email-tl-from">Fuse Integrations</span>
-    <div class="email-tl-text">Fuse Form - IMP Novartis @ AUA 2026 #</div>
+<div class="email-inbox"><details class="email-msg">
+<summary class="email-msg-header">
+    <span class="email-msg-from">Fuse Integrations</span>
+    <span class="email-msg-subject">Fuse Form - IMP Novartis @ AUA 2026 #</span>
+    <span class="email-msg-date">Feb 17, 2026</span>
+</summary>
+<div class="email-msg-body">
+    <div class="email-msg-meta">Fuse Integrations &rarr; Fuse Exhibits</div>
+    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-19<br>Quote: 361092 - IMP Novartis @ AUA 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: IMP Novartis @ AUA 2026 Client: Impact XM<br>End Client: Novartis<br>Event Name:AUA 2026<br>Booth Number:<br>Venue: Walter E. Washington Convention Center<br>Venue Address: 801 Mt Vernon Place NW ,<br>Washington DC 20001<br>City: Washington<br>Load In</div>
 </div>
-<details class="email-full-thread">
-    <summary>View full excerpts (1 messages)</summary>
-    <div class="email-full-content"><div class="email-entry">
-    <div class="email-entry-header"><span class="email-date">Feb 17, 2026</span> <span class="email-people">Fuse Integrations → F. Exhibits</span></div>
-    <div class="email-entry-text"># FUSE ## Event Request ### Quote to follow Please Reply All to this email chain for fastest response. Thankyou Quote requested By Kathryn Parker Quote Needed By 2026-02-19 Quote: 361092 - IMP Novarti</div>
-</div></div>
-</details></div>
+</details></div></div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
