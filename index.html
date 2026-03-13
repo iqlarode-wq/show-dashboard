@@ -5,13 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show Operations Dashboard</title>
     <style>
-/* ═══ V2 Dashboard CSS — Dark Theme, Collapsed Cards ═══ */
+/* ═══ V3 Dashboard CSS — Light Modern Theme ═══ */
+:root {
+    --bg-page: #f8f6f3;
+    --bg-alt: #f1ebe5;
+    --bg-surface: #ffffff;
+    --text-primary: #2c2c2c;
+    --text-secondary: #6b6b6b;
+    --text-tertiary: #999999;
+    --accent: #8b7355;
+    --accent-hover: #6b5d4f;
+    --border: #e0dcd5;
+    --border-subtle: #efe9e1;
+    --critical: #c94c4c;
+    --warning: #d4a574;
+    --success: #6b9d7f;
+    --info: #8b9fb6;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-    color: #e0e0e0;
+    background: var(--bg-page);
+    color: var(--text-primary);
     min-height: 100vh;
     font-size: 16px;
     line-height: 1.5;
@@ -30,416 +47,591 @@ body {
     text-align: center;
     margin-bottom: 20px;
 }
+
 .header h1 {
-    font-size: 22px;
+    font-size: 26px;
     font-weight: 700;
-    color: #fff;
+    color: var(--text-primary);
     margin-bottom: 4px;
 }
+
 .header-meta {
-    font-size: 13px;
-    color: #888;
+    font-size: 12px;
+    color: var(--text-tertiary);
     margin-bottom: 12px;
-}
-.header-stats {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 12px;
-}
-.stat-box {
-    background: rgba(255,255,255,0.06);
-    border-radius: 8px;
-    padding: 6px 10px;
-    text-align: center;
-    min-width: 55px;
-    flex: 1;
-}
-.stat-box.stat-alert .stat-value { color: #ff6b6b; }
-.stat-box.stat-warn .stat-value { color: #ffc048; }
-.stat-label {
-    font-size: 10px;
-    color: #888;
-    text-transform: uppercase;
-    letter-spacing: 0.3px;
-}
-.stat-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1.2;
 }
 
-/* ─── Filter Bar ─── */
-.filter-bar {
+/* ─── Stats ─── */
+.header-stats {
     display: flex;
-    gap: 6px;
     justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
     flex-wrap: wrap;
 }
+
+.stat-box {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-width: 60px;
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.stat-label {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 2px;
+}
+
+.stat-box.stat-alert .stat-value { color: var(--critical); }
+.stat-box.stat-warn .stat-value { color: var(--warning); }
+
+/* ─── Filters ─── */
+.filter-bar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
 .filter-btn {
-    background: rgba(255,255,255,0.08);
-    color: #ccc;
-    border: 1px solid rgba(255,255,255,0.12);
-    padding: 6px 14px;
-    border-radius: 20px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 6px 12px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
 }
-.filter-btn:hover { background: rgba(255,255,255,0.14); }
+
+.filter-btn:hover {
+    background: var(--bg-alt);
+    border-color: var(--accent);
+}
+
 .filter-btn.active {
-    background: #4a9eff;
+    background: var(--accent);
     color: #fff;
-    border-color: #4a9eff;
+    border-color: var(--accent);
 }
+
 .hide-toggle {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 6px;
     font-size: 12px;
-    color: #999;
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 6px 12px;
-    border: 1px solid rgba(255,255,255,0.1);
-    border-radius: 6px;
-    background: rgba(255,255,255,0.03);
-    transition: all 0.2s;
-    margin-left: auto;
 }
-.hide-toggle:hover { color: #ccc; border-color: rgba(255,255,255,0.2); }
-.hide-toggle input { accent-color: #4a9eff; cursor: pointer; }
 
-/* ─── Search/Sort Bar ─── */
+.hide-toggle input {
+    cursor: pointer;
+}
+
+/* ─── Search & Sort ─── */
 .search-sort-bar {
     display: flex;
     gap: 8px;
     justify-content: center;
-    margin-top: 8px;
+    margin-bottom: 16px;
 }
+
 .search-input {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #ddd;
-    padding: 6px 12px;
-    border-radius: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
     font-size: 13px;
-    width: 180px;
-    outline: none;
+    width: 200px;
 }
-.search-input:focus { border-color: #4a9eff; }
-.search-input::placeholder { color: #666; }
-.sort-select {
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,255,255,0.12);
-    color: #ccc;
-    padding: 6px 10px;
-    border-radius: 8px;
-    font-size: 13px;
+
+.search-input::placeholder {
+    color: var(--text-tertiary);
+}
+
+.search-input:focus {
     outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(139, 115, 85, 0.1);
+}
+
+.sort-select {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 13px;
     cursor: pointer;
 }
-.sort-select option { background: #1e2a3a; color: #ddd; }
 
 /* ─── Alert Banner ─── */
 .alert-banner {
-    background: rgba(255,71,87,0.12);
-    border: 1px solid rgba(255,71,87,0.3);
-    border-radius: 10px;
-    padding: 14px 16px;
+    background: #fce4ec;
+    border: 1px solid #f8bbd0;
+    border-radius: 8px;
+    padding: 12px 16px;
     margin-bottom: 16px;
 }
+
 .alert-title {
-    font-weight: 700;
-    color: #ff4757;
-    font-size: 14px;
-    margin-bottom: 6px;
-}
-.alert-item {
     font-size: 13px;
-    color: #ffaaaa;
-    padding: 3px 0;
+    font-weight: 700;
+    color: var(--critical);
+    margin-bottom: 8px;
+}
+
+.alert-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.alert-item {
+    font-size: 12px;
+    color: var(--critical);
+    line-height: 1.4;
 }
 
 /* ─── Shows Grid ─── */
 .shows-grid {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
 }
 
 /* ─── Show Card ─── */
 .show-card {
-    background: #1e2a3a;
-    border-radius: 10px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 8px;
     overflow: hidden;
-    border-left: 4px solid #2ed573;
-    transition: box-shadow 0.2s;
+    transition: all 0.2s;
 }
-.show-card.critical { border-left-color: #ff4757; }
-.show-card.warning { border-left-color: #ffa502; }
 
-/* ─── Card Header (always visible, clickable) ─── */
+.show-card.critical {
+    border-color: var(--critical);
+    box-shadow: 0 2px 8px rgba(201, 76, 76, 0.08);
+}
+
+.show-card.warning {
+    border-color: var(--warning);
+    box-shadow: 0 2px 8px rgba(212, 165, 116, 0.08);
+}
+
+.show-card.normal {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Card Header */
 .card-header {
-    padding: 14px 16px 12px;
+    padding: 12px 14px;
     cursor: pointer;
-    position: relative;
+    transition: background 0.15s;
     user-select: none;
-    -webkit-user-select: none;
 }
+
 .card-header:hover {
-    background: rgba(255,255,255,0.03);
+    background: var(--bg-alt);
 }
+
 .card-header-top {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    margin-bottom: 4px;
 }
+
 .show-title {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
-    color: #fff;
-    flex: 1;
-    min-width: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: var(--text-primary);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: all 0.15s;
 }
+
+.show-title:hover {
+    background: var(--bg-alt);
+    text-decoration: underline;
+    color: var(--accent);
+}
+
 .show-days {
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
-    white-space: nowrap;
-    flex-shrink: 0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    min-width: 40px;
+    text-align: center;
 }
-.show-days.critical { background: rgba(255,71,87,0.2); color: #ff6b6b; }
-.show-days.warning { background: rgba(255,165,2,0.2); color: #ffc048; }
-.show-days.normal { background: rgba(46,213,115,0.15); color: #7bed9f; }
+
+.show-days.critical {
+    color: #fff;
+    background: var(--critical);
+}
+
+.show-days.warning {
+    color: #fff;
+    background: var(--warning);
+}
+
+.show-days.normal {
+    color: var(--text-secondary);
+    background: var(--bg-alt);
+}
 
 .card-header-meta {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 6px;
-    gap: 8px;
-}
-.show-date {
-    font-size: 13px;
-    color: #aaa;
-}
-.badge-group {
-    display: flex;
-    gap: 5px;
-    flex-shrink: 0;
-    flex-wrap: wrap;
+    margin-bottom: 6px;
 }
 
-/* ─── Badges ─── */
-.badge {
+.show-date {
     font-size: 11px;
+    color: var(--text-tertiary);
+    flex: 1;
+}
+
+.badge-group {
+    display: flex;
+    gap: 4px;
+    justify-content: flex-end;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
     font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 10px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
-.badge-travel { background: rgba(74,158,255,0.2); color: #7ab8ff; }
-.badge-remote { background: rgba(162,155,254,0.2); color: #b8b3fe; }
-.badge-confirmed { background: rgba(46,213,115,0.2); color: #7bed9f; }
-.badge-active { background: rgba(255,165,2,0.2); color: #ffc048; }
-.badge-closed { background: rgba(255,255,255,0.1); color: #999; }
 
-/* ─── Risk Chips ─── */
+.badge-travel {
+    background: rgba(139, 115, 85, 0.1);
+    color: var(--accent);
+}
+
+.badge-remote {
+    background: rgba(139, 159, 182, 0.1);
+    color: var(--info);
+}
+
+.badge-confirmed {
+    background: rgba(107, 157, 127, 0.1);
+    color: var(--success);
+}
+
+.badge-active {
+    background: rgba(139, 159, 182, 0.1);
+    color: var(--info);
+}
+
+.badge-closed {
+    background: rgba(153, 153, 153, 0.1);
+    color: var(--text-tertiary);
+}
+
+/* Risk Chips */
 .risk-chips {
     display: flex;
+    gap: 4px;
     flex-wrap: wrap;
-    gap: 5px;
-    margin-top: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
 }
-.chip {
-    font-size: 11px;
-    font-weight: 500;
-    padding: 2px 8px;
-    border-radius: 8px;
-    white-space: nowrap;
-}
-.chip-critical { background: rgba(255,71,87,0.18); color: #ff8a94; border: 1px solid rgba(255,71,87,0.25); }
-.chip-warning { background: rgba(255,165,2,0.15); color: #ffc048; border: 1px solid rgba(255,165,2,0.2); }
-.chip-normal { background: rgba(255,255,255,0.06); color: #aaa; border: 1px solid rgba(255,255,255,0.08); }
 
-/* ─── Next Action Line ─── */
-.next-action-line {
-    font-size: 13px;
-    margin-top: 8px;
-    padding: 5px 8px;
-    border-radius: 6px;
-    background: rgba(255,255,255,0.04);
-    color: #ccc;
+.chip {
+    display: inline-block;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: 600;
     white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
-.next-action-critical { color: #ff8a94; background: rgba(255,71,87,0.08); }
-.next-action-warning { color: #ffc048; background: rgba(255,165,2,0.06); }
-.next-action-normal { color: #7bed9f; }
+
+.chip-critical {
+    background: rgba(201, 76, 76, 0.15);
+    color: var(--critical);
+}
+
+.chip-warning {
+    background: rgba(212, 165, 116, 0.15);
+    color: var(--warning);
+}
+
+.chip-normal {
+    background: rgba(107, 107, 107, 0.1);
+    color: var(--text-secondary);
+}
+
+/* Next Action Line */
+.next-action-line {
+    font-size: 11px;
+    padding: 4px 6px;
+    border-radius: 4px;
+    margin: 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.next-action-critical {
+    background: rgba(201, 76, 76, 0.1);
+    color: var(--critical);
+}
+
+.next-action-warning {
+    background: rgba(212, 165, 116, 0.1);
+    color: var(--warning);
+}
+
+.next-action-normal {
+    background: rgba(107, 107, 107, 0.05);
+    color: var(--text-secondary);
+}
+
 .na-icon {
     font-weight: 700;
+}
+
+.expand-icon {
+    display: inline-block;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+    transition: transform 0.2s;
+    float: right;
+    margin-top: -20px;
+}
+
+/* Card Body */
+.card-body {
+    padding: 12px 14px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-alt);
+}
+
+.accordion-section {
+    margin-bottom: 8px;
+}
+
+.accordion-section > summary {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 6px 8px;
+    user-select: none;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-radius: 4px;
+    transition: all 0.15s;
+    list-style: none;
+}
+
+.accordion-section > summary::-webkit-details-marker {
+    display: none;
+}
+
+.accordion-section > summary::marker {
+    display: none;
+}
+
+.accordion-section > summary::before {
+    content: "▶ ";
+    display: inline-block;
+    transition: transform 0.2s;
     margin-right: 4px;
 }
 
-/* ─── Next Action Bar (expanded) ─── */
-.next-action-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 12px;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    gap: 10px;
-    flex-wrap: wrap;
-    background: rgba(255,255,255,0.04);
-}
-.next-action-bar.next-action-critical { background: rgba(255,71,87,0.08); border: 1px solid rgba(255,71,87,0.15); }
-.next-action-bar.next-action-warning { background: rgba(255,165,2,0.06); border: 1px solid rgba(255,165,2,0.12); }
-.next-action-bar.next-action-normal { border: 1px solid rgba(255,255,255,0.06); }
-.na-bar-label { font-size: 12px; font-weight: 700; color: #999; margin-right: 4px; }
-.na-bar-text { font-size: 13px; color: #ddd; flex: 1; min-width: 0; }
-.na-bar-ctas { display: flex; gap: 6px; flex-shrink: 0; }
-.cta-btn {
-    display: inline-block;
-    padding: 5px 12px;
-    background: rgba(74,158,255,0.15);
-    color: #7ab8ff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-}
-.cta-btn:hover { background: rgba(74,158,255,0.25); }
-
-/* ─── Expand Icon ─── */
-.expand-icon {
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    font-size: 14px;
-    color: #666;
-    font-weight: 700;
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
-    transition: transform 0.2s;
-}
-
-/* ─── Card Body (expandable) ─── */
-.card-body {
-    padding: 0 16px 14px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    animation: fadeIn 0.15s ease-out;
-}
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-4px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Accordion Sections ─── */
-.accordion-section {
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-}
-.accordion-section:last-child { border-bottom: none; }
-
-.accordion-section > summary {
-    padding: 10px 4px;
-    font-size: 13px;
-    font-weight: 600;
-    color: #bbb;
-    cursor: pointer;
-    list-style: none;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-}
-.accordion-section > summary::-webkit-details-marker { display: none; }
-.accordion-section > summary::before {
-    content: "▸";
-    font-size: 11px;
-    color: #666;
-    transition: transform 0.15s;
-    display: inline-block;
-    width: 12px;
-}
 .accordion-section[open] > summary::before {
     transform: rotate(90deg);
 }
-.accordion-section > summary:hover { color: #fff; }
+
+.accordion-section > summary:hover {
+    background: var(--bg-surface);
+    color: var(--accent);
+}
+
 .accordion-content {
-    padding: 4px 4px 10px 18px;
-    font-size: 13px;
+    padding: 8px 8px;
+    background: var(--bg-surface);
+    border-radius: 4px;
+    margin-top: 4px;
 }
 
-/* ─── Overview Grid ─── */
-.overview-grid { display: flex; flex-direction: column; gap: 4px; }
-.ov-row { display: flex; gap: 8px; }
-.ov-label { color: #888; min-width: 60px; flex-shrink: 0; font-size: 12px; }
-.ov-value { color: #ddd; }
+/* Overview */
+.overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
 
-/* ─── Flags ─── */
+.ov-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    font-size: 12px;
+}
+
+.ov-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 60px;
+}
+
+.ov-value {
+    color: var(--text-primary);
+    flex: 1;
+    text-align: right;
+}
+
+/* Key Dates */
+.key-dates-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.kd-item {
+    font-size: 12px;
+    color: var(--text-primary);
+    padding: 4px 6px;
+    border-left: 2px solid var(--border);
+    padding-left: 8px;
+}
+
+.kd-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: inline-block;
+    min-width: 70px;
+}
+
+.countdown-critical {
+    font-weight: 600;
+    color: var(--critical);
+}
+
+.countdown-warning {
+    font-weight: 600;
+    color: var(--warning);
+}
+
+.countdown-normal {
+    color: var(--text-tertiary);
+}
+
+/* Flags */
 .flag {
-    padding: 5px 0;
-    font-size: 13px;
+    font-size: 12px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
 }
-.flag-icon { font-weight: 700; margin-right: 4px; }
-.flag-critical { color: #ff8a94; }
-.flag-critical .flag-icon { color: #ff4757; }
-.flag-warning { color: #ffc048; }
-.flag-warning .flag-icon { color: #ffa502; }
 
-/* ─── Key Dates Grid ─── */
-.key-dates-grid { display: flex; flex-direction: column; gap: 4px; }
-.kd-item { font-size: 13px; }
-.kd-label { color: #888; margin-right: 4px; }
-.countdown-critical { color: #ff6b6b; font-weight: 600; }
-.countdown-warning { color: #ffc048; font-weight: 600; }
-.countdown-normal { color: #7bed9f; }
+.flag-critical {
+    background: rgba(201, 76, 76, 0.08);
+    color: var(--critical);
+}
 
-/* ─── Crew ─── */
-.crew-list { display: flex; flex-direction: column; gap: 6px; }
+.flag-warning {
+    background: rgba(212, 165, 116, 0.08);
+    color: var(--warning);
+}
+
+.flag-icon {
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+/* Crew */
+.crew-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
 .crew-member {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 8px;
     padding: 6px 8px;
-    background: rgba(255,255,255,0.03);
-    border-radius: 6px;
+    border-radius: 4px;
+    background: var(--bg-alt);
+    font-size: 12px;
 }
-.crew-name { font-size: 13px; color: #ddd; font-weight: 500; }
-.crew-role { font-size: 11px; color: #888; }
-.crew-status {
-    font-size: 11px;
-    font-weight: 600;
-    padding: 2px 8px;
-    border-radius: 8px;
-}
-.status-confirmed { background: rgba(46,213,115,0.15); color: #7bed9f; }
-.status-pencilled { background: rgba(255,165,2,0.15); color: #ffc048; }
-.status-empty { background: rgba(255,71,87,0.12); color: #ff8a94; }
 
-/* ─── Tasks / Progress ─── */
+.crew-name {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.crew-role {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+.crew-status {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.status-confirmed {
+    background: rgba(107, 157, 127, 0.15);
+    color: var(--success);
+}
+
+.status-pencilled {
+    background: rgba(212, 165, 116, 0.15);
+    color: var(--warning);
+}
+
+.status-empty {
+    background: rgba(153, 153, 153, 0.1);
+    color: var(--text-tertiary);
+}
+
+/* Progress Bar */
 .progress-bar-container {
-    background: rgba(255,255,255,0.08);
+    background: var(--bg-alt);
     border-radius: 6px;
     height: 20px;
     overflow: hidden;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
+
 .progress-bar-fill {
     height: 100%;
     border-radius: 6px;
@@ -449,213 +641,618 @@ body {
     font-size: 11px;
     font-weight: 600;
     color: #fff;
-    background: #2ed573;
+    background: var(--success);
     transition: width 0.3s;
     min-width: 30px;
 }
-.progress-bar-fill.critical { background: #ff4757; }
-.progress-bar-fill.warning { background: #ffa502; }
-.progress-text { font-size: 12px; color: #888; }
+
+.progress-bar-fill.critical {
+    background: var(--critical);
+}
+
+.progress-bar-fill.warning {
+    background: var(--warning);
+}
+
+.progress-text {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
 
 /* Task Phase Breakdown */
-.task-phases { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
-.task-phase { display: flex; align-items: center; gap: 6px; }
-.tp-label { font-size: 11px; color: #888; width: 60px; flex-shrink: 0; }
-.tp-bar-wrap { flex: 1; background: rgba(255,255,255,0.06); border-radius: 4px; height: 8px; overflow: hidden; }
-.tp-bar { height: 100%; background: #4a9eff; border-radius: 4px; transition: width 0.3s; }
-.tp-pct { font-size: 11px; color: #999; width: 30px; text-align: right; }
-
-.task-button {
-    display: inline-block;
-    margin-top: 6px;
-    padding: 6px 14px;
-    background: rgba(74,158,255,0.15);
-    color: #7ab8ff;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 12px;
-    font-weight: 600;
+.task-phases {
+    margin-top: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-.task-button:hover { background: rgba(74,158,255,0.25); }
 
-/* ─── Email Inbox ─── */
+.task-phase {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tp-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    width: 60px;
+    flex-shrink: 0;
+}
+
+.tp-bar-wrap {
+    flex: 1;
+    background: var(--bg-alt);
+    border-radius: 4px;
+    height: 8px;
+    overflow: hidden;
+}
+
+.tp-bar {
+    height: 100%;
+    background: var(--info);
+    border-radius: 4px;
+    transition: width 0.3s;
+}
+
+.tp-pct {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    width: 30px;
+    text-align: right;
+}
+
+/* CTA Buttons */
+.cta-btn {
+    display: inline-block;
+    padding: 6px 12px;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: background 0.15s;
+    margin-right: 6px;
+}
+
+.cta-btn:hover {
+    background: var(--accent-hover);
+}
+
+/* Email */
 .email-timeline-header {
-    font-size: 13px;
-    color: #aaa;
-    margin-bottom: 10px;
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-bottom: 8px;
     font-weight: 500;
 }
+
 .email-stale {
-    background: rgba(255,71,87,0.1);
-    border: 1px solid rgba(255,71,87,0.2);
-    border-radius: 6px;
-    padding: 6px 10px;
-    font-size: 12px;
-    color: #ff8a94;
-    margin-bottom: 10px;
+    background: rgba(201, 76, 76, 0.08);
+    border: 1px solid rgba(201, 76, 76, 0.15);
+    border-radius: 4px;
+    padding: 6px 8px;
+    font-size: 11px;
+    color: var(--critical);
+    margin-bottom: 8px;
 }
-.stale-icon { font-weight: 700; margin-right: 4px; color: #ff4757; }
+
+.stale-icon {
+    font-weight: 700;
+    margin-right: 4px;
+}
+
 .email-inbox {
     display: flex;
     flex-direction: column;
     gap: 2px;
 }
+
 .email-msg {
-    border-radius: 6px;
-    background: rgba(255,255,255,0.02);
+    border-radius: 4px;
+    background: var(--bg-alt);
     overflow: hidden;
+    border: 1px solid var(--border-subtle);
 }
+
 .email-msg[open] {
-    background: rgba(255,255,255,0.04);
+    background: var(--bg-surface);
+    border-color: var(--accent);
 }
+
 .email-msg-header {
     display: flex;
     align-items: center;
     gap: 8px;
     padding: 8px 10px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     list-style: none;
-    border-left: 3px solid transparent;
-    transition: border-color 0.15s;
+    transition: all 0.15s;
 }
-.email-msg-header::-webkit-details-marker { display: none; }
-.email-msg-header::marker { display: none; content: ""; }
+
+.email-msg-header::-webkit-details-marker {
+    display: none;
+}
+
+.email-msg-header::marker {
+    display: none;
+    content: "";
+}
+
 .email-msg[open] > .email-msg-header {
-    border-left-color: #4a9eff;
-    background: rgba(74,158,255,0.06);
+    background: var(--bg-alt);
 }
+
 .email-msg-header:hover {
-    background: rgba(255,255,255,0.04);
+    background: var(--bg-alt);
 }
+
 .email-msg-from {
-    color: #7ab8ff;
+    color: var(--accent);
     font-weight: 600;
     white-space: nowrap;
     min-width: 90px;
     flex-shrink: 0;
-    font-size: 12px;
+    font-size: 11px;
 }
+
 .email-msg-subject {
-    color: #ccc;
+    color: var(--text-primary);
     flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    font-size: 12px;
 }
+
 .email-msg-date {
-    color: #666;
+    color: var(--text-tertiary);
     font-size: 11px;
     white-space: nowrap;
     flex-shrink: 0;
 }
+
 .email-msg-body {
-    padding: 8px 10px 12px 16px;
-    border-left: 3px solid #4a9eff;
+    padding: 8px 10px 10px 16px;
+    border-left: 2px solid var(--accent);
     margin-left: 0;
 }
+
 .email-msg-meta {
     font-size: 11px;
-    color: #666;
+    color: var(--text-tertiary);
     margin-bottom: 6px;
     padding-bottom: 6px;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid var(--border-subtle);
 }
+
 .email-msg-content {
-    font-size: 13px;
-    color: #bbb;
-    line-height: 1.6;
+    font-size: 12px;
+    color: var(--text-primary);
+    line-height: 1.5;
     white-space: pre-wrap;
     word-break: break-word;
 }
-.email-deadline {
-    padding: 4px 8px;
-    background: rgba(255,165,2,0.08);
-    border-radius: 4px;
-    font-size: 12px;
-    color: #ffc048;
-    margin-bottom: 4px;
-}
-.deadline-icon { font-weight: 700; margin-right: 4px; color: #ffa502; }
-.email-unanswered {
-    padding: 4px 8px;
-    background: rgba(74,158,255,0.08);
-    border-radius: 4px;
-    font-size: 12px;
-    color: #7ab8ff;
-    margin-bottom: 4px;
-}
-.unanswered-icon { font-weight: 700; margin-right: 4px; color: #4a9eff; }
 
-/* ─── Notes ─── */
-.note-item { margin-bottom: 4px; }
+/* Notes */
+.note-item {
+    margin-bottom: 6px;
+}
+
 .note-item details > summary {
     font-size: 12px;
-    color: #999;
+    color: var(--text-secondary);
     cursor: pointer;
-    padding: 4px 0;
+    padding: 4px 6px;
+    border-radius: 3px;
+    transition: background 0.15s;
 }
+
+.note-item details > summary:hover {
+    background: var(--bg-alt);
+}
+
 .note-content {
-    font-size: 13px;
-    color: #ccc;
-    padding: 4px 0 4px 8px;
-    border-left: 2px solid rgba(255,255,255,0.08);
+    font-size: 12px;
+    color: var(--text-primary);
+    padding: 6px 8px;
+    border-left: 2px solid var(--border);
+    margin-top: 4px;
     line-height: 1.5;
 }
 
-/* ─── Service Tags ─── */
+/* Service Tags */
 .service-tag {
     display: inline-block;
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 8px;
-    background: rgba(255,255,255,0.06);
-    color: #bbb;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: var(--bg-alt);
+    color: var(--text-secondary);
     margin-right: 4px;
 }
 
-/* ─── Dropbox ─── */
-.dropbox-row { margin-top: 6px; }
-.dropbox-link {
-    color: #7ab8ff;
-    text-decoration: none;
-    font-size: 13px;
+/* Dropbox */
+.dropbox-row {
+    margin-top: 6px;
 }
-.dropbox-link:hover { text-decoration: underline; }
 
-/* ─── Empty section ─── */
+.dropbox-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dropbox-link:hover {
+    text-decoration: underline;
+}
+
+/* Next Action Bar */
+.next-action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+    font-size: 12px;
+}
+
+.next-action-critical {
+    background: rgba(201, 76, 76, 0.1);
+    color: var(--critical);
+}
+
+.next-action-warning {
+    background: rgba(212, 165, 116, 0.1);
+    color: var(--warning);
+}
+
+.next-action-normal {
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+}
+
+.na-bar-label {
+    font-weight: 700;
+}
+
+.na-bar-ctas {
+    display: flex;
+    gap: 6px;
+}
+
+/* Empty Section */
 .empty-section {
-    font-size: 13px;
-    color: #888;
+    font-size: 12px;
+    color: var(--text-tertiary);
     font-style: italic;
     padding: 6px 0;
 }
 
-/* ─── Mobile-first touch targets ─── */
-.card-header { min-height: 44px; }
-.filter-btn { min-height: 36px; }
-.accordion-section > summary { min-height: 44px; display: flex; align-items: center; }
-.cta-btn { min-height: 36px; display: inline-flex; align-items: center; }
-
-/* ─── Responsive ─── */
-@media (min-width: 640px) {
-    .container { padding: 24px; }
-    .header h1 { font-size: 26px; }
-    .shows-grid {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
-    }
-    .stat-box { min-width: 70px; padding: 8px 12px; }
-    .stat-value { font-size: 22px; }
-    .filter-bar { gap: 6px; }
+/* ─── Detail View ─── */
+.detail-view {
+    display: none;
+    flex-direction: column;
+    min-height: 100vh;
+    background: var(--bg-page);
 }
 
-@media (min-width: 1100px) {
-    .container { padding: 32px; max-width: 1100px; }
+.detail-header {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.back-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s;
+}
+
+.back-btn:hover {
+    background: var(--bg-alt);
+    border-color: var(--accent);
+}
+
+.detail-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.detail-days {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.detail-content {
+    padding: 16px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.detail-section {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: 6px;
+    padding: 12px;
+}
+
+.detail-section-title {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.detail-grid-content {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.detail-label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+}
+
+.detail-value {
+    color: var(--text-primary);
+    text-align: right;
+    flex: 1;
+}
+
+.detail-email-section {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+    border-top: 1px solid var(--border);
+    background: var(--bg-surface);
+}
+
+/* Email Client */
+.email-client {
+    display: flex;
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.email-list-sidebar {
+    width: 280px;
+    border-right: 1px solid var(--border);
+    background: var(--bg-surface);
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.email-list-header {
+    padding: 12px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-tertiary);
+}
+
+.email-list-item {
+    padding: 10px 12px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: all 0.15s;
+}
+
+.email-list-item:hover {
+    background: var(--bg-alt);
+}
+
+.email-list-item.active {
+    background: var(--bg-alt);
+    border-left-color: var(--accent);
+}
+
+.email-item-from {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.email-item-subject {
+    font-size: 11px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.email-item-date {
+    font-size: 10px;
+    color: var(--text-tertiary);
+    margin-top: 3px;
+}
+
+.email-reader-panel {
+    flex: 1;
+    background: var(--bg-surface);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.email-reader-header {
+    padding: 16px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.email-reader-from {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+}
+
+.email-reader-subject {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-top: 6px;
+}
+
+.email-reader-meta {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+}
+
+.email-reader-body {
+    padding: 16px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.email-reader-content {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.email-empty-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-tertiary);
+    font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .email-client {
+        flex-direction: column;
+    }
+
+    .email-list-sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        max-height: 200px;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+
     .shows-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 14px;
+        gap: 8px;
+    }
+
+    .card-header {
+        padding: 10px 12px;
+    }
+
+    .header h1 {
+        font-size: 20px;
+    }
+
+    .filter-bar {
+        gap: 4px;
+    }
+
+    .filter-btn {
+        padding: 5px 10px;
+        font-size: 11px;
+    }
+
+    .search-input {
+        width: 150px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .stat-box {
+        padding: 4px 8px;
+        min-width: 50px;
+    }
+
+    .stat-value {
+        font-size: 14px;
+    }
+
+    .stat-label {
+        font-size: 9px;
+    }
+
+    .filter-bar {
+        gap: 3px;
+    }
+
+    .filter-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .badge-group {
+        gap: 2px;
+    }
+
+    .badge {
+        font-size: 9px;
+        padding: 1px 4px;
     }
 }
 
@@ -721,11 +1318,11 @@ body {
         </div>
     </div>
 
-        <div class="shows-grid">
+        <div class="grid-view">
 <div class="show-card critical" data-labor="remote" data-risk="5" data-days="-7" data-email-age="22" data-crew-state="ok" data-status="in-progress">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
-            <div class="show-title">CRT - Boston Scientific #359986</div>
+            <div class="show-title" onclick="navigateToDetail('recBggRLeCvC52Syi'); event.stopPropagation();">CRT - Boston Scientific #359986</div>
             <span class="show-days critical">7d ago</span>
         </div>
         <div class="card-header-meta">
@@ -853,7 +1450,7 @@ body {
 <div class="show-card critical" data-labor="travel" data-risk="5" data-days="5" data-email-age="16" data-crew-state="ok" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
         <div class="card-header-top">
-            <div class="show-title">RSAC - AuditBoard #359999</div>
+            <div class="show-title" onclick="navigateToDetail('rec1hmHTQF3PSBEHZ'); event.stopPropagation();">RSAC - AuditBoard #359999</div>
             <span class="show-days critical">5d</span>
         </div>
         <div class="card-header-meta">
@@ -1172,7 +1769,7 @@ body {
 <div class="show-card critical" data-labor="travel" data-risk="3" data-days="7" data-email-age="999" data-crew-state="ok" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
-            <div class="show-title">USCAP - Leica Biosystems #360524</div>
+            <div class="show-title" onclick="navigateToDetail('recmhpSJCbtCUL5Ci'); event.stopPropagation();">USCAP - Leica Biosystems #360524</div>
             <span class="show-days warning">7d</span>
         </div>
         <div class="card-header-meta">
@@ -1245,7 +1842,7 @@ body {
 <div class="show-card normal" data-labor="travel" data-risk="0" data-days="24" data-email-age="11" data-crew-state="ok" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
-            <div class="show-title">ASCRS - Bausch &amp; Lomb #360440</div>
+            <div class="show-title" onclick="navigateToDetail('recp7a04etMXiXE7w'); event.stopPropagation();">ASCRS - Bausch &amp; Lomb #360440</div>
             <span class="show-days normal">24d</span>
         </div>
         <div class="card-header-meta">
@@ -1370,7 +1967,7 @@ body {
 <div class="show-card normal" data-labor="travel" data-risk="2" data-days="26" data-email-age="15" data-crew-state="ok" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
         <div class="card-header-top">
-            <div class="show-title">Modex - Honeywell #360175</div>
+            <div class="show-title" onclick="navigateToDetail('recVHqaYbYwOR10kS'); event.stopPropagation();">Modex - Honeywell #360175</div>
             <span class="show-days normal">26d</span>
         </div>
         <div class="card-header-meta">
@@ -1475,7 +2072,7 @@ body {
 <div class="show-card critical" data-labor="travel" data-risk="3" data-days="28" data-email-age="999" data-crew-state="none" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
         <div class="card-header-top">
-            <div class="show-title">PSS - Honeywell EU + META #360177</div>
+            <div class="show-title" onclick="navigateToDetail('rec424142uv4EMt94'); event.stopPropagation();">PSS - Honeywell EU + META #360177</div>
             <span class="show-days normal">28d</span>
         </div>
         <div class="card-header-meta">
@@ -1544,7 +2141,7 @@ body {
 <div class="show-card warning" data-labor="travel" data-risk="3" data-days="38" data-email-age="28" data-crew-state="pencilled" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
         <div class="card-header-top">
-            <div class="show-title">HRS - Impulse Dynamics #360937</div>
+            <div class="show-title" onclick="navigateToDetail('recrw32m5ciX8gWbt'); event.stopPropagation();">HRS - Impulse Dynamics #360937</div>
             <span class="show-days normal">38d</span>
         </div>
         <div class="card-header-meta">
@@ -1633,7 +2230,7 @@ body {
 <div class="show-card warning" data-labor="travel" data-risk="3" data-days="58" data-email-age="24" data-crew-state="pencilled" data-status="upcoming">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
-            <div class="show-title">AUA - Novartis #361092</div>
+            <div class="show-title" onclick="navigateToDetail('recq49LuQliCAooZ0'); event.stopPropagation();">AUA - Novartis #361092</div>
             <span class="show-days normal">58d</span>
         </div>
         <div class="card-header-meta">
@@ -1755,114 +2352,941 @@ body {
     </div>
 </div>
         </div>
+
+<div class="detail-view" data-event-id="recBggRLeCvC52Syi" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">CRT - Boston Scientific #359986</div>
+            <span class="detail-days">7d ago</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">The Washington Hilton — Washington, DC</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / Boston Scientific</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 6 <span class="countdown-warning">(7d ago)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 7 <span class="countdown-warning">(6d ago)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 9 <span class="countdown-warning">(4d ago)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 9 <span class="countdown-warning">(4d ago)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (2/2)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-crt.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> <strong>BOOTH:</strong> (3) 55&quot; Monitors - Plinths, (2) 65&quot; Monitors - IVUS &amp; Hospitality, (3) Monitors for Monitor Arms, (8) NUCS, Install &amp; Dismantle Labor   <strong>TECH SUITE:</strong> (6) 55&quot; Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS, <strong>Expectations:</strong> Katelyn Wann - kwann@wearesparks.com + countertop monitor adds </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 0)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</div>
+            <div class="email-item-date">Feb 19, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 1)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ ACC 2026 #</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 2)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</div>
+            <div class="email-item-date">Feb 13, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 3)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 4)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ OEIS 2026 #407" data-date="Feb 19, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kevin Barry<br>Quote Needed By<br>2026-02-19<br>Quote: 361184 - SPX Boston Scientific @ OEIS 2026 407<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ OEIS 2026 407<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:OEIS 2026<br>Booth Number: 407<br>Venue: Caesars Palace<br>Venue Address: 3570 S Las Vegas Blvd ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div><div class="email-body-data" data-idx="1" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ ACC 2026 #" data-date="Feb 18, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-20<br>Quote: 361165 - SPX Boston Scientific @ ACC 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ACC 2026 Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ACC 2026<br>Booth Number:<br>Venue: New Orleans Ernest N. Morial Convention Center<br>Venue Address: 900 Convention Center Blvd ,<br>New Orleans Louisiana 70130<br>City: New Orleans<br>Load In</div><div class="email-body-data" data-idx="2" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205" data-date="Feb 13, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360941 - SPX Boston Scientific @ ASMBS 2026 1205<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ASMBS 2026 1205<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ASMBS 2026<br>Booth Number: 1205<br>Venue: Henry B. Gonzalez Convention Center<br>Venue Address: 900 E. Market St. ,<br>San Antonio TX 78205<br>City: San Antonio<br>Load In</div><div class="email-body-data" data-idx="3" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ AACE 2026 #914" data-date="Feb 12, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-14<br>Quote: 360877 - SPX Boston Scientific @ AACE 2026 914<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ AACE 2026 914<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:AACE 2026<br>Booth Number: 914<br>Venue: Caesars Forum<br>Venue Address: 3911 S Koval Ln ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div><div class="email-body-data" data-idx="4" data-from="K. Parker" data-to="Z. Dicker" data-subject="Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914" data-date="Feb 12, 2026">Zayna,<br>Quote attached. Please look it over and let us know if you have any questions.</div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="rec1hmHTQF3PSBEHZ" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">RSAC - AuditBoard #359999</div>
+            <span class="detail-days">5d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Moscone Center — San Francisco, CA</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / AuditBoard</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kathryn Parker</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 19 <span class="countdown-warning">(6d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 23 <span class="countdown-normal">(10d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 26 <span class="countdown-normal">(13d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 23 <span class="countdown-normal">(10d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (2/2)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">RIG</div><div class="crew-role">RIG</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-rsac.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42&quot; Monitors (1) ‎70-80&quot; Monitor *for now, a computer for all 5, <strong>Expectations:</strong> 20x20 booth</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 0)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 25, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 1)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 23, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 2)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 20, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 3)">
+            <div class="email-item-from">K. Barry</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 20, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 4)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 5)">
+            <div class="email-item-from">D. Sonnenberg</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 6)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 7)">
+            <div class="email-item-from">D. Sonnenberg</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 8)">
+            <div class="email-item-from">K. Barry</div>
+            <div class="email-item-subject">RE: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 18, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 9)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 10)">
+            <div class="email-item-from">D. Sonnenberg</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 11)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 12)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 13)">
+            <div class="email-item-from">D. Sonnenberg</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 14)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 15)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 16)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 12, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 17)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 11, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 18)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 10, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 19)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
+            <div class="email-item-date">Feb 10, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 20)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
+            <div class="email-item-date">Feb 9, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 21)">
+            <div class="email-item-from">A. Moss</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
+            <div class="email-item-date">Feb 9, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 22)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
+            <div class="email-item-date">Feb 9, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 23)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
+            <div class="email-item-date">Feb 9, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 25, 2026">Added. Revised attached. Thanks Ashley!</div><div class="email-body-data" data-idx="1" data-from="A. Moss" data-to="K. Barry" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 23, 2026">Please add these 2 iPads and desktop stands.</div><div class="email-body-data" data-idx="2" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 20, 2026">Hi all-<br>If we were to add (2) iPads and desktop stands for these, what would that cost be?</div><div class="email-body-data" data-idx="3" data-from="K. Barry" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 20, 2026">2 ipad Pros with desktop stands would be $700 total<br>Thanks, Kevin</div><div class="email-body-data" data-idx="4" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026">Good morning,<br>Can you please send me the required specs and pixel map for the LED content to share with the client?</div><div class="email-body-data" data-idx="5" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="6" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026">Hi All,<br>I did just receive the below from my team...<br>Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and the stand they&#x27;re using is set to a height of 76&quot; however our design deck shows the height of the monitor at 96&quot;. The design deck shows a screen size of 110&quot; as well . Do we have a spec for that monitor and can we lower it 20&quot; to a 76&quot; centerline?<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="7" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="8" data-from="K. Barry" data-to="A. Moss" data-subject="RE: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026">Pixel maps attached. If they have any questions just let us know.<br>Thanks, Kevin</div><div class="email-body-data" data-idx="9" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need.<br>That said, this is the FUSE LED array .dwg overlayed on the booth for RSAC. It extends past the confine of the booth. We will need to shrink the array by (1) run of tiles.<br>Can you please adjust and send us a new .dwg file?</div><div class="email-body-data" data-idx="10" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">Should we shrink the closet the 6” rather than fully redo the flown led wall?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="11" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="12" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">Disregard, we will make the tweaks to the closet.<br>That said, we do still need an updated dwg with the monitor support details please.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="13" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">Ok, did we get a height for that monitor? I don’t think I saw that yet.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="14" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 12, 2026">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor<br>Ashley Moss</div><div class="email-body-data" data-idx="15" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 12, 2026">Dan,<br>Any chance you have an ETA for getting us an updated dwg with the monitor support details ?</div><div class="email-body-data" data-idx="16" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026">This is approved BTw!<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="17" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 11, 2026">Hi FUSE team-<br>Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so wondering if you all could assist with this? They still won&#x27;t provide a quote until they have this.<br>If so, what additional information do you need me to provide?</div><div class="email-body-data" data-idx="18" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 10, 2026">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed.</div><div class="email-body-data" data-idx="19" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 10, 2026">Missed that mounting gear - one more time- attached.</div><div class="email-body-data" data-idx="20" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ GAM 2026 #205" data-date="Feb 9, 2026">Hi All,<br>This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however.</div><div class="email-body-data" data-idx="21" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 9, 2026">Hi Kathryn and Dan-<br>This one is a go, however, only the LED portion. Again, they plan to use their own monitors.<br>Project 353488.<br>What date can I tell the client that you need AV files for testing purposes for the backwall and overhead canopy?</div><div class="email-body-data" data-idx="22" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 9, 2026">Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :)<br>Date for files depends how much time they want for any needed revisions. Usually 2 weeks before show is standard :)</div><div class="email-body-data" data-idx="23" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ GAM 2026 #205" data-date="Feb 9, 2026">Cancelled out!<br>Sent briskly from my iPhone<br>Kathryn Parker</div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="recmhpSJCbtCUL5Ci" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">USCAP - Leica Biosystems #360524</div>
+            <span class="detail-days">7d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Henry B. Gonzalez Convention Center — San Antonio, TX</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">IMP</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Custom Fab</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 20 <span class="countdown-warning">(7d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 23 <span class="countdown-normal">(10d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 25 <span class="countdown-normal">(12d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 25 <span class="countdown-normal">(12d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (1/1)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 44 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-uscap.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> 1.Basic booth AV – (2) 55 Touch with Mini-PC (2) 43 Non-Touch with stand to flank the sides of the new piece of equipment with Mini-PC, Keyboard and Mice Not sure if we will need PCs for them or if we can use media players or the built in OS on the monitors LED Wall – 7 wide x 4 high LED wall using Alluvision frame.  We discussed 1.55 tiles. Fabric retractor Fabric itself Needs to have a Leica logo on the front. Needs to cover the entire counter and items on top of it. Is this something IXM provides or is this something that comes from the company that does the retractor? Lighting/Laser effect shown in the deck on Page 18 and anything that is associated with that (Truss, Rigging.  Do we provide that?), <strong>Expectations:</strong> https://impactunlimited477-my.sharepoint.com/:p:/g/personal/gjordan_impact-xm_com/IQDtLK5ALISlS45kmm5npHKOATK8m71EZMokSl82XakrVwg?rtime=FPscedhk3kg</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-reader-panel">
+            <div class="email-empty-state">No emails yet</div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="recp7a04etMXiXE7w" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">ASCRS - Bausch &amp; Lomb #360440</div>
+            <span class="detail-days">24d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Walter E. Washington Convention Center — Washington, DC</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / Bausch &amp; Lomb</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 6 <span class="countdown-normal">(24d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 10 <span class="countdown-normal">(28d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 12 <span class="countdown-normal">(30d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 12 <span class="countdown-normal">(30d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (7/7)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">LED2</div><div class="crew-role">LED2</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LoadIn</div><div class="crew-role">LoadIn</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LoadIn</div><div class="crew-role">LoadIn</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LoadIn</div><div class="crew-role">LoadIn</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-ascrs.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor, <strong>Expectations:</strong> </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 0)">
+            <div class="email-item-from">B. Jacocks</div>
+            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
+            <div class="email-item-date">Mar 2, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 1)">
+            <div class="email-item-from">M. Ray</div>
+            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
+            <div class="email-item-date">Mar 2, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 2)">
+            <div class="email-item-from">J. Lipitz</div>
+            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
+            <div class="email-item-date">Mar 2, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="B. Jacocks" data-to="G. Calvanese" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026">Hi Gina,<br>Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan accordingly.</div><div class="email-body-data" data-idx="1" data-from="M. Ray" data-to="B. Jacocks" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026">[@Jason Lipitz](mailto:jlipitz@</div><div class="email-body-data" data-idx="2" data-from="J. Lipitz" data-to="M. Ray" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026">Team:<br>I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams.</div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="recVHqaYbYwOR10kS" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">Modex - Honeywell #360175</div>
+            <span class="detail-days">26d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Georgia World Congress Center — Atlanta, GA</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Honeywell</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 9 <span class="countdown-normal">(27d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 13 <span class="countdown-normal">(31d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 16 <span class="countdown-normal">(34d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 16 <span class="countdown-normal">(34d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (2/2)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">S/S TECH</div><div class="crew-role">S/S TECH</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-modex.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 0)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
+            <div class="email-item-date">Feb 26, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 1)">
+            <div class="email-item-from">A. Cooley</div>
+            <div class="email-item-subject">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
+            <div class="email-item-date">Feb 26, 2026</div>
+        </div>
+        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 2)">
+            <div class="email-item-from">K. Parker</div>
+            <div class="email-item-subject">Quote Request: Honeywell @ Modex 2026 #B12512</div>
+            <div class="email-item-date">Feb 24, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="K. Parker" data-to="A. Thompson" data-subject="Re: Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 26, 2026">Hi all, just wanted to make sure you received this.<br>Thanks!</div><div class="email-body-data" data-idx="1" data-from="A. Cooley" data-to="K. Parker" data-subject="RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 26, 2026">We have received, thank you!<br>When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in sourcing?<br>Thank you!<br>Ali Cooley</div><div class="email-body-data" data-idx="2" data-from="K. Parker" data-to="A. Thompson" data-subject="Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 24, 2026">Ashley and Ali,<br>Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pixel count. We also included local labor on this since this is Atlanta and we’re able to provide.<br>Lastly, in the form below the second link can be utilized for sending us any content you’d like us to review before show site.<br>Please reach out with any questions.</div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="rec424142uv4EMt94" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">PSS - Honeywell EU + META #360177</div>
+            <span class="detail-days">28d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Hilton Istanbul — Istanbul, Turkey</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Honeywell</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 10 <span class="countdown-normal">(28d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 13 <span class="countdown-normal">(31d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 16 <span class="countdown-normal">(34d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 16 <span class="countdown-normal">(34d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (0/0)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="empty-section">No crew assigned</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 44 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-pss.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts, special events, solutions room (very similar to the US&amp;C event), <strong>Expectations:</strong> hopefully partner with the hotel for the AV equipment and looking more for a team to help with the production onsite of the event.</div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-reader-panel">
+            <div class="email-empty-state">No emails yet</div>
+        </div>
+    </div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="recrw32m5ciX8gWbt" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">HRS - Impulse Dynamics #360937</div>
+            <span class="detail-days">38d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-active">Quoted</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">McCormick Place Lakeside Center — Chicago, IL</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">SPX</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span> <span class="service-tag">Audio</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 21 <span class="countdown-normal">(39d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 24 <span class="countdown-normal">(42d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 26 <span class="countdown-normal">(44d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 26 <span class="countdown-normal">(44d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (2/2)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 68 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1%;"></div></div><span class="tp-pct">1%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-hrs.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV, <strong>Expectations:</strong> </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('recrw32m5ciX8gWbt', 0)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</div>
+            <div class="email-item-date">Feb 13, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Impulse Dynamics @ HRS 2026 #" data-date="Feb 13, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360937 - SPX Impulse Dynamics @ HRS 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Impulse Dynamics @ HRS 2026 Client: Sparks<br>End Client: Impulse Dynamics<br>Event Name:HRS 2026<br>Booth Number:<br>Venue: McCormick Place Lakeside Center<br>Venue Address: 2301 S. Lake Shore Drive ,<br>Chicago IL 60616<br>City: Chicago<br>Load In</div>
+        </div>
+    </div>
+
+<div class="detail-view" data-event-id="recq49LuQliCAooZ0" style="display:none;">
+        <div class="detail-header">
+            <button class="back-btn" onclick="backToGrid()">← Back</button>
+            <div class="detail-title">AUA - Novartis #361092</div>
+            <span class="detail-days">58d</span>
+            <div class="badge-group" style="margin-left:auto;">
+                <span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span>
+            </div>
+        </div>
+        <div class="detail-content">
+            <div class="detail-grid">
+                <div class="detail-section">
+        <div class="detail-section-title">Overview</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Walter E. Washington Convention Center — Washington, DC</span></div>
+            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">IMP</span></div>
+            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
+            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Key Dates</div>
+        <div class="detail-grid-content">
+            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">May 12 <span class="countdown-normal">(60d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">May 15 <span class="countdown-normal">(63d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">May 17 <span class="countdown-normal">(65d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">May 17 <span class="countdown-normal">(65d)</span></span></div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Crew (11/11)</div>
+        <div class="detail-grid-content crew-list">
+            <div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LED2</div><div class="crew-role">LED2</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LED2</div><div class="crew-role">LED2</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">LED2</div><div class="crew-role">LED2</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">PM</div><div class="crew-role">PM</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Crew</div><div class="crew-role">Crew</div></div>
+    <span class="crew-status status-empty">Empty</span>
+</div>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Task Progress</div>
+        <div class="detail-grid-content">
+            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <div class="progress-text">0 of 50 tasks complete</div>
+        <div class="task-phases">
+        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
+    </div><a href="tasks-aua.html" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist</a>
+        </div>
+    </div>
+<div class="detail-section">
+        <div class="detail-section-title">Notes & Links</div>
+        <div class="detail-grid-content">
+            <div class="note-item client">
+    <details><summary>Client Notes</summary>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36&#x27; on 2 faces, 11&#x27; on returns (two on each side), 57.6&quot; high (3 tiles) + 2 LED walls (1 one on medical side) + LED squared arch 2 tiles x 1 tile, circular interactive piece, + monitors/nucs, <strong>Expectations:</strong> </div></details>
+</div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
+        </div>
+    </div>
+            </div>
+        </div>
+        <div class="detail-email-section">
+            <div class="email-client">
+        <div class="email-list-sidebar">
+        <div class="email-list-header">Messages</div>
+        <div class="email-list-item" onclick="selectEmail('recq49LuQliCAooZ0', 0)">
+            <div class="email-item-from">Fuse Integrations</div>
+            <div class="email-item-subject">Fuse Form - IMP Novartis @ AUA 2026 #</div>
+            <div class="email-item-date">Feb 17, 2026</div>
+        </div>
+    </div>
+        <div class="email-reader-panel">
+            <div class="email-empty-state">Select an email to read</div>
+        </div>
+    </div>
+    <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="Fuse Exhibits" data-subject="Fuse Form - IMP Novartis @ AUA 2026 #" data-date="Feb 17, 2026">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-19<br>Quote: 361092 - IMP Novartis @ AUA 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: IMP Novartis @ AUA 2026 Client: Impact XM<br>End Client: Novartis<br>Event Name:AUA 2026<br>Booth Number:<br>Venue: Walter E. Washington Convention Center<br>Venue Address: 801 Mt Vernon Place NW ,<br>Washington DC 20001<br>City: Washington<br>Load In</div>
+        </div>
+    </div>
     </div>
     <script>
 
-    function toggleCard(id) {
-        var body = document.getElementById('body-' + id);
-        var icon = document.getElementById('icon-' + id);
-        if (!body) return;
-        if (body.style.display === 'none' || body.style.display === '') {
-            body.style.display = 'block';
-            if (icon) icon.textContent = '\u2212';
-        } else {
-            body.style.display = 'none';
-            if (icon) icon.textContent = '+';
-        }
-    }
+function toggleCard(id) {{
+    var body = document.getElementById('body-' + id);
+    var icon = document.getElementById('icon-' + id);
+    if (!body) return;
+    if (body.style.display === 'none' || body.style.display === '') {{
+        body.style.display = 'block';
+        if (icon) icon.textContent = '\u2212';
+    }} else {{
+        body.style.display = 'none';
+        if (icon) icon.textContent = '+';
+    }}
+}}
 
-    var currentFilter = 'all';
+function navigateToDetail(eventId) {{
+    document.querySelector('.grid-view').style.display = 'none';
+    var views = document.querySelectorAll('.detail-view');
+    for (var i = 0; i < views.length; i++) {{
+        views[i].style.display = views[i].dataset.eventId === eventId ? 'flex' : 'none';
+    }}
+    window.scrollTo(0, 0);
+    var firstItem = document.querySelector('.detail-view[data-event-id="' + eventId + '"] .email-list-item');
+    if (firstItem) firstItem.click();
+}}
 
-    function filterShows(type) {
-        currentFilter = type;
-        var btns = document.querySelectorAll('.filter-btn');
-        for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
-        var activeBtn = document.querySelector('[data-filter="' + type + '"]');
-        if (activeBtn) activeBtn.classList.add('active');
+function backToGrid() {{
+    document.querySelector('.grid-view').style.display = 'block';
+    var views = document.querySelectorAll('.detail-view');
+    for (var i = 0; i < views.length; i++) {{
+        views[i].style.display = 'none';
+    }}
+    window.scrollTo(0, 0);
+}}
 
-        var cards = document.querySelectorAll('.show-card');
-        for (var j = 0; j < cards.length; j++) {
-            var card = cards[j];
-            var show = true;
+function selectEmail(eventId, idx) {{
+    var detail = document.querySelector('.detail-view[data-event-id="' + eventId + '"]');
+    if (!detail) return;
 
-            if (type === 'all') {
-                show = true;
-            } else if (type === 'travel') {
-                show = card.dataset.labor === 'travel';
-            } else if (type === 'remote') {
-                show = card.dataset.labor === 'remote';
-            } else if (type === 'at-risk') {
-                show = parseInt(card.dataset.risk) > 0;
-            } else if (type === 'next14') {
-                show = parseInt(card.dataset.days) <= 14;
-            } else if (type === 'no-crew') {
-                show = card.dataset.crewState === 'none';
-            } else if (type === 'silent') {
-                show = parseInt(card.dataset.emailAge) > 14;
-            }
+    var items = detail.querySelectorAll('.email-list-item');
+    for (var i = 0; i < items.length; i++) {{
+        items[i].classList.toggle('active', i === idx);
+    }}
 
-            // Hide in-progress toggle
-            var hideIP = document.getElementById('hideInProgress');
-            if (show && hideIP && hideIP.checked) {
-                if (card.dataset.status === 'in-progress') show = false;
-            }
+    var dataDiv = detail.querySelector('.email-body-data[data-idx="' + idx + '"]');
+    if (!dataDiv) return;
 
-            // Also apply search filter
-            var searchVal = document.querySelector('.search-input').value.toLowerCase();
-            if (show && searchVal) {
-                var title = card.querySelector('.show-title');
-                var text = title ? title.textContent.toLowerCase() : '';
-                if (text.indexOf(searchVal) === -1) show = false;
-            }
+    var reader = detail.querySelector('.email-reader-panel');
+    reader.innerHTML = '<div class="email-reader-header">' +
+        '<div class="email-reader-from">' + dataDiv.dataset.from + '</div>' +
+        '<div class="email-reader-subject">' + dataDiv.dataset.subject + '</div>' +
+        '<div class="email-reader-meta">' + dataDiv.dataset.from + ' → ' + dataDiv.dataset.to + ' • ' + dataDiv.dataset.date + '</div>' +
+        '</div>' +
+        '<div class="email-reader-body"><div class="email-reader-content">' + dataDiv.innerHTML + '</div></div>';
+}}
 
-            card.style.display = show ? '' : 'none';
-        }
-    }
+var currentFilter = 'all';
 
-    function searchShows(query) {
-        // Re-apply current filter (which also applies search)
-        filterShows(currentFilter);
-    }
+function filterShows(type) {{
+    currentFilter = type;
+    var btns = document.querySelectorAll('.filter-btn');
+    for (var i = 0; i < btns.length; i++) btns[i].classList.remove('active');
+    var activeBtn = document.querySelector('[data-filter="' + type + '"]');
+    if (activeBtn) activeBtn.classList.add('active');
 
-    function sortShows(field) {
-        var grid = document.querySelector('.shows-grid');
-        var cards = Array.prototype.slice.call(grid.querySelectorAll('.show-card'));
+    var cards = document.querySelectorAll('.show-card');
+    for (var j = 0; j < cards.length; j++) {{
+        var card = cards[j];
+        var show = true;
 
-        cards.sort(function(a, b) {
-            if (field === 'risk') {
-                return parseInt(b.dataset.risk) - parseInt(a.dataset.risk);
-            } else if (field === 'date') {
-                return parseInt(a.dataset.days) - parseInt(b.dataset.days);
-            } else if (field === 'email') {
-                return parseInt(b.dataset.emailAge) - parseInt(a.dataset.emailAge);
-            }
-            return 0;
-        });
+        if (type === 'all') {{
+            show = true;
+        }} else if (type === 'travel') {{
+            show = card.dataset.labor === 'travel';
+        }} else if (type === 'remote') {{
+            show = card.dataset.labor === 'remote';
+        }} else if (type === 'at-risk') {{
+            show = parseInt(card.dataset.risk) > 0;
+        }} else if (type === 'next14') {{
+            show = parseInt(card.dataset.days) <= 14;
+        }} else if (type === 'no-crew') {{
+            show = card.dataset.crewState === 'none';
+        }} else if (type === 'silent') {{
+            show = parseInt(card.dataset.emailAge) > 14;
+        }}
 
-        for (var i = 0; i < cards.length; i++) {
-            grid.appendChild(cards[i]);
-        }
-    }
+        var hideIP = document.getElementById('hideInProgress');
+        if (show && hideIP && hideIP.checked) {{
+            if (card.dataset.status === 'in-progress') show = false;
+        }}
 
-    function expandAll() {
-        var cards = document.querySelectorAll('.show-card');
-        for (var i = 0; i < cards.length; i++) {
-            var body = cards[i].querySelector('.card-body');
-            var icon = cards[i].querySelector('.expand-icon');
-            if (body) body.style.display = 'block';
-            if (icon) icon.textContent = '\u2212';
-        }
-    }
+        var searchVal = document.querySelector('.search-input').value.toLowerCase();
+        if (show && searchVal) {{
+            var title = card.querySelector('.show-title');
+            var text = title ? title.textContent.toLowerCase() : '';
+            if (text.indexOf(searchVal) === -1) show = false;
+        }}
 
-    function collapseAll() {
-        var cards = document.querySelectorAll('.show-card');
-        for (var i = 0; i < cards.length; i++) {
-            var body = cards[i].querySelector('.card-body');
-            var icon = cards[i].querySelector('.expand-icon');
-            if (body) body.style.display = 'none';
-            if (icon) icon.textContent = '+';
-        }
-    }
+        card.style.display = show ? '' : 'none';
+    }}
+}}
+
+function searchShows(query) {{
+    filterShows(currentFilter);
+}}
+
+function sortShows(field) {{
+    var grid = document.querySelector('.shows-grid');
+    var cards = Array.from(document.querySelectorAll('.show-card'));
+
+    cards.sort(function(a, b) {{
+        if (field === 'date') {{
+            return parseInt(a.dataset.days) - parseInt(b.dataset.days);
+        }} else if (field === 'risk') {{
+            return parseInt(b.dataset.risk) - parseInt(a.dataset.risk);
+        }} else if (field === 'email') {{
+            return parseInt(b.dataset.emailAge) - parseInt(a.dataset.emailAge);
+        }}
+        return 0;
+    }});
+
+    grid.innerHTML = '';
+    for (var i = 0; i < cards.length; i++) {{
+        grid.appendChild(cards[i]);
+    }}
+}}
 
     </script>
 </body>
