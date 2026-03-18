@@ -1200,6 +1200,198 @@ body {
     font-size: 13px;
 }
 
+/* Archive Section */
+.archive-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 12px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.archive-btn:hover {
+    background: var(--critical);
+    color: white;
+    border-color: var(--critical);
+}
+.archived-section {
+    margin-top: 24px;
+    border-top: 2px solid var(--border);
+    padding-top: 16px;
+}
+.archived-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    padding: 10px 16px;
+    background: var(--bg-alt);
+    border-radius: 8px;
+    transition: background 0.15s;
+}
+.archived-header:hover {
+    background: var(--border);
+}
+.archived-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.archived-toggle {
+    font-size: 16px;
+    color: var(--text-tertiary);
+    font-weight: 700;
+}
+.archived-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+}
+.archived-grid .show-card {
+    opacity: 0.7;
+}
+.archived-grid .show-card:hover {
+    opacity: 1;
+}
+.unarchive-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 4px;
+    margin-left: 8px;
+    transition: all 0.15s;
+}
+.unarchive-btn:hover {
+    background: var(--success);
+    color: white;
+    border-color: var(--success);
+}
+
+/* Per-Show Notes / To-Do */
+.show-notes-area {
+    padding: 4px 0;
+}
+.notes-list {
+    margin-bottom: 8px;
+}
+.note-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+    color: var(--text-primary);
+}
+.note-item:last-child {
+    border-bottom: none;
+}
+.note-checkbox {
+    accent-color: var(--accent);
+    cursor: pointer;
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+.note-text {
+    flex: 1;
+    line-height: 1.4;
+}
+.note-text.completed {
+    text-decoration: line-through;
+    color: var(--text-tertiary);
+}
+.note-delete {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.note-delete:hover {
+    background: var(--critical);
+    color: white;
+}
+.notes-add-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+.notes-input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    outline: none;
+    transition: border 0.15s;
+}
+.notes-input:focus {
+    border-color: var(--accent);
+}
+.notes-add-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 15px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: background 0.15s;
+}
+.notes-add-btn:hover {
+    background: var(--accent-hover);
+}
+.notes-export-btn {
+    display: block;
+    margin-top: 10px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.notes-export-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+.export-all-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: auto;
+    transition: all 0.15s;
+}
+.export-all-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .email-client {
@@ -1327,6 +1519,7 @@ body {
                 <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (7)</button>
                 <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (1)</button>
                 <label class="hide-toggle"><input type="checkbox" id="hideInProgress" onchange="filterShows(currentFilter)"> Hide in-progress</label>
+                <button class="export-all-btn" onclick="exportAllNotes()">Export All Notes</button>
             </div>
             <div class="search-sort-bar">
                 <input type="text" class="search-input" placeholder="Search shows..." oninput="searchShows(this.value)">
@@ -1348,11 +1541,13 @@ body {
     </div>
 
         <div class="grid-view">
-<div class="show-card critical" data-labor="remote" data-risk="5" data-days="-12" data-email-age="27" data-crew-state="ok" data-status="in-progress">
+            <div class="shows-grid" id="active-shows">
+<div class="show-card critical" data-labor="remote" data-risk="5" data-days="-12" data-email-age="27" data-crew-state="ok" data-status="in-progress" data-end-days="9" data-event-id="recBggRLeCvC52Syi">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recBggRLeCvC52Syi'); event.stopPropagation();">CRT - Boston Scientific #359986</div>
             <span class="show-days critical">12d ago</span>
+            <button class="archive-btn" onclick="archiveShow('recBggRLeCvC52Syi'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 6 – 9</span>
@@ -1473,14 +1668,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recBggRLeCvC52Syi">
+            <div class="notes-list" id="notes-list-recBggRLeCvC52Syi"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recBggRLeCvC52Syi" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recBggRLeCvC52Syi')">
+                <button class="notes-add-btn" onclick="addNote('recBggRLeCvC52Syi')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recBggRLeCvC52Syi', 'CRT - Boston Scientific #359986')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="5" data-days="0" data-email-age="21" data-crew-state="ok" data-status="upcoming">
+<div class="show-card critical" data-labor="travel" data-risk="5" data-days="0" data-email-age="21" data-crew-state="ok" data-status="upcoming" data-end-days="-10" data-event-id="rec1hmHTQF3PSBEHZ">
     <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('rec1hmHTQF3PSBEHZ'); event.stopPropagation();">RSAC - AuditBoard #359999</div>
             <span class="show-days critical">0d</span>
+            <button class="archive-btn" onclick="archiveShow('rec1hmHTQF3PSBEHZ'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 18 – 28</span>
@@ -1792,14 +2001,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="rec1hmHTQF3PSBEHZ">
+            <div class="notes-list" id="notes-list-rec1hmHTQF3PSBEHZ"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-rec1hmHTQF3PSBEHZ" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('rec1hmHTQF3PSBEHZ')">
+                <button class="notes-add-btn" onclick="addNote('rec1hmHTQF3PSBEHZ')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('rec1hmHTQF3PSBEHZ', 'RSAC - AuditBoard #359999')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="2" data-email-age="999" data-crew-state="ok" data-status="upcoming">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="2" data-email-age="999" data-crew-state="ok" data-status="upcoming" data-end-days="-8" data-event-id="recmhpSJCbtCUL5Ci">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recmhpSJCbtCUL5Ci'); event.stopPropagation();">USCAP - Leica Biosystems #360524</div>
             <span class="show-days critical">2d</span>
+            <button class="archive-btn" onclick="archiveShow('recmhpSJCbtCUL5Ci'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Mar 20 – 26</span>
@@ -1865,14 +2088,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recmhpSJCbtCUL5Ci">
+            <div class="notes-list" id="notes-list-recmhpSJCbtCUL5Ci"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recmhpSJCbtCUL5Ci" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recmhpSJCbtCUL5Ci')">
+                <button class="notes-add-btn" onclick="addNote('recmhpSJCbtCUL5Ci')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recmhpSJCbtCUL5Ci', 'USCAP - Leica Biosystems #360524')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="19" data-email-age="16" data-crew-state="ok" data-status="upcoming">
+<div class="show-card normal" data-labor="travel" data-risk="2" data-days="19" data-email-age="16" data-crew-state="ok" data-status="upcoming" data-end-days="-28" data-event-id="recp7a04etMXiXE7w">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recp7a04etMXiXE7w'); event.stopPropagation();">ASCRS - Bausch &amp; Lomb #360440</div>
             <span class="show-days normal">19d</span>
+            <button class="archive-btn" onclick="archiveShow('recp7a04etMXiXE7w'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 6 – 15</span>
@@ -1990,14 +2227,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recp7a04etMXiXE7w">
+            <div class="notes-list" id="notes-list-recp7a04etMXiXE7w"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recp7a04etMXiXE7w" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recp7a04etMXiXE7w')">
+                <button class="notes-add-btn" onclick="addNote('recp7a04etMXiXE7w')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recp7a04etMXiXE7w', 'ASCRS - Bausch &amp; Lomb #360440')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="21" data-email-age="20" data-crew-state="ok" data-status="upcoming">
+<div class="show-card normal" data-labor="travel" data-risk="2" data-days="21" data-email-age="20" data-crew-state="ok" data-status="upcoming" data-end-days="-30" data-event-id="recVHqaYbYwOR10kS">
     <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recVHqaYbYwOR10kS'); event.stopPropagation();">Modex - Honeywell #360175</div>
             <span class="show-days normal">21d</span>
+            <button class="archive-btn" onclick="archiveShow('recVHqaYbYwOR10kS'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 8 – 17</span>
@@ -2095,14 +2346,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recVHqaYbYwOR10kS">
+            <div class="notes-list" id="notes-list-recVHqaYbYwOR10kS"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recVHqaYbYwOR10kS" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recVHqaYbYwOR10kS')">
+                <button class="notes-add-btn" onclick="addNote('recVHqaYbYwOR10kS')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recVHqaYbYwOR10kS', 'Modex - Honeywell #360175')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="23" data-email-age="999" data-crew-state="none" data-status="upcoming">
+<div class="show-card critical" data-labor="travel" data-risk="3" data-days="23" data-email-age="999" data-crew-state="none" data-status="upcoming" data-end-days="-29" data-event-id="rec424142uv4EMt94">
     <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('rec424142uv4EMt94'); event.stopPropagation();">PSS - Honeywell EU + META #360177</div>
             <span class="show-days normal">23d</span>
+            <button class="archive-btn" onclick="archiveShow('rec424142uv4EMt94'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 10 – 16</span>
@@ -2164,14 +2429,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="rec424142uv4EMt94">
+            <div class="notes-list" id="notes-list-rec424142uv4EMt94"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-rec424142uv4EMt94" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('rec424142uv4EMt94')">
+                <button class="notes-add-btn" onclick="addNote('rec424142uv4EMt94')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('rec424142uv4EMt94', 'PSS - Honeywell EU + META #360177')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="33" data-email-age="33" data-crew-state="ok" data-status="upcoming">
+<div class="show-card normal" data-labor="travel" data-risk="2" data-days="33" data-email-age="33" data-crew-state="ok" data-status="upcoming" data-end-days="-40" data-event-id="recrw32m5ciX8gWbt">
     <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recrw32m5ciX8gWbt'); event.stopPropagation();">HRS - Impulse Dynamics #360937</div>
             <span class="show-days normal">33d</span>
+            <button class="archive-btn" onclick="archiveShow('recrw32m5ciX8gWbt'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 20 – 27</span>
@@ -2249,14 +2528,28 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recrw32m5ciX8gWbt">
+            <div class="notes-list" id="notes-list-recrw32m5ciX8gWbt"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recrw32m5ciX8gWbt" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recrw32m5ciX8gWbt')">
+                <button class="notes-add-btn" onclick="addNote('recrw32m5ciX8gWbt')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recrw32m5ciX8gWbt', 'HRS - Impulse Dynamics #360937')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
-<div class="show-card warning" data-labor="travel" data-risk="3" data-days="53" data-email-age="29" data-crew-state="pencilled" data-status="upcoming">
+<div class="show-card warning" data-labor="travel" data-risk="3" data-days="53" data-email-age="29" data-crew-state="pencilled" data-status="upcoming" data-end-days="-61" data-event-id="recq49LuQliCAooZ0">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recq49LuQliCAooZ0'); event.stopPropagation();">AUA - Novartis #361092</div>
             <span class="show-days normal">53d</span>
+            <button class="archive-btn" onclick="archiveShow('recq49LuQliCAooZ0'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">May 10 – 18</span>
@@ -2346,8 +2639,29 @@ body {
 </div>
 <div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
+        <details class="accordion-section" open>
+    <summary>My Notes / To-Do</summary>
+    <div class="accordion-content">
+        <div class="show-notes-area" data-event-id="recq49LuQliCAooZ0">
+            <div class="notes-list" id="notes-list-recq49LuQliCAooZ0"></div>
+            <div class="notes-add-row">
+                <input type="text" class="notes-input" id="notes-input-recq49LuQliCAooZ0" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recq49LuQliCAooZ0')">
+                <button class="notes-add-btn" onclick="addNote('recq49LuQliCAooZ0')">+</button>
+            </div>
+            <button class="notes-export-btn" onclick="exportNotesFile('recq49LuQliCAooZ0', 'AUA - Novartis #361092')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
+            </div>
+            <div class="archived-section" id="archived-section" style="display:none;">
+                <div class="archived-header" onclick="toggleArchivedSection()">
+                    <span class="archived-title">Archived Shows (<span id="archived-count">0</span>)</span>
+                    <span class="archived-toggle" id="archived-toggle-icon">+</span>
+                </div>
+                <div class="archived-grid" id="archived-grid" style="display:none;"></div>
+            </div>
         </div>
 
 <div class="detail-view" data-event-id="recBggRLeCvC52Syi" style="display:none;">
@@ -3214,7 +3528,7 @@ function filterShows(type) {{
     var activeBtn = document.querySelector('[data-filter="' + type + '"]');
     if (activeBtn) activeBtn.classList.add('active');
 
-    var cards = document.querySelectorAll('.show-card');
+    var cards = document.querySelectorAll('#active-shows .show-card');
     for (var j = 0; j < cards.length; j++) {{
         var card = cards[j];
         var show = true;
@@ -3275,6 +3589,271 @@ function sortShows(field) {{
         grid.appendChild(cards[i]);
     }}
 }}
+
+// ═══ localStorage helpers ═══
+function getStored(key, fallback) {{
+    try {{ return JSON.parse(localStorage.getItem(key)) || fallback; }} catch(e) {{ return fallback; }}
+}}
+function setStored(key, val) {{
+    try {{ localStorage.setItem(key, JSON.stringify(val)); }} catch(e) {{}}
+}}
+
+// ═══ Archive logic ═══
+var archivedIds = getStored('dashboard_archived', []);
+
+function archiveShow(eventId) {{
+    if (archivedIds.indexOf(eventId) === -1) {{
+        archivedIds.push(eventId);
+        setStored('dashboard_archived', archivedIds);
+    }}
+    applyArchiveState();
+}}
+
+function unarchiveShow(eventId) {{
+    archivedIds = archivedIds.filter(function(id) {{ return id !== eventId; }});
+    setStored('dashboard_archived', archivedIds);
+    applyArchiveState();
+}}
+
+function applyArchiveState() {{
+    var activeGrid = document.getElementById('active-shows');
+    var archivedGrid = document.getElementById('archived-grid');
+    var archivedSection = document.getElementById('archived-section');
+    var archivedCount = document.getElementById('archived-count');
+    if (!activeGrid || !archivedGrid) return;
+
+    var allCards = document.querySelectorAll('.show-card');
+    var archiveCount = 0;
+
+    for (var i = 0; i < allCards.length; i++) {{
+        var card = allCards[i];
+        var eventId = card.dataset.eventId;
+        var endDays = parseInt(card.dataset.endDays);
+        var isAutoArchived = endDays >= 14;
+        var isManualArchived = archivedIds.indexOf(eventId) !== -1;
+        var isArchived = isAutoArchived || isManualArchived;
+
+        if (isArchived) {{
+            archivedGrid.appendChild(card);
+            archiveCount++;
+            // Swap archive btn for unarchive btn
+            var archBtn = card.querySelector('.archive-btn');
+            if (archBtn && !card.querySelector('.unarchive-btn')) {{
+                var unBtn = document.createElement('button');
+                unBtn.className = 'unarchive-btn';
+                unBtn.textContent = 'Restore';
+                unBtn.title = 'Restore to active shows';
+                unBtn.onclick = function(eid) {{
+                    return function(e) {{
+                        e.stopPropagation();
+                        unarchiveShow(eid);
+                    }};
+                }}(eventId);
+                archBtn.parentNode.replaceChild(unBtn, archBtn);
+            }}
+        }} else {{
+            activeGrid.appendChild(card);
+            // Make sure it has archive btn
+            var unBtn = card.querySelector('.unarchive-btn');
+            if (unBtn) {{
+                var archBtn2 = document.createElement('button');
+                archBtn2.className = 'archive-btn';
+                archBtn2.innerHTML = '&#x2715;';
+                archBtn2.title = 'Archive this show';
+                archBtn2.onclick = function(eid) {{
+                    return function(e) {{
+                        e.stopPropagation();
+                        archiveShow(eid);
+                    }};
+                }}(eventId);
+                unBtn.parentNode.replaceChild(archBtn2, unBtn);
+            }}
+        }}
+    }}
+
+    if (archiveCount > 0) {{
+        archivedSection.style.display = 'block';
+        archivedCount.textContent = archiveCount;
+    }} else {{
+        archivedSection.style.display = 'none';
+    }}
+}}
+
+function toggleArchivedSection() {{
+    var grid = document.getElementById('archived-grid');
+    var icon = document.getElementById('archived-toggle-icon');
+    if (grid.style.display === 'none') {{
+        grid.style.display = 'grid';
+        icon.textContent = '\u2212';
+    }} else {{
+        grid.style.display = 'none';
+        icon.textContent = '+';
+    }}
+}}
+
+// ═══ Per-show notes/to-do ═══
+function getShowNotes(eventId) {{
+    var all = getStored('dashboard_notes', {{}});
+    return all[eventId] || [];
+}}
+
+function saveShowNotes(eventId, notes) {{
+    var all = getStored('dashboard_notes', {{}});
+    all[eventId] = notes;
+    setStored('dashboard_notes', all);
+}}
+
+function renderNotes(eventId) {{
+    var list = document.getElementById('notes-list-' + eventId);
+    if (!list) return;
+    var notes = getShowNotes(eventId);
+    list.innerHTML = '';
+    for (var i = 0; i < notes.length; i++) {{
+        var note = notes[i];
+        var div = document.createElement('div');
+        div.className = 'note-item';
+
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.className = 'note-checkbox';
+        cb.checked = note.done;
+        cb.onchange = (function(eid, idx) {{
+            return function() {{ toggleNote(eid, idx); }};
+        }})(eventId, i);
+
+        var span = document.createElement('span');
+        span.className = 'note-text' + (note.done ? ' completed' : '');
+        span.textContent = note.text;
+
+        var del = document.createElement('button');
+        del.className = 'note-delete';
+        del.innerHTML = '&#x2715;';
+        del.onclick = (function(eid, idx) {{
+            return function() {{ deleteNote(eid, idx); }};
+        }})(eventId, i);
+
+        div.appendChild(cb);
+        div.appendChild(span);
+        div.appendChild(del);
+        list.appendChild(div);
+    }}
+}}
+
+function addNote(eventId) {{
+    var input = document.getElementById('notes-input-' + eventId);
+    if (!input || !input.value.trim()) return;
+    var notes = getShowNotes(eventId);
+    notes.push({{ text: input.value.trim(), done: false, created: new Date().toISOString() }});
+    saveShowNotes(eventId, notes);
+    input.value = '';
+    renderNotes(eventId);
+}}
+
+function toggleNote(eventId, idx) {{
+    var notes = getShowNotes(eventId);
+    if (notes[idx]) {{
+        notes[idx].done = !notes[idx].done;
+        saveShowNotes(eventId, notes);
+        renderNotes(eventId);
+    }}
+}}
+
+function deleteNote(eventId, idx) {{
+    var notes = getShowNotes(eventId);
+    notes.splice(idx, 1);
+    saveShowNotes(eventId, notes);
+    renderNotes(eventId);
+}}
+
+function exportNotesFile(eventId, showName) {{
+    var notes = getShowNotes(eventId);
+    if (notes.length === 0) {{
+        alert('No notes to export for ' + showName);
+        return;
+    }}
+    var md = '# ' + showName + ' — Notes & To-Do\n\n';
+    var pending = notes.filter(function(n) {{ return !n.done; }});
+    var done = notes.filter(function(n) {{ return n.done; }});
+    if (pending.length > 0) {{
+        md += '## Open\n\n';
+        for (var i = 0; i < pending.length; i++) {{
+            md += '- [ ] ' + pending[i].text + '\n';
+        }}
+        md += '\n';
+    }}
+    if (done.length > 0) {{
+        md += '## Completed\n\n';
+        for (var j = 0; j < done.length; j++) {{
+            md += '- [x] ' + done[j].text + '\n';
+        }}
+        md += '\n';
+    }}
+    md += '---\n*Exported: ' + new Date().toLocaleString() + '*\n';
+
+    var blob = new Blob([md], {{ type: 'text/markdown' }});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    // Sanitize show name for filename
+    var safeName = showName.replace(/[^a-zA-Z0-9 _-]/g, '').replace(/\s+/g, '-');
+    a.download = safeName + '-notes.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}}
+
+function exportAllNotes() {{
+    var allNotes = getStored('dashboard_notes', {{}});
+    var keys = Object.keys(allNotes);
+    if (keys.length === 0) {{
+        alert('No notes to export.');
+        return;
+    }}
+    // Build a combined markdown file
+    var md = '# Show Dashboard — All Notes\n\n';
+    md += '*Exported: ' + new Date().toLocaleString() + '*\n\n';
+    var showNames = {{}};
+    var cards = document.querySelectorAll('.show-card');
+    for (var i = 0; i < cards.length; i++) {{
+        var eid = cards[i].dataset.eventId;
+        var title = cards[i].querySelector('.show-title');
+        if (title) showNames[eid] = title.textContent;
+    }}
+    for (var k = 0; k < keys.length; k++) {{
+        var eventId = keys[k];
+        var notes = allNotes[eventId];
+        if (notes.length === 0) continue;
+        var name = showNames[eventId] || eventId;
+        md += '## ' + name + '\n\n';
+        for (var n = 0; n < notes.length; n++) {{
+            var prefix = notes[n].done ? '- [x] ' : '- [ ] ';
+            md += prefix + notes[n].text + '\n';
+        }}
+        md += '\n';
+    }}
+
+    var blob = new Blob([md], {{ type: 'text/markdown' }});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'all-show-notes.md';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}}
+
+// ═══ Init on page load ═══
+document.addEventListener('DOMContentLoaded', function() {{
+    // Apply archive state
+    applyArchiveState();
+    // Render saved notes for all shows
+    var noteAreas = document.querySelectorAll('.show-notes-area');
+    for (var i = 0; i < noteAreas.length; i++) {{
+        renderNotes(noteAreas[i].dataset.eventId);
+    }}
+}});
 
     </script>
 </body>
