@@ -2447,6 +2447,13 @@ body {
 </div>
 
             </div>
+<div class="archived-section" id="archived-section" style="display:none;">
+  <div class="archived-header" onclick="toggleArchivedSection()">
+    <span class="archived-title">Archived Shows (<span id="archived-count">0</span>)</span>
+    <span class="archived-toggle" id="archived-toggle-icon">+</span>
+  </div>
+  <div class="archived-grid" id="archived-grid" style="display:none;"></div>
+</div>
         </div>
     </div>
     <script>
@@ -2616,7 +2623,7 @@ function applyArchiveState() {
         var card = allCards[i];
         var eventId = card.dataset.eventId;
         var endDays = parseInt(card.dataset.endDays);
-        var isAutoArchived = endDays >= 14;
+        var isAutoArchived = endDays <= -14;
         var isManualArchived = archivedIds.indexOf(eventId) !== -1;
         var isArchived = isAutoArchived || isManualArchived;
 
