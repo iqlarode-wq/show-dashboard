@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Show Operations Dashboard</title>
     <style>
+
 /* ═══ V3 Dashboard CSS — Light Modern Theme ═══ */
 :root {
     --bg-page: #e8e0d4;
@@ -1200,6 +1201,137 @@ body {
     font-size: 13px;
 }
 
+/* Task Checklist */
+.task-checklist {
+    margin-top: 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--bg-page);
+}
+.task-checklist-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-alt);
+    border-bottom: 1px solid var(--border);
+}
+.task-checklist-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.task-check-all-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+.task-check-all-btn:hover {
+    background: var(--accent-hover);
+}
+.task-checklist-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 13px;
+}
+.task-checklist-item:last-of-type {
+    border-bottom: none;
+}
+.task-status-select {
+    padding: 3px 4px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 11px;
+    background: var(--bg-surface);
+    color: var(--text-secondary);
+    cursor: pointer;
+    min-width: 95px;
+    flex-shrink: 0;
+}
+.task-status-select:focus {
+    border-color: var(--accent);
+    outline: none;
+}
+.task-status-select.dirty {
+    border-color: var(--warning);
+    background: #fdf6ee;
+}
+.task-checklist-name {
+    flex: 1;
+    color: var(--text-primary);
+    line-height: 1.3;
+}
+.task-checklist-due {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.task-due-past {
+    color: var(--critical);
+    font-weight: 600;
+}
+.task-due-soon {
+    color: var(--warning);
+    font-weight: 600;
+}
+.task-push-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--bg-alt);
+    border-top: 1px solid var(--border);
+}
+.task-push-count {
+    font-size: 12px;
+    color: var(--warning);
+    font-weight: 600;
+}
+.task-push-btn {
+    background: var(--success);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s;
+}
+.task-push-btn:hover {
+    background: #4a7a5d;
+}
+.task-push-btn.pushing {
+    opacity: 0.6;
+    cursor: wait;
+}
+.task-push-result {
+    font-size: 12px;
+    padding: 6px 12px;
+    border-top: 1px solid var(--border);
+}
+.task-push-result.success {
+    color: var(--success);
+    background: #f0f7f2;
+}
+.task-push-result.error {
+    color: var(--critical);
+    background: #fdf0f0;
+}
+
 /* Archive Section */
 .archive-btn {
     background: none;
@@ -1477,25 +1609,30 @@ body {
     }
 }
 
+    
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>Show Operations Dashboard</h1>
-            <div class="header-meta">Generated: March 18, 2026</div>
+            <div class="header-meta">Updated: Mar 19, 2026 • 06:06 PM</div>
             <div class="header-stats">
                 <div class="stat-box">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label">Next 14d</div>
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">Total Shows</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">Active</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">Travel</div>
                 </div>
                 <div class="stat-box stat-alert">
-                    <div class="stat-value">8</div>
+                    <div class="stat-value">7</div>
                     <div class="stat-label">At Risk</div>
-                </div>
-                <div class="stat-box stat-warn">
-                    <div class="stat-value">6</div>
-                    <div class="stat-label">Silent</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-value">1</div>
@@ -1505,20 +1642,15 @@ body {
                     <div class="stat-value">1</div>
                     <div class="stat-label">Pencilled</div>
                 </div>
-                <div class="stat-box">
-                    <div class="stat-value">1%</div>
-                    <div class="stat-label">Tasks Med.</div>
-                </div>
             </div>
             <div class="filter-bar">
                 <button class="filter-btn active" data-filter="all" onclick="filterShows('all')">All (8)</button>
-                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (8)</button>
+                <button class="filter-btn" data-filter="at-risk" onclick="filterShows('at-risk')">At Risk (7)</button>
                 <button class="filter-btn" data-filter="next14" onclick="filterShows('next14')">Next 14d</button>
                 <button class="filter-btn" data-filter="no-crew" onclick="filterShows('no-crew')">No Crew</button>
-                <button class="filter-btn" data-filter="silent" onclick="filterShows('silent')">Silent</button>
-                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (7)</button>
-                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (1)</button>
-                <label class="hide-toggle"><input type="checkbox" id="hideInProgress" onchange="filterShows(currentFilter)"> Hide in-progress</label>
+                <button class="filter-btn" data-filter="travel" onclick="filterShows('travel')">Travel (5)</button>
+                <button class="filter-btn" data-filter="remote" onclick="filterShows('remote')">Remote (3)</button>
+                <label class="hide-toggle"><input type="checkbox" id="hideInProgress" onchange="filterShows(currentFilter)"> Hide past</label>
                 <button class="export-all-btn" onclick="exportAllNotes()">Export All Notes</button>
             </div>
             <div class="search-sort-bar">
@@ -1532,25 +1664,23 @@ body {
         </div>
 
     <div class="alert-banner">
-        <div class="alert-title">!! CRITICAL: High Priority Shows Starting This Week</div>
+        <div class="alert-title">!! CRITICAL: Urgent Shows Starting Soon</div>
         <div class="alert-content">
-        <div class="alert-item"><strong>CRT - Boston Scientific #359986:</strong> Starts Mar 06 (-12 days) — Tasks 0% complete (0 of 50 tasks)</div>
-        <div class="alert-item"><strong>RSAC - AuditBoard #359999:</strong> Starts Mar 18 (0 days) — Tasks 1% complete (0 of 50 tasks)</div>
-        <div class="alert-item"><strong>USCAP - Leica Biosystems #360524:</strong> Starts Mar 20 (2 days) — Tasks 1% complete (0 of 44 tasks)</div>
+        <div class="alert-item"><strong>RSAC - AuditBoard #359999:</strong> Load-in TODAY — Tasks 0% complete (0 of 50 tasks)</div><div class="alert-item"><strong>USCAP - Leica Biosystems #361146:</strong> Load-in 1d — Tasks 0% complete (0 of 44 tasks)</div>
         </div>
     </div>
 
         <div class="grid-view">
             <div class="shows-grid" id="active-shows">
-<div class="show-card critical" data-labor="remote" data-risk="5" data-days="-12" data-email-age="27" data-crew-state="ok" data-status="in-progress" data-end-days="9" data-event-id="recBggRLeCvC52Syi">
+<div class="show-card critical" data-labor="remote" data-risk="5" data-days="-13" data-email-age="27" data-crew-state="ok" data-status="upcoming" data-end-days="-10" data-event-id="recBggRLeCvC52Syi">
     <div class="card-header" onclick="toggleCard('recBggRLeCvC52Syi')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recBggRLeCvC52Syi'); event.stopPropagation();">CRT - Boston Scientific #359986</div>
-            <span class="show-days critical">12d ago</span>
+            <span class="show-days critical">13d ago</span>
             <button class="archive-btn" onclick="archiveShow('recBggRLeCvC52Syi'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Mar 6 – 9</span>
+            <span class="show-date">Mar 06 – 9</span>
             <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
         <div class="risk-chips"><span class="chip chip-warning">Thread silent 27d</span> <span class="chip chip-critical">Tasks 0%</span></div>
@@ -1560,27 +1690,27 @@ body {
     <div class="card-body" id="body-recBggRLeCvC52Syi" style="display:none;">
         <div class="next-action-bar next-action-warning">
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 27 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in -12 days, tasks barely started (&lt;0% complete)</div>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show started 13 days ago, tasks incomplete (0%)</div>
 </div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">The Washington Hilton — Washington, DC</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / Boston Scientific</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">The Washington Hilton — Washington, DC 20009</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX / Boston Scientific</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 6 <span class='countdown-warning'>(12d ago)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 7 <span class='countdown-warning'>(11d ago)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 9 <span class='countdown-warning'>(9d ago)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 9 <span class='countdown-warning'>(9d ago)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Mar 06 <span class='countdown-critical'>(-13d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Mar 07 <span class='countdown-warning'>(-12d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Mar 09 <span class='countdown-normal'>(-10d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Mar 09 <span class='countdown-normal'>(-10d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (2)</summary>
@@ -1591,82 +1721,35 @@ body {
 <div class="crew-member">
     <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (0% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0%;">0%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 50 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 50 tasks complete</div>
         <div class="task-phases">
     <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
     <summary>Emails (5)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 19, 2026 (27d ago) &bull; 5 messages</div>
-
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</span>
-    <span class="email-msg-date">Feb 19, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kevin Barry<br>Quote Needed By<br>2026-02-19<br>Quote: 361184 - SPX Boston Scientific @ OEIS 2026 407<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ OEIS 2026 407<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:OEIS 2026<br>Booth Number: 407<br>Venue: Caesars Palace<br>Venue Address: 3570 S Las Vegas Blvd ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ ACC 2026 #</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-20<br>Quote: 361165 - SPX Boston Scientific @ ACC 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ACC 2026 Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ACC 2026<br>Booth Number:<br>Venue: New Orleans Ernest N. Morial Convention Center<br>Venue Address: 900 Convention Center Blvd ,<br>New Orleans Louisiana 70130<br>City: New Orleans<br>Load In</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</span>
-    <span class="email-msg-date">Feb 13, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360941 - SPX Boston Scientific @ ASMBS 2026 1205<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ASMBS 2026 1205<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ASMBS 2026<br>Booth Number: 1205<br>Venue: Henry B. Gonzalez Convention Center<br>Venue Address: 900 E. Market St. ,<br>San Antonio TX 78205<br>City: San Antonio<br>Load In</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-14<br>Quote: 360877 - SPX Boston Scientific @ AACE 2026 914<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ AACE 2026 914<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:AACE 2026<br>Booth Number: 914<br>Venue: Caesars Forum<br>Venue Address: 3911 S Koval Ln ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; Z. Dicker</div>
-    <div class="email-msg-content">Zayna,<br>Quote attached. Please look it over and let us know if you have any questions.</div>
-</div>
-</details></div></div>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 27d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> <strong>BOOTH:</strong> (3) 55&quot; Monitors - Plinths, (2) 65&quot; Monitors - IVUS &amp; Hospitality, (3) Monitors for Monitor Arms, (8) NUCS, Install &amp; Dismantle Labor   <strong>TECH SUITE:</strong> (6) 55&quot; Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS, <strong>Expectations:</strong> Katelyn Wann - kwann@wearesparks.com + countertop monitor adds </div></details>
+    <div class="note-content"><strong>Needs:</strong> (3) 55" Monitors - Plinths, (2) 65" Monitors - IVUS & Hospitality, (3) Monitors for Monitor Arms, (8) NUCS... TECH SUITE: (6) 55" Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -1684,322 +1767,84 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="5" data-days="0" data-email-age="21" data-crew-state="ok" data-status="upcoming" data-end-days="-10" data-event-id="rec1hmHTQF3PSBEHZ">
+<div class="show-card critical" data-labor="travel" data-risk="5" data-days="0" data-email-age="21" data-crew-state="ok" data-status="upcoming" data-end-days="7" data-event-id="rec1hmHTQF3PSBEHZ">
     <div class="card-header" onclick="toggleCard('rec1hmHTQF3PSBEHZ')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('rec1hmHTQF3PSBEHZ'); event.stopPropagation();">RSAC - AuditBoard #359999</div>
-            <span class="show-days critical">0d</span>
+            <span class="show-days critical">TODAY</span>
             <button class="archive-btn" onclick="archiveShow('rec1hmHTQF3PSBEHZ'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Mar 18 – 28</span>
+            <span class="show-date">Mar 19 – 26</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 21d</span> <span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 21d</span> <span class="chip chip-critical">Tasks 0%</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Follow up — thread silent 21 days</div>
         <span class="expand-icon" id="icon-rec1hmHTQF3PSBEHZ">+</span>
     </div>
     <div class="card-body" id="body-rec1hmHTQF3PSBEHZ" style="display:none;">
         <div class="next-action-bar next-action-warning">
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 21 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 0 days, tasks barely started (&lt;1% complete)</div>
+    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show started 0 days ago, tasks incomplete (0%)</div>
 </div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Moscone Center — San Francisco, CA</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / AuditBoard</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Moscone Center — San Francisco, CA 94103</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX / AuditBoard</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kathryn Parker</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-critical'>(1d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-warning'>(5d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(8d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-warning'>(5d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Mar 19 <span class='countdown-warning'>(+0d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-warning'>(+4d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Mar 26 <span class='countdown-normal'>(+7d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Mar 23 <span class='countdown-normal'>(+4d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Michael  Mathews</div><div class="crew-role">Production Rigger</div></div>
+    <div><div class="crew-name">Michael Mathews</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 50 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 50 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.6%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (24)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 25, 2026 (21d ago) &bull; 24 messages</div>
-
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 25, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
-    <div class="email-msg-content">Added. Revised attached. Thanks Ashley!</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 23, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Barry</div>
-    <div class="email-msg-content">Please add these 2 iPads and desktop stands.</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 20, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Hi all-<br>If we were to add (2) iPads and desktop stands for these, what would that cost be?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Barry</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 20, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Barry &rarr; A. Moss</div>
-    <div class="email-msg-content">2 ipad Pros with desktop stands would be $700 total<br>Thanks, Kevin</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Good morning,<br>Can you please send me the required specs and pixel map for the LED content to share with the client?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">D. Sonnenberg</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
-    <div class="email-msg-content">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
-    <div class="email-msg-content">Hi All,<br>I did just receive the below from my team...<br>Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and the stand they&#x27;re using is set to a height of 76&quot; however our design deck shows the height of the monitor at 96&quot;. The design deck shows a screen size of 110&quot; as well . Do we have a spec for that monitor and can we lower it 20&quot; to a 76&quot; centerline?<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">D. Sonnenberg</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
-    <div class="email-msg-content">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Barry</span>
-    <span class="email-msg-subject">RE: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 18, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Barry &rarr; A. Moss</div>
-    <div class="email-msg-content">Pixel maps attached. If they have any questions just let us know.<br>Thanks, Kevin</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need.<br>That said, this is the FUSE LED array .dwg overlayed on the booth for RSAC. It extends past the confine of the booth. We will need to shrink the array by (1) run of tiles.<br>Can you please adjust and send us a new .dwg file?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">D. Sonnenberg</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
-    <div class="email-msg-content">Should we shrink the closet the 6” rather than fully redo the flown led wall?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
-    <div class="email-msg-content">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
-    <div class="email-msg-content">Disregard, we will make the tweaks to the closet.<br>That said, we do still need an updated dwg with the monitor support details please.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">D. Sonnenberg</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">D. Sonnenberg &rarr; A. Moss</div>
-    <div class="email-msg-content">Ok, did we get a height for that monitor? I don’t think I saw that yet.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
-    <div class="email-msg-content">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor<br>Ashley Moss</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; D. Sonnenberg</div>
-    <div class="email-msg-content">Dan,<br>Any chance you have an ETA for getting us an updated dwg with the monitor support details ?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 12, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">This is approved BTw!<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 11, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Hi FUSE team-<br>Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so wondering if you all could assist with this? They still won&#x27;t provide a quote until they have this.<br>If so, what additional information do you need me to provide?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 10, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
-    <div class="email-msg-content">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed.</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</span>
-    <span class="email-msg-date">Feb 10, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
-    <div class="email-msg-content">Missed that mounting gear - one more time- attached.</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</span>
-    <span class="email-msg-date">Feb 9, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Hi All,<br>This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however.</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Moss</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
-    <span class="email-msg-date">Feb 9, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Moss &rarr; K. Parker</div>
-    <div class="email-msg-content">Hi Kathryn and Dan-<br>This one is a go, however, only the LED portion. Again, they plan to use their own monitors.<br>Project 353488.<br>What date can I tell the client that you need AV files for testing purposes for the backwall and overhead canopy?</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </span>
-    <span class="email-msg-date">Feb 9, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
-    <div class="email-msg-content">Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :)<br>Date for files depends how much time they want for any needed revisions. Usually 2 weeks before show is standard :)</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</span>
-    <span class="email-msg-date">Feb 9, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Moss</div>
-    <div class="email-msg-content">Cancelled out!<br>Sent briskly from my iPhone<br>Kathryn Parker</div>
-</div>
-</details></div></div>
+    <summary>Emails (45)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 21d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42&quot; Monitors (1) ‎70-80&quot; Monitor *for now, a computer for all 5, <strong>Expectations:</strong> 20x20 booth</div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42" Monitors (1) 70-80" Monitor, computer for all 5. 20x20 booth</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2017,76 +1862,80 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="2" data-email-age="999" data-crew-state="ok" data-status="upcoming" data-end-days="-8" data-event-id="recmhpSJCbtCUL5Ci">
+<div class="show-card critical" data-labor="travel" data-risk="4" data-days="1" data-email-age="999" data-crew-state="ok" data-status="upcoming" data-end-days="6" data-event-id="recmhpSJCbtCUL5Ci">
     <div class="card-header" onclick="toggleCard('recmhpSJCbtCUL5Ci')">
         <div class="card-header-top">
-            <div class="show-title" onclick="navigateToDetail('recmhpSJCbtCUL5Ci'); event.stopPropagation();">USCAP - Leica Biosystems #360524</div>
-            <span class="show-days critical">2d</span>
+            <div class="show-title" onclick="navigateToDetail('recmhpSJCbtCUL5Ci'); event.stopPropagation();">USCAP - Leica Biosystems #361146</div>
+            <span class="show-days critical">1d</span>
             <button class="archive-btn" onclick="archiveShow('recmhpSJCbtCUL5Ci'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Mar 20 – 26</span>
+            <span class="show-date">Mar 20 – 25</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Start task checklist</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 0%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Complete pre-show tasks (0/44)</div>
         <span class="expand-icon" id="icon-recmhpSJCbtCUL5Ci">+</span>
     </div>
     <div class="card-body" id="body-recmhpSJCbtCUL5Ci" style="display:none;">
         <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Start task checklist</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Complete pre-show tasks (0/44)</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> Show starts in 2 days, tasks barely started (&lt;1% complete)</div>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Load-in in 1 days, only 0% tasks complete</div>
 </div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Henry B. Gonzalez Convention Center — San Antonio, TX</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Henry B. Gonzalez Convention Center — San Antonio, TX 78205</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP / Leica Biosystems</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Custom Fab</span></span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Mar 20 <span class='countdown-critical'>(2d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-warning'>(5d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Mar 25 <span class='countdown-warning'>(7d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-warning'>(7d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Mar 20 <span class='countdown-warning'>(+1d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Mar 23 <span class='countdown-warning'>(+4d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Mar 25 <span class='countdown-normal'>(+6d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Mar 25 <span class='countdown-normal'>(+6d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (1)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">David Devore</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 44 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 44 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.9%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails</summary>
-    <div class="accordion-content"><div class="empty-section">No email data</div></div>
+    <summary>Emails (2)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 999d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> 1.Basic booth AV – (2) 55 Touch with Mini-PC (2) 43 Non-Touch with stand to flank the sides of the new piece of equipment with Mini-PC, Keyboard and Mice Not sure if we will need PCs for them or if we can use media players or the built in OS on the monitors LED Wall – 7 wide x 4 high LED wall using Alluvision frame.  We discussed 1.55 tiles. Fabric retractor Fabric itself Needs to have a Leica logo on the front. Needs to cover the entire counter and items on top of it. Is this something IXM provides or is this something that comes from the company that does the retractor? Lighting/Laser effect shown in the deck on Page 18 and anything that is associated with that (Truss, Rigging.  Do we provide that?), <strong>Expectations:</strong> https://impactunlimited477-my.sharepoint.com/:p:/g/personal/gjordan_impact-xm_com/IQDtLK5ALISlS45kmm5npHKOATK8m71EZMokSl82XakrVwg?rtime=FPscedhk3kg</div></details>
+    <div class="note-content"><strong>Needs:</strong> LED Wall 7x4 Alluvision, (2) 55 Touch with Mini-PC, (2) 43 Non-Touch...</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2097,135 +1946,110 @@ body {
                 <input type="text" class="notes-input" id="notes-input-recmhpSJCbtCUL5Ci" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recmhpSJCbtCUL5Ci')">
                 <button class="notes-add-btn" onclick="addNote('recmhpSJCbtCUL5Ci')">+</button>
             </div>
-            <button class="notes-export-btn" onclick="exportNotesFile('recmhpSJCbtCUL5Ci', 'USCAP - Leica Biosystems #360524')">Export Notes (.md)</button>
+            <button class="notes-export-btn" onclick="exportNotesFile('recmhpSJCbtCUL5Ci', 'USCAP - Leica Biosystems #361146')">Export Notes (.md)</button>
         </div>
     </div>
 </details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="19" data-email-age="16" data-crew-state="ok" data-status="upcoming" data-end-days="-28" data-event-id="recp7a04etMXiXE7w">
+<div class="show-card normal" data-labor="travel" data-risk="2" data-days="18" data-email-age="16" data-crew-state="ok" data-status="upcoming" data-end-days="24" data-event-id="recp7a04etMXiXE7w">
     <div class="card-header" onclick="toggleCard('recp7a04etMXiXE7w')">
         <div class="card-header-top">
-            <div class="show-title" onclick="navigateToDetail('recp7a04etMXiXE7w'); event.stopPropagation();">ASCRS - Bausch &amp; Lomb #360440</div>
-            <span class="show-days normal">19d</span>
+            <div class="show-title" onclick="navigateToDetail('recp7a04etMXiXE7w'); event.stopPropagation();">ASCRS - Bausch & Lomb #360170</div>
+            <span class="show-days normal">18d</span>
             <button class="archive-btn" onclick="archiveShow('recp7a04etMXiXE7w'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Apr 6 – 15</span>
+            <span class="show-date">Apr 06 – 12</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 16d</span> <span class="chip chip-critical">Tasks 1%</span></div>
-        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Follow up — thread silent 16 days</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 0%</span></div>
+        <div class="next-action-line next-action-normal"><span class="na-icon">!</span> On track</div>
         <span class="expand-icon" id="icon-recp7a04etMXiXE7w">+</span>
     </div>
     <div class="card-body" id="body-recp7a04etMXiXE7w" style="display:none;">
-        <div class="next-action-bar next-action-warning">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 16 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+        <div class="next-action-bar next-action-normal">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> On track</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (0)</summary>
+    <div class="accordion-content"><div class="empty-section">No critical issues</div></div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Sparks / Bausch &amp; Lomb</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC 20001</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX / Bausch & Lomb</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span></span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 6 <span class='countdown-normal'>(19d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 10 <span class='countdown-normal'>(23d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 12 <span class='countdown-normal'>(25d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(25d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Apr 06 <span class='countdown-normal'>(+18d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Apr 10 <span class='countdown-normal'>(+22d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Apr 12 <span class='countdown-normal'>(+24d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Apr 12 <span class='countdown-normal'>(+24d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (7)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">Luke Irvine</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Dan Sonnenberg</div><div class="crew-role">Load In</div></div>
+    <div><div class="crew-name">Dan Sonnenberg</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">Load In</div></div>
+    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Will Johnson</div><div class="crew-role">Lighting</div></div>
+    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">Will Johnson</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Luke Irvine</div><div class="crew-role">Load In</div></div>
+    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 50 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 50 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.6%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (3)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Mar 2, 2026 (16d ago) &bull; 3 messages</div>
-
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">B. Jacocks</span>
-    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
-    <span class="email-msg-date">Mar 2, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">B. Jacocks &rarr; G. Calvanese</div>
-    <div class="email-msg-content">Hi Gina,<br>Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan accordingly.</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">M. Ray</span>
-    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
-    <span class="email-msg-date">Mar 2, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">M. Ray &rarr; B. Jacocks</div>
-    <div class="email-msg-content">[@Jason Lipitz](mailto:jlipitz@</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">J. Lipitz</span>
-    <span class="email-msg-subject">Re: Bausch and Lomb Vision Expo Controls</span>
-    <span class="email-msg-date">Mar 2, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">J. Lipitz &rarr; M. Ray</div>
-    <div class="email-msg-content">Team:<br>I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams.</div>
-</div>
-</details></div></div>
+    <summary>Emails (4)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 16d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor, <strong>Expectations:</strong> </div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2236,14 +2060,14 @@ body {
                 <input type="text" class="notes-input" id="notes-input-recp7a04etMXiXE7w" placeholder="Add a note or to-do..." onkeydown="if(event.key==='Enter')addNote('recp7a04etMXiXE7w')">
                 <button class="notes-add-btn" onclick="addNote('recp7a04etMXiXE7w')">+</button>
             </div>
-            <button class="notes-export-btn" onclick="exportNotesFile('recp7a04etMXiXE7w', 'ASCRS - Bausch &amp; Lomb #360440')">Export Notes (.md)</button>
+            <button class="notes-export-btn" onclick="exportNotesFile('recp7a04etMXiXE7w', 'ASCRS - Bausch & Lomb #360170')">Export Notes (.md)</button>
         </div>
     </div>
 </details>
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="21" data-email-age="20" data-crew-state="ok" data-status="upcoming" data-end-days="-30" data-event-id="recVHqaYbYwOR10kS">
+<div class="show-card normal" data-labor="remote" data-risk="3" data-days="21" data-email-age="20" data-crew-state="ok" data-status="upcoming" data-end-days="28" data-event-id="recVHqaYbYwOR10kS">
     <div class="card-header" onclick="toggleCard('recVHqaYbYwOR10kS')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recVHqaYbYwOR10kS'); event.stopPropagation();">Modex - Honeywell #360175</div>
@@ -2251,100 +2075,76 @@ body {
             <button class="archive-btn" onclick="archiveShow('recVHqaYbYwOR10kS'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Apr 8 – 17</span>
-            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
+            <span class="show-date">Apr 09 – 16</span>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 20d</span> <span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 20d</span> <span class="chip chip-critical">Tasks 0%</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Follow up — thread silent 20 days</div>
         <span class="expand-icon" id="icon-recVHqaYbYwOR10kS">+</span>
     </div>
     <div class="card-body" id="body-recVHqaYbYwOR10kS" style="display:none;">
         <div class="next-action-bar next-action-warning">
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 20 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Email thread silent for 20 days</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Georgia World Congress Center — Atlanta, GA</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Georgia World Congress Center — Atlanta, GA 30313</span></div>
     <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">Honeywell</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 9 <span class='countdown-normal'>(22d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(26d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(29d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(29d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Apr 09 <span class='countdown-normal'>(+21d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(+25d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(+28d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(+28d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Eric Petty</div><div class="crew-role">Set/Strike Tech</div></div>
+    <div><div class="crew-name">Eric Petty</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 50 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 50 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.6%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (3)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 26, 2026 (20d ago) &bull; 3 messages</div>
-
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Re: Quote Request: Honeywell @ Modex 2026 #B12512</span>
-    <span class="email-msg-date">Feb 26, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Thompson</div>
-    <div class="email-msg-content">Hi all, just wanted to make sure you received this.<br>Thanks!</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">A. Cooley</span>
-    <span class="email-msg-subject">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</span>
-    <span class="email-msg-date">Feb 26, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">A. Cooley &rarr; K. Parker</div>
-    <div class="email-msg-content">We have received, thank you!<br>When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in sourcing?<br>Thank you!<br>Ali Cooley</div>
-</div>
-</details><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">K. Parker</span>
-    <span class="email-msg-subject">Quote Request: Honeywell @ Modex 2026 #B12512</span>
-    <span class="email-msg-date">Feb 24, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">K. Parker &rarr; A. Thompson</div>
-    <div class="email-msg-content">Ashley and Ali,<br>Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pixel count. We also included local labor on this since this is Atlanta and we’re able to provide.<br>Lastly, in the form below the second link can be utilized for sending us any content you’d like us to review before show site.<br>Please reach out with any questions.</div>
-</div>
-</details></div></div>
+    <summary>Emails (4)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 20d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
+    <div class="note-content"><strong>Needs:</strong> 50x50 booth, LED wall at the front</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2362,30 +2162,29 @@ body {
     </div>
 </div>
 
-<div class="show-card critical" data-labor="travel" data-risk="3" data-days="23" data-email-age="999" data-crew-state="none" data-status="upcoming" data-end-days="-29" data-event-id="rec424142uv4EMt94">
+<div class="show-card normal" data-labor="remote" data-risk="5" data-days="22" data-email-age="999" data-crew-state="ok" data-status="upcoming" data-end-days="28" data-event-id="rec424142uv4EMt94">
     <div class="card-header" onclick="toggleCard('rec424142uv4EMt94')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('rec424142uv4EMt94'); event.stopPropagation();">PSS - Honeywell EU + META #360177</div>
-            <span class="show-days normal">23d</span>
+            <span class="show-days normal">22d</span>
             <button class="archive-btn" onclick="archiveShow('rec424142uv4EMt94'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
             <span class="show-date">Apr 10 – 16</span>
-            <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span></div>
+            <div class="badge-group"><span class="badge badge-remote">Remote</span> <span class="badge badge-closed">Not Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-critical">No crew</span></div>
-        <div class="next-action-line next-action-critical"><span class="na-icon">!!</span> Create crew positions</div>
+        <div class="risk-chips"><span class="chip chip-critical">Tasks 0%</span></div>
+        <div class="next-action-line next-action-warning"><span class="na-icon">!</span> On track</div>
         <span class="expand-icon" id="icon-rec424142uv4EMt94">+</span>
     </div>
     <div class="card-body" id="body-rec424142uv4EMt94" style="display:none;">
-        <div class="next-action-bar next-action-critical">
-    <div class="na-bar-text"><span class="na-bar-label">Next:</span> Create crew positions</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+        <div class="next-action-bar next-action-warning">
+    <div class="na-bar-text"><span class="na-bar-label">Next:</span> On track</div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
         <details class="accordion-section" open>
-    <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-critical"><span class="flag-icon">!!</span> No crew assigned — no positions created</div>
-</div>
+    <summary>Flags / Risks (0)</summary>
+    <div class="accordion-content"><div class="empty-section">No critical issues</div></div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
@@ -2397,37 +2196,41 @@ body {
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(23d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(26d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(29d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(29d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Apr 10 <span class='countdown-normal'>(+22d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Apr 13 <span class='countdown-normal'>(+25d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Apr 16 <span class='countdown-normal'>(+28d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Apr 16 <span class='countdown-normal'>(+28d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (0)</summary>
-    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned — no positions created</div></div></div>
+    <div class="accordion-content"><div class="crew-list"><div class="empty-section">No crew assigned</div></div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 44 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 44 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.9%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails</summary>
-    <div class="accordion-content"><div class="empty-section">No email data</div></div>
+    <summary>Emails (1)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 999d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts, special events, solutions room (very similar to the US&amp;C event), <strong>Expectations:</strong> hopefully partner with the hotel for the AV equipment and looking more for a team to help with the production onsite of the event.</div></details>
+    <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2445,7 +2248,7 @@ body {
     </div>
 </div>
 
-<div class="show-card normal" data-labor="travel" data-risk="2" data-days="33" data-email-age="33" data-crew-state="ok" data-status="upcoming" data-end-days="-40" data-event-id="recrw32m5ciX8gWbt">
+<div class="show-card normal" data-labor="travel" data-risk="3" data-days="33" data-email-age="33" data-crew-state="ok" data-status="upcoming" data-end-days="38" data-event-id="recrw32m5ciX8gWbt">
     <div class="card-header" onclick="toggleCard('recrw32m5ciX8gWbt')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recrw32m5ciX8gWbt'); event.stopPropagation();">HRS - Impulse Dynamics #360937</div>
@@ -2453,80 +2256,76 @@ body {
             <button class="archive-btn" onclick="archiveShow('recrw32m5ciX8gWbt'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">Apr 20 – 27</span>
+            <span class="show-date">Apr 21 – 26</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-critical">Thread silent 33d</span> <span class="chip chip-critical">Tasks 1%</span></div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 33d</span> <span class="chip chip-critical">Tasks 0%</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Follow up — thread silent 33 days</div>
         <span class="expand-icon" id="icon-recrw32m5ciX8gWbt">+</span>
     </div>
     <div class="card-body" id="body-recrw32m5ciX8gWbt" style="display:none;">
         <div class="next-action-bar next-action-warning">
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 33 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
-        
+        <details class="accordion-section" open>
+    <summary>Flags / Risks (1)</summary>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Email thread silent for 33 days</div>
+</div>
+</details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">McCormick Place Lakeside Center — Chicago, IL</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX</span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">McCormick Place Lakeside Center — Chicago, IL 60616</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">SPX / Impulse Dynamics</span></div>
     <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kevin Barry</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span> <span class="service-tag">Audio</span></span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> Apr 21 <span class='countdown-normal'>(34d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> Apr 24 <span class='countdown-normal'>(37d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> Apr 26 <span class='countdown-normal'>(39d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> Apr 26 <span class='countdown-normal'>(39d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> Apr 21 <span class='countdown-normal'>(+33d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> Apr 24 <span class='countdown-normal'>(+36d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> Apr 26 <span class='countdown-normal'>(+38d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> Apr 26 <span class='countdown-normal'>(+38d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">Project Manager</div></div>
+    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Eric Weston</div><div class="crew-role">Lighting</div></div>
+    <div><div class="crew-name">Eric Weston</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 68 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 68 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1%;"></div></div><span class="tp-pct">1%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.0%;"></div></div><span class="tp-pct">1%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
     <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 13, 2026 (33d ago) &bull; 1 messages</div>
-<div class="email-stale"><span class="stale-icon">!!</span> Thread silent for 33 days — may need a follow-up</div>
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</span>
-    <span class="email-msg-date">Feb 13, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; SPX Ops</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360937 - SPX Impulse Dynamics @ HRS 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Impulse Dynamics @ HRS 2026 Client: Sparks<br>End Client: Impulse Dynamics<br>Event Name:HRS 2026<br>Booth Number:<br>Venue: McCormick Place Lakeside Center<br>Venue Address: 2301 S. Lake Shore Drive ,<br>Chicago IL 60616<br>City: Chicago<br>Load In</div>
-</div>
-</details></div></div>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 33d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV, <strong>Expectations:</strong> </div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options, presentation audio, small booth lighting</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2544,100 +2343,92 @@ body {
     </div>
 </div>
 
-<div class="show-card warning" data-labor="travel" data-risk="3" data-days="53" data-email-age="29" data-crew-state="pencilled" data-status="upcoming" data-end-days="-61" data-event-id="recq49LuQliCAooZ0">
+<div class="show-card normal" data-labor="travel" data-risk="4" data-days="54" data-email-age="29" data-crew-state="ok" data-status="upcoming" data-end-days="59" data-event-id="recq49LuQliCAooZ0">
     <div class="card-header" onclick="toggleCard('recq49LuQliCAooZ0')">
         <div class="card-header-top">
             <div class="show-title" onclick="navigateToDetail('recq49LuQliCAooZ0'); event.stopPropagation();">AUA - Novartis #361092</div>
-            <span class="show-days normal">53d</span>
+            <span class="show-days normal">54d</span>
             <button class="archive-btn" onclick="archiveShow('recq49LuQliCAooZ0'); event.stopPropagation();" title="Archive this show">&#x2715;</button>
         </div>
         <div class="card-header-meta">
-            <span class="show-date">May 10 – 18</span>
+            <span class="show-date">May 12 – 17</span>
             <div class="badge-group"><span class="badge badge-travel">Travel</span> <span class="badge badge-active">Quoted</span></div>
         </div>
-        <div class="risk-chips"><span class="chip chip-warning">Thread silent 29d</span> <span class="chip chip-critical">Tasks 1%</span> <span class="chip chip-warning">1 pencilled</span> <span class="chip chip-warning">1 unconfirmed</span></div>
+        <div class="risk-chips"><span class="chip chip-warning">Thread silent 29d</span> <span class="chip chip-critical">Tasks 0%</span></div>
         <div class="next-action-line next-action-warning"><span class="na-icon">!</span> Follow up — thread silent 29 days</div>
         <span class="expand-icon" id="icon-recq49LuQliCAooZ0">+</span>
     </div>
     <div class="card-body" id="body-recq49LuQliCAooZ0" style="display:none;">
         <div class="next-action-bar next-action-warning">
     <div class="na-bar-text"><span class="na-bar-label">Next:</span> Follow up — thread silent 29 days</div>
-    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
+    <div class="na-bar-ctas"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&dl=0" target="_blank" class="cta-btn">Open Dropbox</a><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn">Open Checklist in Airtable</a></div>
 </div>
         <details class="accordion-section" open>
     <summary>Flags / Risks (1)</summary>
-    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Not yet confirmed, crew only pencilled</div>
+    <div class="accordion-content"><div class="flag flag-warning"><span class="flag-icon">!</span> Email thread silent for 29 days</div>
 </div>
 </details>
         <details class="accordion-section" open>
             <summary>Overview</summary>
             <div class="accordion-content"><div class="overview-grid">
-    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC</span></div>
-    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP</span></div>
-    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Dan Sonnenberg</span></div>
-    <div class="ov-row"><span class="ov-label">Services</span><span class="ov-value"><span class="service-tag">Video</span></span></div>
+    <div class="ov-row"><span class="ov-label">Venue</span><span class="ov-value">Walter E. Washington Convention Center — Washington, DC 20001</span></div>
+    <div class="ov-row"><span class="ov-label">Client</span><span class="ov-value">IMP / Novartis</span></div>
+    <div class="ov-row"><span class="ov-label">AM</span><span class="ov-value">Kathryn Parker</span></div>
 </div></div>
         </details>
         <details class="accordion-section">
     <summary>Key Dates</summary>
-    <div class="accordion-content"><div class="key-dates-grid"><div class="kd-item"><span class='kd-label'>Load-In:</span> May 12 <span class='countdown-normal'>(55d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show Start:</span> May 15 <span class='countdown-normal'>(58d)</span></div>
-<div class="kd-item"><span class='kd-label'>Show End:</span> May 17 <span class='countdown-normal'>(60d)</span></div>
-<div class="kd-item"><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(60d)</span></div></div></div>
+    <div class="accordion-content"><div class="key-dates-grid"><div class='kd-item'><span class='kd-label'>Load-In:</span> May 12 <span class='countdown-normal'>(+54d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show Start:</span> May 15 <span class='countdown-normal'>(+57d)</span></div>
+<div class='kd-item'><span class='kd-label'>Show End:</span> May 17 <span class='countdown-normal'>(+59d)</span></div>
+<div class='kd-item'><span class='kd-label'>Load-Out:</span> May 17 <span class='countdown-normal'>(+59d)</span></div></div></div>
 </details>
         <details class="accordion-section">
     <summary>Crew (4)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">Lighting</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div>
+<div class="crew-member">
+    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">—</div></div>
     <span class="crew-status status-pencilled">Pencilled</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Set/Strike Tech</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
+    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">—</div></div>
+    <span class="crew-status status-empty">Not Confirmed</span>
 </div>
 <div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
 </div>
-<div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div></div></div>
+</div></div>
 </details>
-        <details class="accordion-section">
-    <summary>Tasks (1% complete)</summary>
-    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
+        <details class="accordion-section" open>
+    <summary>Tasks (0% complete — 50 open)</summary>
+    <div class="accordion-content"><div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0.0%;">0%</div></div>
         <div class="progress-text">0 of 50 tasks complete</div>
         <div class="task-phases">
-    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
+    <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1.6%;"></div></div><span class="tp-pct">2%</span></div>
     <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
     <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
 </div>
-        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:6px;">Open Checklist in Airtable</a></div>
+        <a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Tasks in Airtable</a>
+</div>
 </details>
         <details class="accordion-section">
-    <summary>Emails (1)</summary>
-    <div class="accordion-content"><div class="email-timeline-header">Last activity: Feb 17, 2026 (29d ago) &bull; 1 messages</div>
-
-<div class="email-inbox"><details class="email-msg">
-<summary class="email-msg-header">
-    <span class="email-msg-from">Fuse Integrations</span>
-    <span class="email-msg-subject">Fuse Form - IMP Novartis @ AUA 2026 #</span>
-    <span class="email-msg-date">Feb 17, 2026</span>
-</summary>
-<div class="email-msg-body">
-    <div class="email-msg-meta">Fuse Integrations &rarr; Fuse Exhibits</div>
-    <div class="email-msg-content">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-19<br>Quote: 361092 - IMP Novartis @ AUA 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: IMP Novartis @ AUA 2026 Client: Impact XM<br>End Client: Novartis<br>Event Name:AUA 2026<br>Booth Number:<br>Venue: Walter E. Washington Convention Center<br>Venue Address: 801 Mt Vernon Place NW ,<br>Washington DC 20001<br>City: Washington<br>Load In</div>
-</div>
-</details></div></div>
+    <summary>Emails (3)</summary>
+    <div class="accordion-content">
+        <div class="email-stale"><span class="stale-icon">⚠</span> Email data not refreshed in this update. Last update: 29d ago</div>
+        <div class="empty-section">Use detail view to access email thread</div>
+    </div>
 </details>
         <details class="accordion-section">
     <summary>Notes & Links</summary>
     <div class="accordion-content"><div class="note-item client">
     <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36&#x27; on 2 faces, 11&#x27; on returns (two on each side), 57.6&quot; high (3 tiles) + 2 LED walls (1 one on medical side) + LED squared arch 2 tiles x 1 tile, circular interactive piece, + monitors/nucs, <strong>Expectations:</strong> </div></details>
+    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36' on 2 faces, 11' on returns, LED squared arch, circular interactive piece</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2654,816 +2445,12 @@ body {
 </details>
     </div>
 </div>
-            </div>
-            <div class="archived-section" id="archived-section" style="display:none;">
-                <div class="archived-header" onclick="toggleArchivedSection()">
-                    <span class="archived-title">Archived Shows (<span id="archived-count">0</span>)</span>
-                    <span class="archived-toggle" id="archived-toggle-icon">+</span>
-                </div>
-                <div class="archived-grid" id="archived-grid" style="display:none;"></div>
-            </div>
-        </div>
 
-<div class="detail-view" data-event-id="recBggRLeCvC52Syi" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">CRT - Boston Scientific #359986</div>
-            <span class="detail-days">12d ago</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-remote">Remote</span> <span class="badge badge-confirmed">Confirmed</span>
             </div>
         </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">The Washington Hilton — Washington, DC</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / Boston Scientific</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 6 <span class="countdown-warning">(12d ago)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 7 <span class="countdown-warning">(11d ago)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 9 <span class="countdown-warning">(9d ago)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 9 <span class="countdown-warning">(9d ago)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (2/2)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 0%;">0%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> <strong>BOOTH:</strong> (3) 55&quot; Monitors - Plinths, (2) 65&quot; Monitors - IVUS &amp; Hospitality, (3) Monitors for Monitor Arms, (8) NUCS, Install &amp; Dismantle Labor   <strong>TECH SUITE:</strong> (6) 55&quot; Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS, <strong>Expectations:</strong> Katelyn Wann - kwann@wearesparks.com + countertop monitor adds </div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 0)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ OEIS 2026 #407</div>
-            <div class="email-item-date">Feb 19, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 1)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ ACC 2026 #</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 2)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205</div>
-            <div class="email-item-date">Feb 13, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 3)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recBggRLeCvC52Syi', 4)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ OEIS 2026 #407" data-date="Feb 19, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kevin Barry<br>Quote Needed By<br>2026-02-19<br>Quote: 361184 - SPX Boston Scientific @ OEIS 2026 407<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ OEIS 2026 407<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:OEIS 2026<br>Booth Number: 407<br>Venue: Caesars Palace<br>Venue Address: 3570 S Las Vegas Blvd ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div><div class="email-body-data" data-idx="1" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ ACC 2026 #" data-date="Feb 18, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-20<br>Quote: 361165 - SPX Boston Scientific @ ACC 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ACC 2026 Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ACC 2026<br>Booth Number:<br>Venue: New Orleans Ernest N. Morial Convention Center<br>Venue Address: 900 Convention Center Blvd ,<br>New Orleans Louisiana 70130<br>City: New Orleans<br>Load In</div><div class="email-body-data" data-idx="2" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ ASMBS 2026 #1205" data-date="Feb 13, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360941 - SPX Boston Scientific @ ASMBS 2026 1205<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ ASMBS 2026 1205<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:ASMBS 2026<br>Booth Number: 1205<br>Venue: Henry B. Gonzalez Convention Center<br>Venue Address: 900 E. Market St. ,<br>San Antonio TX 78205<br>City: San Antonio<br>Load In</div><div class="email-body-data" data-idx="3" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Boston Scientific @ AACE 2026 #914" data-date="Feb 12, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-14<br>Quote: 360877 - SPX Boston Scientific @ AACE 2026 914<br>File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Boston Scientific @ AACE 2026 914<br>Client: Sparks<br>End Client: Boston Scientific<br>Event Name:AACE 2026<br>Booth Number: 914<br>Venue: Caesars Forum<br>Venue Address: 3911 S Koval Ln ,<br>Las Vegas NV 89109<br>City: Las Vegas<br>Load In</div><div class="email-body-data" data-idx="4" data-from="K. Parker" data-to="Z. Dicker" data-subject="Re: Fuse Form - SPX Boston Scientific @ AACE 2026 #914" data-date="Feb 12, 2026" style="display:none;">Zayna,<br>Quote attached. Please look it over and let us know if you have any questions.</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="rec1hmHTQF3PSBEHZ" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">RSAC - AuditBoard #359999</div>
-            <span class="detail-days">0d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Moscone Center — San Francisco, CA</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / AuditBoard</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kathryn Parker</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 19 <span class="countdown-critical">(1d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 23 <span class="countdown-warning">(5d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 26 <span class="countdown-normal">(8d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 23 <span class="countdown-warning">(5d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (2/2)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Michael  Mathews</div><div class="crew-role">Production Rigger</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42&quot; Monitors (1) ‎70-80&quot; Monitor *for now, a computer for all 5, <strong>Expectations:</strong> 20x20 booth</div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 0)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 25, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 1)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 23, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 2)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 20, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 3)">
-            <div class="email-item-from">K. Barry</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 20, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 4)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 5)">
-            <div class="email-item-from">D. Sonnenberg</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 6)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 7)">
-            <div class="email-item-from">D. Sonnenberg</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 8)">
-            <div class="email-item-from">K. Barry</div>
-            <div class="email-item-subject">RE: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 18, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 9)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 10)">
-            <div class="email-item-from">D. Sonnenberg</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 11)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 12)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 13)">
-            <div class="email-item-from">D. Sonnenberg</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 14)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 15)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 16)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 12, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 17)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 11, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 18)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 10, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 19)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026</div>
-            <div class="email-item-date">Feb 10, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 20)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
-            <div class="email-item-date">Feb 9, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 21)">
-            <div class="email-item-from">A. Moss</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
-            <div class="email-item-date">Feb 9, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 22)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ RSAC 2026 </div>
-            <div class="email-item-date">Feb 9, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('rec1hmHTQF3PSBEHZ', 23)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: SPX AuditBoard @ GAM 2026 #205</div>
-            <div class="email-item-date">Feb 9, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 25, 2026" style="display:none;">Added. Revised attached. Thanks Ashley!</div><div class="email-body-data" data-idx="1" data-from="A. Moss" data-to="K. Barry" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 23, 2026" style="display:none;">Please add these 2 iPads and desktop stands.</div><div class="email-body-data" data-idx="2" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 20, 2026" style="display:none;">Hi all-<br>If we were to add (2) iPads and desktop stands for these, what would that cost be?</div><div class="email-body-data" data-idx="3" data-from="K. Barry" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 20, 2026" style="display:none;">2 ipad Pros with desktop stands would be $700 total<br>Thanks, Kevin</div><div class="email-body-data" data-idx="4" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026" style="display:none;">Good morning,<br>Can you please send me the required specs and pixel map for the LED content to share with the client?</div><div class="email-body-data" data-idx="5" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026" style="display:none;">Have we confirmed that everything fits in the booth as we drew it? I have not seen a combined detail drawing yet, just want to make sure we are good before specs are shared.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="6" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026" style="display:none;">Hi All,<br>I did just receive the below from my team...<br>Detailing dropped in FUSE&#x27;s updated RSA model this morning and we have a few conflicts with the controls: Their floor-based mount in the model and the stand they&#x27;re using is set to a height of 76&quot; however our design deck shows the height of the monitor at 96&quot;. The design deck shows a screen size of 110&quot; as well . Do we have a spec for that monitor and can we lower it 20&quot; to a 76&quot; centerline?<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="7" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026" style="display:none;">We where asked to quote a 75 and this height was what you gave us on Friday. What would you like us to do?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="8" data-from="K. Barry" data-to="A. Moss" data-subject="RE: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 18, 2026" style="display:none;">Pixel maps attached. If they have any questions just let us know.<br>Thanks, Kevin</div><div class="email-body-data" data-idx="9" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">Hi FUSE team. I may not need the drawing from you after all as my team did a preliminary drawing that will hopefully get Freeman what they need.<br>That said, this is the FUSE LED array .dwg overlayed on the booth for RSAC. It extends past the confine of the booth. We will need to shrink the array by (1) run of tiles.<br>Can you please adjust and send us a new .dwg file?</div><div class="email-body-data" data-idx="10" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">Should we shrink the closet the 6” rather than fully redo the flown led wall?<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="11" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">I can&#x27;t do that because the size of the closet (how small it is) is already a major point of contention with the client. I&#x27;m sorry.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="12" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">Disregard, we will make the tweaks to the closet.<br>That said, we do still need an updated dwg with the monitor support details please.<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="13" data-from="D. Sonnenberg" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">Ok, did we get a height for that monitor? I don’t think I saw that yet.<br>Dan Sonnenberg<br>Fuse Technical Group<br>M: +1 (817) 894-4096<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;<br>&lt;&gt;</div><div class="email-body-data" data-idx="14" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 12, 2026" style="display:none;">I can&#x27;t pull a centerline from Ethan&#x27;s export, but it&#x27;s 57&quot; from bottom of the monitor to the floor<br>Ashley Moss</div><div class="email-body-data" data-idx="15" data-from="A. Moss" data-to="D. Sonnenberg" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 12, 2026" style="display:none;">Dan,<br>Any chance you have an ETA for getting us an updated dwg with the monitor support details ?</div><div class="email-body-data" data-idx="16" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 12, 2026" style="display:none;">This is approved BTw!<br>Ashley Moss<br>Senior Account Manager<br>1-336-209-2525 (phone)<br>amoss@</div><div class="email-body-data" data-idx="17" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 11, 2026" style="display:none;">Hi FUSE team-<br>Freeman Rigging is asking for an overhead placement to scale for the LED for the AuditBoard 20x20 booth for RSA. Our team is not far along enough in the process to complete as of now so wondering if you all could assist with this? They still won&#x27;t provide a quote until they have this.<br>If so, what additional information do you need me to provide?</div><div class="email-body-data" data-idx="18" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 10, 2026" style="display:none;">Ashley- here’s the revised quote with the 75” thats mounted to the LED wall kept in and the 43’s removed.</div><div class="email-body-data" data-idx="19" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026" data-date="Feb 10, 2026" style="display:none;">Missed that mounting gear - one more time- attached.</div><div class="email-body-data" data-idx="20" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ GAM 2026 #205" data-date="Feb 9, 2026" style="display:none;">Hi All,<br>This one is not going forward as the client has chosen to utilize their on monitors for this show. I so appreciate you sending over an estimate however.</div><div class="email-body-data" data-idx="21" data-from="A. Moss" data-to="K. Parker" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 9, 2026" style="display:none;">Hi Kathryn and Dan-<br>This one is a go, however, only the LED portion. Again, they plan to use their own monitors.<br>Project 353488.<br>What date can I tell the client that you need AV files for testing purposes for the backwall and overhead canopy?</div><div class="email-body-data" data-idx="22" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ RSAC 2026 " data-date="Feb 9, 2026" style="display:none;">Hi Ashley- Got it! I will get monitors removed and quote confirmed now. The plan currently is ti bring Iqral in for this one- looping him in on cc to follow along :)<br>Date for files depends how much time they want for any needed revisions. Usually 2 weeks before show is standard :)</div><div class="email-body-data" data-idx="23" data-from="K. Parker" data-to="A. Moss" data-subject="Re: Quote Request: SPX AuditBoard @ GAM 2026 #205" data-date="Feb 9, 2026" style="display:none;">Cancelled out!<br>Sent briskly from my iPhone<br>Kathryn Parker</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="recmhpSJCbtCUL5Ci" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">USCAP - Leica Biosystems #360524</div>
-            <span class="detail-days">2d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Henry B. Gonzalez Convention Center — San Antonio, TX</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">IMP</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Custom Fab</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Mar 20 <span class="countdown-critical">(2d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Mar 23 <span class="countdown-warning">(5d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Mar 25 <span class="countdown-warning">(7d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Mar 25 <span class="countdown-warning">(7d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (1/1)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 44 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> 1.Basic booth AV – (2) 55 Touch with Mini-PC (2) 43 Non-Touch with stand to flank the sides of the new piece of equipment with Mini-PC, Keyboard and Mice Not sure if we will need PCs for them or if we can use media players or the built in OS on the monitors LED Wall – 7 wide x 4 high LED wall using Alluvision frame.  We discussed 1.55 tiles. Fabric retractor Fabric itself Needs to have a Leica logo on the front. Needs to cover the entire counter and items on top of it. Is this something IXM provides or is this something that comes from the company that does the retractor? Lighting/Laser effect shown in the deck on Page 18 and anything that is associated with that (Truss, Rigging.  Do we provide that?), <strong>Expectations:</strong> https://impactunlimited477-my.sharepoint.com/:p:/g/personal/gjordan_impact-xm_com/IQDtLK5ALISlS45kmm5npHKOATK8m71EZMokSl82XakrVwg?rtime=FPscedhk3kg</div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-reader-panel">
-            <div class="email-empty-state">No emails yet</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="recp7a04etMXiXE7w" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">ASCRS - Bausch &amp; Lomb #360440</div>
-            <span class="detail-days">19d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Walter E. Washington Convention Center — Washington, DC</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Sparks / Bausch &amp; Lomb</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 6 <span class="countdown-normal">(19d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 10 <span class="countdown-normal">(23d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 12 <span class="countdown-normal">(25d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 12 <span class="countdown-normal">(25d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (7/7)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Dan Sonnenberg</div><div class="crew-role">Load In</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">Load In</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Will Johnson</div><div class="crew-role">Lighting</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Luke Irvine</div><div class="crew-role">Load In</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor, <strong>Expectations:</strong> </div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 0)">
-            <div class="email-item-from">B. Jacocks</div>
-            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
-            <div class="email-item-date">Mar 2, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 1)">
-            <div class="email-item-from">M. Ray</div>
-            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
-            <div class="email-item-date">Mar 2, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recp7a04etMXiXE7w', 2)">
-            <div class="email-item-from">J. Lipitz</div>
-            <div class="email-item-subject">Re: Bausch and Lomb Vision Expo Controls</div>
-            <div class="email-item-date">Mar 2, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="B. Jacocks" data-to="G. Calvanese" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026" style="display:none;">Hi Gina,<br>Happy Monday! When you have a moment, could you please share any available content along with the install and dismantle timeline? I’d like to get everything over to our tech so we can plan accordingly.</div><div class="email-body-data" data-idx="1" data-from="M. Ray" data-to="B. Jacocks" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026" style="display:none;">[@Jason Lipitz](mailto:jlipitz@</div><div class="email-body-data" data-idx="2" data-from="J. Lipitz" data-to="M. Ray" data-subject="Re: Bausch and Lomb Vision Expo Controls" data-date="Mar 2, 2026" style="display:none;">Team:<br>I am still waiting for 2 more videos to complete the loop. I know Brenda has requested these to be sent to me from the brand teams.</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="recVHqaYbYwOR10kS" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">Modex - Honeywell #360175</div>
-            <span class="detail-days">21d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Georgia World Congress Center — Atlanta, GA</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Honeywell</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 9 <span class="countdown-normal">(22d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 13 <span class="countdown-normal">(26d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 16 <span class="countdown-normal">(29d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 16 <span class="countdown-normal">(29d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (2/2)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Eric Petty</div><div class="crew-role">Set/Strike Tech</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: tbd, montors tbd, <strong>Expectations:</strong> 50x50 booth.  a significant amount of regular screens for demoing as well as a LED wall at the front of the booth (reference page 5 – image looks like a warehouse) as the area intended for the LED wall.</div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 0)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
-            <div class="email-item-date">Feb 26, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 1)">
-            <div class="email-item-from">A. Cooley</div>
-            <div class="email-item-subject">RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512</div>
-            <div class="email-item-date">Feb 26, 2026</div>
-        </div>
-        <div class="email-list-item" onclick="selectEmail('recVHqaYbYwOR10kS', 2)">
-            <div class="email-item-from">K. Parker</div>
-            <div class="email-item-subject">Quote Request: Honeywell @ Modex 2026 #B12512</div>
-            <div class="email-item-date">Feb 24, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="K. Parker" data-to="A. Thompson" data-subject="Re: Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 26, 2026" style="display:none;">Hi all, just wanted to make sure you received this.<br>Thanks!</div><div class="email-body-data" data-idx="1" data-from="A. Cooley" data-to="K. Parker" data-subject="RE: [External] Re: Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 26, 2026" style="display:none;">We have received, thank you!<br>When we spoke, we mentioned that the team is asking for a photographer and videographer in the booth for a portion of the show, is this something you can also assist us in sourcing?<br>Thank you!<br>Ali Cooley</div><div class="email-body-data" data-idx="2" data-from="K. Parker" data-to="A. Thompson" data-subject="Quote Request: Honeywell @ Modex 2026 #B12512" data-date="Feb 24, 2026" style="display:none;">Ashley and Ali,<br>Here is the quote for Honeywell @ Modex for your review. One change I do see is it looks like previous this was a 2.6mm wall, and we’ve quoted using 2.0mm tiles so better resolution/pixel count. We also included local labor on this since this is Atlanta and we’re able to provide.<br>Lastly, in the form below the second link can be utilized for sending us any content you’d like us to review before show site.<br>Please reach out with any questions.</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="rec424142uv4EMt94" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">PSS - Honeywell EU + META #360177</div>
-            <span class="detail-days">23d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-active">None</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Hilton Istanbul — Istanbul, Turkey</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">Honeywell</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 10 <span class="countdown-normal">(23d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 13 <span class="countdown-normal">(26d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 16 <span class="countdown-normal">(29d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 16 <span class="countdown-normal">(29d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (0/0)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="empty-section">No crew assigned</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 44 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts, special events, solutions room (very similar to the US&amp;C event), <strong>Expectations:</strong> hopefully partner with the hotel for the AV equipment and looking more for a team to help with the production onsite of the event.</div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-reader-panel">
-            <div class="email-empty-state">No emails yet</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="recrw32m5ciX8gWbt" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">HRS - Impulse Dynamics #360937</div>
-            <span class="detail-days">33d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-confirmed">Confirmed</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">McCormick Place Lakeside Center — Chicago, IL</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">SPX</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Kevin Barry</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Lighting</span> <span class="service-tag">Video</span> <span class="service-tag">Audio</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">Apr 21 <span class="countdown-normal">(34d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">Apr 24 <span class="countdown-normal">(37d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">Apr 26 <span class="countdown-normal">(39d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">Apr 26 <span class="countdown-normal">(39d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (2/2)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Eric Weston</div><div class="crew-role">Lighting</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 68 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:1%;"></div></div><span class="tp-pct">1%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options (4x6 and 4x12), presentation audio, small booth lighting package, meeting room AV, <strong>Expectations:</strong> </div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('recrw32m5ciX8gWbt', 0)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - SPX Impulse Dynamics @ HRS 2026 #</div>
-            <div class="email-item-date">Feb 13, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="SPX Ops" data-subject="Fuse Form - SPX Impulse Dynamics @ HRS 2026 #" data-date="Feb 13, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-15<br>Quote: 360937 - SPX Impulse Dynamics @ HRS 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: SPX Impulse Dynamics @ HRS 2026 Client: Sparks<br>End Client: Impulse Dynamics<br>Event Name:HRS 2026<br>Booth Number:<br>Venue: McCormick Place Lakeside Center<br>Venue Address: 2301 S. Lake Shore Drive ,<br>Chicago IL 60616<br>City: Chicago<br>Load In</div>
-        </div>
-    </div>
-        </div>
-    </div>
-
-<div class="detail-view" data-event-id="recq49LuQliCAooZ0" style="display:none;">
-        <div class="detail-header">
-            <button class="back-btn" onclick="backToGrid()">← Back</button>
-            <div class="detail-title">AUA - Novartis #361092</div>
-            <span class="detail-days">53d</span>
-            <div class="badge-group" style="margin-left:auto;">
-                <span class="badge badge-travel">Travel</span> <span class="badge badge-active">Quoted</span>
-            </div>
-        </div>
-        <div class="detail-content">
-            <div class="detail-grid">
-                <div class="detail-section">
-        <div class="detail-section-title">Overview</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Venue</span><span class="detail-value">Walter E. Washington Convention Center — Washington, DC</span></div>
-            <div class="detail-row"><span class="detail-label">Client</span><span class="detail-value">IMP</span></div>
-            <div class="detail-row"><span class="detail-label">AM</span><span class="detail-value">Dan Sonnenberg</span></div>
-            <div class="detail-row"><span class="detail-label">Services</span><span class="detail-value"><span class="service-tag">Video</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Key Dates</div>
-        <div class="detail-grid-content">
-            <div class="detail-row"><span class="detail-label">Load-In</span><span class="detail-value">May 12 <span class="countdown-normal">(55d)</span></span></div><div class="detail-row"><span class="detail-label">Show Start</span><span class="detail-value">May 15 <span class="countdown-normal">(58d)</span></span></div><div class="detail-row"><span class="detail-label">Show End</span><span class="detail-value">May 17 <span class="countdown-normal">(60d)</span></span></div><div class="detail-row"><span class="detail-label">Load-Out</span><span class="detail-value">May 17 <span class="countdown-normal">(60d)</span></span></div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Crew (4/4)</div>
-        <div class="detail-grid-content crew-list">
-            <div class="crew-member">
-    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">Lighting</div></div>
-    <span class="crew-status status-pencilled">Pencilled</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">Set/Strike Tech</div></div>
-    <span class="crew-status status-pencilled">Not Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Jonathan (Johnny) Jordan</div><div class="crew-role">LED</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">Project Manager</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Task Progress</div>
-        <div class="detail-grid-content">
-            <div class="progress-bar-container"><div class="progress-bar-fill critical" style="width: 1%;">1%</div></div>
-        <div class="progress-text">0 of 50 tasks complete</div>
-        <div class="task-phases">
-        <div class="task-phase"><span class="tp-label">Pre-Show</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:2%;"></div></div><span class="tp-pct">2%</span></div>
-        <div class="task-phase"><span class="tp-label">During</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-        <div class="task-phase"><span class="tp-label">Post</span><div class="tp-bar-wrap"><div class="tp-bar" style="width:0%;"></div></div><span class="tp-pct">0%</span></div>
-    </div><a href="https://airtable.com/appcbc1CDJKyKb8db/tbl5RQ4eWcGKrwNDR" target="_blank" class="cta-btn" style="margin-top:8px; display:inline-block;">Open Checklist in Airtable</a>
-        </div>
-    </div>
-<div class="detail-section">
-        <div class="detail-section-title">Notes & Links</div>
-        <div class="detail-grid-content">
-            <div class="note-item client">
-    <details><summary>Client Notes</summary>
-    <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36&#x27; on 2 faces, 11&#x27; on returns (two on each side), 57.6&quot; high (3 tiles) + 2 LED walls (1 one on medical side) + LED squared arch 2 tiles x 1 tile, circular interactive piece, + monitors/nucs, <strong>Expectations:</strong> </div></details>
-</div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&amp;dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div>
-        </div>
-    </div>
-            </div>
-        </div>
-        <div class="detail-email-section">
-            <div class="email-client">
-        <div class="email-list-sidebar">
-        <div class="email-list-header">Messages</div>
-        <div class="email-list-item" onclick="selectEmail('recq49LuQliCAooZ0', 0)">
-            <div class="email-item-from">Fuse Integrations</div>
-            <div class="email-item-subject">Fuse Form - IMP Novartis @ AUA 2026 #</div>
-            <div class="email-item-date">Feb 17, 2026</div>
-        </div>
-    </div>
-        <div class="email-reader-panel">
-            <div class="email-empty-state">Select an email to read</div>
-        </div>
-        <div class="email-hidden-data" style="display:none;">
-            <div class="email-body-data" data-idx="0" data-from="Fuse Integrations" data-to="Fuse Exhibits" data-subject="Fuse Form - IMP Novartis @ AUA 2026 #" data-date="Feb 17, 2026" style="display:none;">FUSE<br>Event Request<br>Quote to follow<br>Please Reply All to this email chain for fastest response.<br>Thankyou<br>Quote requested By<br>Kathryn Parker<br>Quote Needed By<br>2026-02-19<br>Quote: 361092 - IMP Novartis @ AUA 2026 File location<br><br>Upload Content Files Link<br><br>Form Information<br>Event: IMP Novartis @ AUA 2026 Client: Impact XM<br>End Client: Novartis<br>Event Name:AUA 2026<br>Booth Number:<br>Venue: Walter E. Washington Convention Center<br>Venue Address: 801 Mt Vernon Place NW ,<br>Washington DC 20001<br>City: Washington<br>Load In</div>
-        </div>
-    </div>
-        </div>
-    </div>
     </div>
     <script>
+
 
 function toggleCard(id) {
     var body = document.getElementById('body-' + id);
@@ -3844,6 +2831,162 @@ function exportAllNotes() {
     URL.revokeObjectURL(url);
 }
 
+// ═══ Task Checklist — Airtable Push ═══
+var AIRTABLE_BASE = 'appcbc1CDJKyKb8db';
+var AIRTABLE_TASKS_TABLE = 'tbl5RQ4eWcGKrwNDR';
+var taskOriginalValues = {};
+
+// Track original values on page load
+function initTaskTracking() {
+    var selects = document.querySelectorAll('.task-status-select');
+    for (var i = 0; i < selects.length; i++) {
+        var s = selects[i];
+        taskOriginalValues[s.dataset.taskId] = s.value;
+    }
+}
+
+function markTaskDirty(eventId) {
+    var checklist = document.querySelector('.task-checklist[data-event-id="' + eventId + '"]');
+    if (!checklist) return;
+    var selects = checklist.querySelectorAll('.task-status-select');
+    var dirtyCount = 0;
+    for (var i = 0; i < selects.length; i++) {
+        var s = selects[i];
+        var orig = taskOriginalValues[s.dataset.taskId];
+        if (s.value !== orig) {
+            s.classList.add('dirty');
+            dirtyCount++;
+        } else {
+            s.classList.remove('dirty');
+        }
+    }
+    var bar = document.getElementById('task-push-bar-' + eventId);
+    var count = document.getElementById('task-push-count-' + eventId);
+    if (bar) {
+        bar.style.display = dirtyCount > 0 ? 'flex' : 'none';
+    }
+    if (count) {
+        count.textContent = dirtyCount + ' change' + (dirtyCount !== 1 ? 's' : '');
+    }
+}
+
+function checkAllTasks(eventId) {
+    var checklist = document.querySelector('.task-checklist[data-event-id="' + eventId + '"]');
+    if (!checklist) return;
+    var selects = checklist.querySelectorAll('.task-status-select');
+    for (var i = 0; i < selects.length; i++) {
+        selects[i].value = 'Done';
+    }
+    markTaskDirty(eventId);
+}
+
+function getAirtableToken() {
+    var token = localStorage.getItem('airtable_pat');
+    if (token) return token;
+    token = prompt('Enter your Airtable Personal Access Token to push task updates.\n\nGet one at: https://airtable.com/create/tokens\n(Stored locally in your browser only)');
+    if (token) {
+        localStorage.setItem('airtable_pat', token.trim());
+        return token.trim();
+    }
+    return null;
+}
+
+function pushTasksToAirtable(eventId) {
+    var token = getAirtableToken();
+    if (!token) return;
+
+    var checklist = document.querySelector('.task-checklist[data-event-id="' + eventId + '"]');
+    if (!checklist) return;
+
+    // Collect changed tasks
+    var selects = checklist.querySelectorAll('.task-status-select');
+    var updates = [];
+    for (var i = 0; i < selects.length; i++) {
+        var s = selects[i];
+        var orig = taskOriginalValues[s.dataset.taskId];
+        if (s.value !== orig) {
+            updates.push({ id: s.dataset.taskId, fields: { 'Task Status': s.value } });
+        }
+    }
+
+    if (updates.length === 0) {
+        alert('No changes to push.');
+        return;
+    }
+
+    // Disable button
+    var btn = checklist.querySelector('.task-push-btn');
+    if (btn) { btn.classList.add('pushing'); btn.textContent = 'Pushing...'; }
+
+    // Remove old result
+    var oldResult = checklist.querySelector('.task-push-result');
+    if (oldResult) oldResult.remove();
+
+    // Airtable batch update (max 10 per request)
+    var batches = [];
+    for (var b = 0; b < updates.length; b += 10) {
+        batches.push(updates.slice(b, b + 10));
+    }
+
+    var completed = 0;
+    var errors = [];
+
+    function processBatch(batchIdx) {
+        if (batchIdx >= batches.length) {
+            // All done
+            if (btn) { btn.classList.remove('pushing'); btn.textContent = 'Push to Airtable'; }
+            var resultDiv = document.createElement('div');
+            if (errors.length > 0) {
+                resultDiv.className = 'task-push-result error';
+                resultDiv.textContent = 'Error: ' + errors.join(', ');
+            } else {
+                resultDiv.className = 'task-push-result success';
+                resultDiv.textContent = 'Updated ' + updates.length + ' task(s) in Airtable';
+                // Update originals so they're no longer dirty
+                for (var u = 0; u < updates.length; u++) {
+                    taskOriginalValues[updates[u].id] = updates[u].fields['Task Status'];
+                }
+                markTaskDirty(eventId);
+            }
+            checklist.appendChild(resultDiv);
+            setTimeout(function() { resultDiv.remove(); }, 5000);
+            return;
+        }
+
+        var batch = batches[batchIdx];
+        fetch('https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_TASKS_TABLE, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ records: batch })
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                return response.json().then(function(err) {
+                    throw new Error(err.error ? err.error.message : 'HTTP ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(function() {
+            completed += batch.length;
+            processBatch(batchIdx + 1);
+        })
+        .catch(function(err) {
+            errors.push(err.message);
+            if (err.message && err.message.indexOf('AUTHENTICATION') !== -1) {
+                localStorage.removeItem('airtable_pat');
+                errors.push('Token invalid — cleared. Try again.');
+            }
+            processBatch(batchIdx + 1);
+        });
+    }
+
+    processBatch(0);
+}
+
 // ═══ Init on page load ═══
 document.addEventListener('DOMContentLoaded', function() {
     // Apply archive state
@@ -3853,8 +2996,11 @@ document.addEventListener('DOMContentLoaded', function() {
     for (var i = 0; i < noteAreas.length; i++) {
         renderNotes(noteAreas[i].dataset.eventId);
     }
+    // Track original task values
+    initTaskTracking();
 });
 
+    
     </script>
 </body>
 </html>
