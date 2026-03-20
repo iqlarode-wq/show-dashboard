@@ -1507,6 +1507,130 @@ body {
     color: white;
     border-color: var(--accent);
 }
+
+/* ─── Airtable Comments ─── */
+.comments-area {
+    padding: 4px 0;
+}
+.comments-loading {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 8px 0;
+    text-align: center;
+}
+.comments-error {
+    font-size: 12px;
+    color: var(--critical);
+    background: rgba(201, 76, 76, 0.08);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.comments-list {
+    margin-bottom: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.comment-item {
+    padding: 8px 10px;
+    background: var(--bg-alt);
+    border-radius: 6px;
+    border-left: 3px solid var(--accent);
+}
+.comment-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+.comment-author {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+}
+.comment-time {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+.comment-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.comments-empty {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-align: center;
+    padding: 12px 0;
+    font-style: italic;
+}
+.comments-add-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+.comments-input {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    background: var(--bg-page);
+    color: var(--text-primary);
+    outline: none;
+    transition: border 0.15s;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 36px;
+    max-height: 120px;
+}
+.comments-input:focus {
+    border-color: var(--accent);
+}
+.comments-post-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.15s;
+    white-space: nowrap;
+    align-self: flex-end;
+}
+.comments-post-btn:hover {
+    background: var(--accent-hover);
+}
+.comments-post-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.comments-post-btn.posting {
+    opacity: 0.6;
+    pointer-events: none;
+}
+.comments-refresh-btn {
+    display: inline-block;
+    margin-top: 6px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+.comments-refresh-btn:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+}
 .export-all-btn {
     background: none;
     border: 1px solid var(--border);
@@ -1764,6 +1888,21 @@ body {
         </div>
     </div>
 </details>
+        <details class="accordion-section" id="comments-accordion-recBggRLeCvC52Syi" ontoggle="onCommentsToggle('recBggRLeCvC52Syi')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recBggRLeCvC52Syi">
+            <div class="comments-list" id="comments-list-recBggRLeCvC52Syi">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recBggRLeCvC52Syi" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recBggRLeCvC52Syi');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recBggRLeCvC52Syi" onclick="postComment('recBggRLeCvC52Syi')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recBggRLeCvC52Syi')">Refresh</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
@@ -1859,6 +1998,21 @@ body {
         </div>
     </div>
 </details>
+        <details class="accordion-section" id="comments-accordion-rec1hmHTQF3PSBEHZ" ontoggle="onCommentsToggle('rec1hmHTQF3PSBEHZ')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-rec1hmHTQF3PSBEHZ">
+            <div class="comments-list" id="comments-list-rec1hmHTQF3PSBEHZ">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-rec1hmHTQF3PSBEHZ" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('rec1hmHTQF3PSBEHZ');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-rec1hmHTQF3PSBEHZ" onclick="postComment('rec1hmHTQF3PSBEHZ')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('rec1hmHTQF3PSBEHZ')">Refresh</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
@@ -1947,6 +2101,21 @@ body {
                 <button class="notes-add-btn" onclick="addNote('recmhpSJCbtCUL5Ci')">+</button>
             </div>
             <button class="notes-export-btn" onclick="exportNotesFile('recmhpSJCbtCUL5Ci', 'USCAP - Leica Biosystems #361146')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="comments-accordion-recmhpSJCbtCUL5Ci" ontoggle="onCommentsToggle('recmhpSJCbtCUL5Ci')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recmhpSJCbtCUL5Ci">
+            <div class="comments-list" id="comments-list-recmhpSJCbtCUL5Ci">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recmhpSJCbtCUL5Ci" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recmhpSJCbtCUL5Ci');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recmhpSJCbtCUL5Ci" onclick="postComment('recmhpSJCbtCUL5Ci')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recmhpSJCbtCUL5Ci')">Refresh</button>
         </div>
     </div>
 </details>
@@ -2064,6 +2233,21 @@ body {
         </div>
     </div>
 </details>
+        <details class="accordion-section" id="comments-accordion-recp7a04etMXiXE7w" ontoggle="onCommentsToggle('recp7a04etMXiXE7w')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recp7a04etMXiXE7w">
+            <div class="comments-list" id="comments-list-recp7a04etMXiXE7w">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recp7a04etMXiXE7w" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recp7a04etMXiXE7w');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recp7a04etMXiXE7w" onclick="postComment('recp7a04etMXiXE7w')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recp7a04etMXiXE7w')">Refresh</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
@@ -2159,6 +2343,21 @@ body {
         </div>
     </div>
 </details>
+        <details class="accordion-section" id="comments-accordion-recVHqaYbYwOR10kS" ontoggle="onCommentsToggle('recVHqaYbYwOR10kS')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recVHqaYbYwOR10kS">
+            <div class="comments-list" id="comments-list-recVHqaYbYwOR10kS">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recVHqaYbYwOR10kS" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recVHqaYbYwOR10kS');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recVHqaYbYwOR10kS" onclick="postComment('recVHqaYbYwOR10kS')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recVHqaYbYwOR10kS')">Refresh</button>
+        </div>
+    </div>
+</details>
     </div>
 </div>
 
@@ -2242,6 +2441,21 @@ body {
                 <button class="notes-add-btn" onclick="addNote('rec424142uv4EMt94')">+</button>
             </div>
             <button class="notes-export-btn" onclick="exportNotesFile('rec424142uv4EMt94', 'PSS - Honeywell EU + META #360177')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="comments-accordion-rec424142uv4EMt94" ontoggle="onCommentsToggle('rec424142uv4EMt94')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-rec424142uv4EMt94">
+            <div class="comments-list" id="comments-list-rec424142uv4EMt94">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-rec424142uv4EMt94" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('rec424142uv4EMt94');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-rec424142uv4EMt94" onclick="postComment('rec424142uv4EMt94')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('rec424142uv4EMt94')">Refresh</button>
         </div>
     </div>
 </details>
@@ -2337,6 +2551,21 @@ body {
                 <button class="notes-add-btn" onclick="addNote('recrw32m5ciX8gWbt')">+</button>
             </div>
             <button class="notes-export-btn" onclick="exportNotesFile('recrw32m5ciX8gWbt', 'HRS - Impulse Dynamics #360937')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="comments-accordion-recrw32m5ciX8gWbt" ontoggle="onCommentsToggle('recrw32m5ciX8gWbt')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recrw32m5ciX8gWbt">
+            <div class="comments-list" id="comments-list-recrw32m5ciX8gWbt">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recrw32m5ciX8gWbt" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recrw32m5ciX8gWbt');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recrw32m5ciX8gWbt" onclick="postComment('recrw32m5ciX8gWbt')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recrw32m5ciX8gWbt')">Refresh</button>
         </div>
     </div>
 </details>
@@ -2440,6 +2669,21 @@ body {
                 <button class="notes-add-btn" onclick="addNote('recq49LuQliCAooZ0')">+</button>
             </div>
             <button class="notes-export-btn" onclick="exportNotesFile('recq49LuQliCAooZ0', 'AUA - Novartis #361092')">Export Notes (.md)</button>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="comments-accordion-recq49LuQliCAooZ0" ontoggle="onCommentsToggle('recq49LuQliCAooZ0')">
+    <summary>Airtable Comments</summary>
+    <div class="accordion-content">
+        <div class="comments-area" id="comments-area-recq49LuQliCAooZ0">
+            <div class="comments-list" id="comments-list-recq49LuQliCAooZ0">
+                <div class="comments-empty">Expand to load comments</div>
+            </div>
+            <div class="comments-add-row">
+                <textarea class="comments-input" id="comments-input-recq49LuQliCAooZ0" placeholder="Write a comment..." rows="1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();postComment('recq49LuQliCAooZ0');}"></textarea>
+                <button class="comments-post-btn" id="comments-post-btn-recq49LuQliCAooZ0" onclick="postComment('recq49LuQliCAooZ0')">Post</button>
+            </div>
+            <button class="comments-refresh-btn" onclick="fetchComments('recq49LuQliCAooZ0')">Refresh</button>
         </div>
     </div>
 </details>
@@ -2841,6 +3085,7 @@ function exportAllNotes() {
 // ═══ Task Checklist — Airtable Push ═══
 var AIRTABLE_BASE = 'appcbc1CDJKyKb8db';
 var AIRTABLE_TASKS_TABLE = 'tbl5RQ4eWcGKrwNDR';
+var AIRTABLE_EVENTS_TABLE = 'tblno1XUMyyVeA2z6';
 var taskOriginalValues = {};
 
 // Track original values on page load
@@ -2992,6 +3237,165 @@ function pushTasksToAirtable(eventId) {
     }
 
     processBatch(0);
+}
+
+// ═══ Airtable Comments ═══
+var commentsCache = {};
+
+function fetchComments(eventId) {
+    var area = document.getElementById('comments-area-' + eventId);
+    if (!area) return;
+
+    var listEl = document.getElementById('comments-list-' + eventId);
+    listEl.innerHTML = '<div class="comments-loading">Loading comments...</div>';
+
+    var token = getAirtableToken();
+    if (!token) {
+        listEl.innerHTML = '<div class="comments-error">No Airtable token set. Click Post to set one.</div>';
+        return;
+    }
+
+    var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId + '/comments';
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + token
+        }
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            return response.json().then(function(err) {
+                throw new Error(err.error ? err.error.message : 'HTTP ' + response.status);
+            });
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        var comments = data.comments || [];
+        commentsCache[eventId] = comments;
+        renderComments(eventId, comments);
+    })
+    .catch(function(err) {
+        if (err.message && err.message.indexOf('AUTHENTICATION') !== -1) {
+            localStorage.removeItem('airtable_pat');
+            listEl.innerHTML = '<div class="comments-error">Token expired — cleared. Expand again to re-enter.</div>';
+        } else {
+            listEl.innerHTML = '<div class="comments-error">Error loading comments: ' + err.message + '</div>';
+        }
+    });
+}
+
+function renderComments(eventId, comments) {
+    var listEl = document.getElementById('comments-list-' + eventId);
+    if (!listEl) return;
+
+    if (!comments || comments.length === 0) {
+        listEl.innerHTML = '<div class="comments-empty">No comments yet</div>';
+        return;
+    }
+
+    // Sort chronologically (oldest first)
+    var sorted = comments.slice().sort(function(a, b) {
+        return new Date(a.createdTime) - new Date(b.createdTime);
+    });
+
+    var html = '';
+    for (var i = 0; i < sorted.length; i++) {
+        var c = sorted[i];
+        var authorName = 'Unknown';
+        if (c.author && c.author.name) {
+            authorName = c.author.name;
+        } else if (c.author && c.author.email) {
+            authorName = c.author.email;
+        }
+        var timeStr = formatCommentTime(c.createdTime);
+        var text = escapeHtml(c.text || '');
+        html += '<div class="comment-item">';
+        html += '<div class="comment-meta"><span class="comment-author">' + escapeHtml(authorName) + '</span><span class="comment-time">' + timeStr + '</span></div>';
+        html += '<div class="comment-text">' + text + '</div>';
+        html += '</div>';
+    }
+    listEl.innerHTML = html;
+}
+
+function formatCommentTime(isoStr) {
+    if (!isoStr) return '';
+    var d = new Date(isoStr);
+    var now = new Date();
+    var diffMs = now - d;
+    var diffMins = Math.floor(diffMs / 60000);
+    var diffHours = Math.floor(diffMs / 3600000);
+    var diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return diffMins + 'm ago';
+    if (diffHours < 24) return diffHours + 'h ago';
+    if (diffDays < 7) return diffDays + 'd ago';
+
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+}
+
+function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function postComment(eventId) {
+    var input = document.getElementById('comments-input-' + eventId);
+    var text = input.value.trim();
+    if (!text) return;
+
+    var token = getAirtableToken();
+    if (!token) return;
+
+    var btn = document.getElementById('comments-post-btn-' + eventId);
+    if (btn) { btn.classList.add('posting'); btn.textContent = 'Posting...'; }
+    input.disabled = true;
+
+    var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId + '/comments';
+
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ text: text })
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            return response.json().then(function(err) {
+                throw new Error(err.error ? err.error.message : 'HTTP ' + response.status);
+            });
+        }
+        return response.json();
+    })
+    .then(function() {
+        input.value = '';
+        input.disabled = false;
+        if (btn) { btn.classList.remove('posting'); btn.textContent = 'Post'; }
+        fetchComments(eventId);
+    })
+    .catch(function(err) {
+        input.disabled = false;
+        if (btn) { btn.classList.remove('posting'); btn.textContent = 'Post'; }
+        if (err.message && err.message.indexOf('AUTHENTICATION') !== -1) {
+            localStorage.removeItem('airtable_pat');
+            alert('Airtable token expired. Cleared — try again.');
+        } else {
+            alert('Error posting comment: ' + err.message);
+        }
+    });
+}
+
+function onCommentsToggle(eventId) {
+    var details = document.getElementById('comments-accordion-' + eventId);
+    if (details && details.open && !commentsCache[eventId]) {
+        fetchComments(eventId);
+    }
 }
 
 // ═══ Init on page load ═══
