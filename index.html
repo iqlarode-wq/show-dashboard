@@ -3116,13 +3116,19 @@ function toggleCard(id) {
 }
 
 function navigateToDetail(eventId) {
+    var detailView = document.querySelector('.detail-view[data-event-id="' + eventId + '"]');
+    if (!detailView) {
+        // No detail view exists — just toggle the card open instead
+        toggleCard(eventId);
+        return;
+    }
     document.querySelector('.grid-view').style.display = 'none';
     var views = document.querySelectorAll('.detail-view');
     for (var i = 0; i < views.length; i++) {
         views[i].style.display = views[i].dataset.eventId === eventId ? 'flex' : 'none';
     }
     window.scrollTo(0, 0);
-    var firstItem = document.querySelector('.detail-view[data-event-id="' + eventId + '"] .email-list-item');
+    var firstItem = detailView.querySelector('.email-list-item');
     if (firstItem) firstItem.click();
 }
 
