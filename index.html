@@ -900,6 +900,197 @@ body {
     text-decoration: underline;
 }
 
+/* ─── Files & Links Section ─── */
+.files-area {
+    padding: 4px 0;
+}
+.files-loading {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    padding: 8px 0;
+    text-align: center;
+}
+.files-error {
+    font-size: 12px;
+    color: var(--critical);
+    background: rgba(201, 76, 76, 0.08);
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.files-empty {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    text-align: center;
+    padding: 8px 0;
+    font-style: italic;
+}
+.files-dropbox-grid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+.files-dropbox-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 12px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.15s;
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+}
+.files-dropbox-btn:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.files-dropbox-btn .dbx-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+.files-divider {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 8px 0 10px;
+}
+.files-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+}
+.files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+.file-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    background: var(--bg-alt);
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+.file-item:hover {
+    background: var(--bg-page);
+}
+.file-icon {
+    font-size: 16px;
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+.file-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.file-meta {
+    font-size: 10px;
+    color: var(--text-tertiary);
+}
+.file-link {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    flex-shrink: 0;
+    transition: all 0.15s;
+}
+.file-link:hover {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+}
+.files-upload-row {
+    display: flex;
+    gap: 6px;
+    margin-top: 4px;
+}
+.files-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px dashed var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+}
+.files-upload-btn:hover {
+    background: var(--bg-alt);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.files-airtable-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 6px 12px;
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    text-decoration: none;
+}
+.files-airtable-link:hover {
+    background: var(--bg-alt);
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.files-upload-status {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+    display: none;
+}
+.files-upload-status.active {
+    display: block;
+}
+.files-upload-status.error {
+    color: var(--critical);
+    display: block;
+}
+.files-upload-status.success {
+    color: var(--success);
+    display: block;
+}
+
+
+
 /* Next Action Bar */
 .next-action-bar {
     display: flex;
@@ -1873,7 +2064,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> (3) 55" Monitors - Plinths, (2) 65" Monitors - IVUS & Hospitality, (3) Monitors for Monitor Arms, (8) NUCS... TECH SUITE: (6) 55" Monitors, (6) Dual Post Stands w/ Socks, (6) NUCS</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/9d0tp6gbodb249g56z5hz/ADZZWcMjAHK3PUG3diNOP4I?rlkey=xzmryxpeajco33u6l616aey5p&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -1887,8 +2078,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recBggRLeCvC52Syi', 'CRT - Boston Scientific #359986')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recBggRLeCvC52Syi" ontoggle="onCommentsToggle('recBggRLeCvC52Syi')">
+</details>        <details class="accordion-section" id="comments-accordion-recBggRLeCvC52Syi" ontoggle="onCommentsToggle('recBggRLeCvC52Syi')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recBggRLeCvC52Syi">
@@ -1900,6 +2090,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recBggRLeCvC52Syi" onclick="postComment('recBggRLeCvC52Syi')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recBggRLeCvC52Syi')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recBggRLeCvC52Syi')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recBggRLeCvC52Syi" ontoggle="onFilesToggle('recBggRLeCvC52Syi')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recBggRLeCvC52Syi">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recBggRLeCvC52Syi" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recBggRLeCvC52Syi" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recBggRLeCvC52Syi">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recBggRLeCvC52Syi', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recBggRLeCvC52Syi" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recBggRLeCvC52Syi"></div>
         </div>
     </div>
 </details>
@@ -1983,7 +2196,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> LED SCREENS: L Shaped Overhead wall, Vanish tiles, (4) 42" Monitors (1) 70-80" Monitor, computer for all 5. 20x20 booth</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/7jjyrgut398j9u8it537i/AAiqaf1HroSHvZrubjIg2Ew?rlkey=c40dtm19z901vsmr49v5plhkl&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -1997,8 +2210,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('rec1hmHTQF3PSBEHZ', 'RSAC - AuditBoard #359999')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-rec1hmHTQF3PSBEHZ" ontoggle="onCommentsToggle('rec1hmHTQF3PSBEHZ')">
+</details>        <details class="accordion-section" id="comments-accordion-rec1hmHTQF3PSBEHZ" ontoggle="onCommentsToggle('rec1hmHTQF3PSBEHZ')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-rec1hmHTQF3PSBEHZ">
@@ -2010,6 +2222,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-rec1hmHTQF3PSBEHZ" onclick="postComment('rec1hmHTQF3PSBEHZ')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('rec1hmHTQF3PSBEHZ')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('rec1hmHTQF3PSBEHZ')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-rec1hmHTQF3PSBEHZ" ontoggle="onFilesToggle('rec1hmHTQF3PSBEHZ')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-rec1hmHTQF3PSBEHZ">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-rec1hmHTQF3PSBEHZ" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-rec1hmHTQF3PSBEHZ" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-rec1hmHTQF3PSBEHZ">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('rec1hmHTQF3PSBEHZ', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/rec1hmHTQF3PSBEHZ" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-rec1hmHTQF3PSBEHZ"></div>
         </div>
     </div>
 </details>
@@ -2089,7 +2324,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> LED Wall 7x4 Alluvision, (2) 55 Touch with Mini-PC, (2) 43 Non-Touch...</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/r6nqr5cdo77j04hf51qp5/AAKC99BOfrAJVeIkgecpGek?rlkey=xwmnieru2pyahapbrku8a5s0b&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2103,8 +2338,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recmhpSJCbtCUL5Ci', 'USCAP - Leica Biosystems #361146')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recmhpSJCbtCUL5Ci" ontoggle="onCommentsToggle('recmhpSJCbtCUL5Ci')">
+</details>        <details class="accordion-section" id="comments-accordion-recmhpSJCbtCUL5Ci" ontoggle="onCommentsToggle('recmhpSJCbtCUL5Ci')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recmhpSJCbtCUL5Ci">
@@ -2116,6 +2350,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recmhpSJCbtCUL5Ci" onclick="postComment('recmhpSJCbtCUL5Ci')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recmhpSJCbtCUL5Ci')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recmhpSJCbtCUL5Ci')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recmhpSJCbtCUL5Ci" ontoggle="onFilesToggle('recmhpSJCbtCUL5Ci')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recmhpSJCbtCUL5Ci">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recmhpSJCbtCUL5Ci" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recmhpSJCbtCUL5Ci" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recmhpSJCbtCUL5Ci">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recmhpSJCbtCUL5Ci', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recmhpSJCbtCUL5Ci" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recmhpSJCbtCUL5Ci"></div>
         </div>
     </div>
 </details>
@@ -2218,7 +2475,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> LED SCREENS: 3x5 wall 4x5 floor</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/6n8ljeaarhzguw5kdna7a/AGjYZ_z1FDB7kOTnIs6neSU?rlkey=zfknk7pfzk3416us2ji564vsf&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2232,8 +2489,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recp7a04etMXiXE7w', 'ASCRS - Bausch & Lomb #360170')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recp7a04etMXiXE7w" ontoggle="onCommentsToggle('recp7a04etMXiXE7w')">
+</details>        <details class="accordion-section" id="comments-accordion-recp7a04etMXiXE7w" ontoggle="onCommentsToggle('recp7a04etMXiXE7w')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recp7a04etMXiXE7w">
@@ -2245,6 +2501,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recp7a04etMXiXE7w" onclick="postComment('recp7a04etMXiXE7w')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recp7a04etMXiXE7w')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recp7a04etMXiXE7w')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recp7a04etMXiXE7w" ontoggle="onFilesToggle('recp7a04etMXiXE7w')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recp7a04etMXiXE7w">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recp7a04etMXiXE7w" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recp7a04etMXiXE7w" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recp7a04etMXiXE7w">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recp7a04etMXiXE7w', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recp7a04etMXiXE7w" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recp7a04etMXiXE7w"></div>
         </div>
     </div>
 </details>
@@ -2328,7 +2607,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> 50x50 booth, LED wall at the front</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/1bw9meg5qp6rku93o6yld/ADVnDlQGHjXri7ucc0DNzxo?rlkey=kpiyopz5pyyleezrs63i5wlm3&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2342,8 +2621,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recVHqaYbYwOR10kS', 'Modex - Honeywell #360175')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recVHqaYbYwOR10kS" ontoggle="onCommentsToggle('recVHqaYbYwOR10kS')">
+</details>        <details class="accordion-section" id="comments-accordion-recVHqaYbYwOR10kS" ontoggle="onCommentsToggle('recVHqaYbYwOR10kS')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recVHqaYbYwOR10kS">
@@ -2355,6 +2633,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recVHqaYbYwOR10kS" onclick="postComment('recVHqaYbYwOR10kS')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recVHqaYbYwOR10kS')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recVHqaYbYwOR10kS')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recVHqaYbYwOR10kS" ontoggle="onFilesToggle('recVHqaYbYwOR10kS')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recVHqaYbYwOR10kS">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recVHqaYbYwOR10kS" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recVHqaYbYwOR10kS" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recVHqaYbYwOR10kS">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recVHqaYbYwOR10kS', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recVHqaYbYwOR10kS" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recVHqaYbYwOR10kS"></div>
         </div>
     </div>
 </details>
@@ -2429,7 +2730,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> Onsite Production Support for general session, breakouts</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/2snftbrkdsslav9jwc3re/ACS6NpobeiE5w_gJ4xpBWUI?rlkey=4jhvz9hzefqk94yopylv8drm2&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2443,8 +2744,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('rec424142uv4EMt94', 'PSS - Honeywell EU + META #360177')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-rec424142uv4EMt94" ontoggle="onCommentsToggle('rec424142uv4EMt94')">
+</details>        <details class="accordion-section" id="comments-accordion-rec424142uv4EMt94" ontoggle="onCommentsToggle('rec424142uv4EMt94')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-rec424142uv4EMt94">
@@ -2456,6 +2756,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-rec424142uv4EMt94" onclick="postComment('rec424142uv4EMt94')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('rec424142uv4EMt94')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('rec424142uv4EMt94')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-rec424142uv4EMt94" ontoggle="onFilesToggle('rec424142uv4EMt94')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-rec424142uv4EMt94">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-rec424142uv4EMt94" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-rec424142uv4EMt94" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-rec424142uv4EMt94">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('rec424142uv4EMt94', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/rec424142uv4EMt94" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-rec424142uv4EMt94"></div>
         </div>
     </div>
 </details>
@@ -2539,7 +2862,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> LED SCREENS: 8w x 4h topaz (curved) + 2 new wall options, presentation audio, small booth lighting</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/expl9apqxume7809zj9x5/AMOip_c50TNHZvAIOdoHIYo?rlkey=nmut5x3k30x2x79nksrebbgcb&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2553,8 +2876,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recrw32m5ciX8gWbt', 'HRS - Impulse Dynamics #360937')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recrw32m5ciX8gWbt" ontoggle="onCommentsToggle('recrw32m5ciX8gWbt')">
+</details>        <details class="accordion-section" id="comments-accordion-recrw32m5ciX8gWbt" ontoggle="onCommentsToggle('recrw32m5ciX8gWbt')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recrw32m5ciX8gWbt">
@@ -2566,6 +2888,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recrw32m5ciX8gWbt" onclick="postComment('recrw32m5ciX8gWbt')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recrw32m5ciX8gWbt')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recrw32m5ciX8gWbt')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recrw32m5ciX8gWbt" ontoggle="onFilesToggle('recrw32m5ciX8gWbt')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recrw32m5ciX8gWbt">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recrw32m5ciX8gWbt" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recrw32m5ciX8gWbt" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recrw32m5ciX8gWbt">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recrw32m5ciX8gWbt', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recrw32m5ciX8gWbt" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recrw32m5ciX8gWbt"></div>
         </div>
     </div>
 </details>
@@ -2657,7 +3002,7 @@ body {
     <details><summary>Client Notes</summary>
     <div class="note-content"><strong>Needs:</strong> LED SCREENS: 36' on 2 faces, 11' on returns, LED squared arch, circular interactive piece</div></details>
 </div>
-<div class="dropbox-row"><a href="https://www.dropbox.com/scl/fo/up7fuaofbifdzbxjjc8uv/AITCGOXwVQEV1riLwqcIvPk?rlkey=209z7g890kmd2ejyn28615932&dl=0" target="_blank" class="dropbox-link">Dropbox Folder</a></div></div>
+</div>
 </details>
         <details class="accordion-section" open>
     <summary>My Notes / To-Do</summary>
@@ -2671,8 +3016,7 @@ body {
             <button class="notes-export-btn" onclick="exportNotesFile('recq49LuQliCAooZ0', 'AUA - Novartis #361092')">Export Notes (.md)</button>
         </div>
     </div>
-</details>
-        <details class="accordion-section" id="comments-accordion-recq49LuQliCAooZ0" ontoggle="onCommentsToggle('recq49LuQliCAooZ0')">
+</details>        <details class="accordion-section" id="comments-accordion-recq49LuQliCAooZ0" ontoggle="onCommentsToggle('recq49LuQliCAooZ0')">
     <summary>Airtable Comments</summary>
     <div class="accordion-content">
         <div class="comments-area" id="comments-area-recq49LuQliCAooZ0">
@@ -2684,6 +3028,29 @@ body {
                 <button class="comments-post-btn" id="comments-post-btn-recq49LuQliCAooZ0" onclick="postComment('recq49LuQliCAooZ0')">Post</button>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;"><button class="comments-refresh-btn" onclick="fetchComments('recq49LuQliCAooZ0')">Refresh</button><button class="comments-refresh-btn" onclick="resetAirtableToken();fetchComments('recq49LuQliCAooZ0')">Reset Token</button></div>
+        </div>
+    </div>
+</details>
+        <details class="accordion-section" id="files-accordion-recq49LuQliCAooZ0" ontoggle="onFilesToggle('recq49LuQliCAooZ0')">
+    <summary>Files &amp; Documents</summary>
+    <div class="accordion-content">
+        <div class="files-area">
+            <div class="files-dropbox-grid" id="files-dropbox-recq49LuQliCAooZ0">
+                <div class="files-loading">Loading Dropbox links...</div>
+            </div>
+            <div class="files-divider" id="files-divider-recq49LuQliCAooZ0" style="display:none;"></div>
+            <div class="files-section-label" id="files-label-recq49LuQliCAooZ0" style="display:none;">Airtable Attachments</div>
+            <div class="files-list" id="files-list-recq49LuQliCAooZ0">
+                <div class="files-empty">Expand to load files...</div>
+            </div>
+            <div class="files-upload-row">
+                <label class="files-upload-btn">
+                    + Attach File
+                    <input type="file" style="display:none" onchange="uploadFileToAirtable('recq49LuQliCAooZ0', this)">
+                </label>
+                <a href="https://airtable.com/appcbc1CDJKyKb8db/tblno1XUMyyVeA2z6/recq49LuQliCAooZ0" target="_blank" class="files-airtable-link">Open in Airtable</a>
+            </div>
+            <div class="files-upload-status" id="files-upload-status-recq49LuQliCAooZ0"></div>
         </div>
     </div>
 </details>
@@ -3418,10 +3785,254 @@ function postComment(eventId) {
     });
 }
 
+
 function onCommentsToggle(eventId) {
     var details = document.getElementById('comments-accordion-' + eventId);
     if (details && details.open && !commentsCache[eventId]) {
         fetchComments(eventId);
+    }
+}
+
+
+// ═══ Files & Links Section ═══
+var filesCache = {};
+var AIRTABLE_FILES_FIELD = 'fldcAZQcavyAZIOH2';
+
+function getFileIcon(type, filename) {
+    if (!type) type = '';
+    if (!filename) filename = '';
+    var ext = filename.split('.').pop().toLowerCase();
+    if (type.indexOf('image') === 0) return '\ud83d\uddbc\ufe0f';
+    if (type.indexOf('video') === 0) return '\ud83c\udfac';
+    if (type === 'application/pdf' || ext === 'pdf') return '\ud83d\udcc4';
+    if (type.indexOf('spreadsheet') !== -1 || ext === 'xlsx' || ext === 'xls' || ext === 'csv') return '\ud83d\udcca';
+    if (type.indexOf('presentation') !== -1 || ext === 'pptx' || ext === 'ppt') return '\ud83d\udcfd\ufe0f';
+    if (type.indexOf('document') !== -1 || type.indexOf('word') !== -1 || ext === 'docx' || ext === 'doc') return '\ud83d\udcdd';
+    if (type.indexOf('zip') !== -1 || type.indexOf('compressed') !== -1 || ext === 'zip' || ext === 'rar') return '\ud83d\udce6';
+    if (type.indexOf('text') === 0 || ext === 'txt' || ext === 'md') return '\ud83d\udcc3';
+    return '\ud83d\udcce';
+}
+
+function formatFileSize(bytes) {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+}
+
+function fetchFiles(eventId) {
+    var listEl = document.getElementById('files-list-' + eventId);
+    var dbxGrid = document.getElementById('files-dropbox-' + eventId);
+    if (!listEl) return;
+
+    listEl.innerHTML = '<div class="files-loading">Loading files...</div>';
+
+    var token = localStorage.getItem('airtable_pat');
+    if (!token) {
+        token = resetAirtableToken();
+        if (!token) {
+            listEl.innerHTML = '<div class="files-error">No token provided. Click "Reset Token" in Comments to enter one.</div>';
+            return;
+        }
+    }
+
+    // Fetch specific fields: Files attachment, Dropbox URLs
+    var fields = [
+        'fields%5B%5D=' + AIRTABLE_FILES_FIELD,
+        'fields%5B%5D=Dropbox+URL',
+        'fields%5B%5D=Dropbox+Content+URL',
+        'fields%5B%5D=Dropbox+Quotes+Folder'
+    ].join('&');
+
+    var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId + '?' + fields;
+    console.log('[Files] Fetching:', url);
+
+    fetch(url, {
+        method: 'GET',
+        headers: { 'Authorization': 'Bearer ' + token }
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            return response.json().then(function(err) {
+                var msg = err.error ? err.error.message : 'HTTP ' + response.status;
+                if (response.status === 401 || response.status === 403) {
+                    throw new Error('AUTH_ERROR:' + msg);
+                }
+                throw new Error(msg);
+            });
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        var fields = data.fields || {};
+        filesCache[eventId] = data;
+        renderDropboxLinks(eventId, fields);
+        renderFilesList(eventId, fields);
+    })
+    .catch(function(err) {
+        var msg = err.message || '';
+        if (msg.indexOf('AUTH_ERROR') === 0) {
+            localStorage.removeItem('airtable_pat');
+            var detail = msg.replace('AUTH_ERROR:', '');
+            listEl.innerHTML = '<div class="files-error">Token rejected: ' + escapeHtml(detail) + '<br><small>Click Reset Token in Comments section.</small></div>';
+        } else {
+            listEl.innerHTML = '<div class="files-error">Error loading files: ' + escapeHtml(msg) + '</div>';
+        }
+    });
+}
+
+function renderDropboxLinks(eventId, fields) {
+    var grid = document.getElementById('files-dropbox-' + eventId);
+    if (!grid) return;
+
+    var showUrl = fields['Dropbox URL'] || '';
+    var contentUrl = fields['Dropbox Content URL'] || '';
+    var quotesUrl = fields['Dropbox Quotes Folder'] || '';
+
+    var html = '';
+    if (showUrl) {
+        html += '<a href="' + escapeHtml(showUrl) + '" target="_blank" class="files-dropbox-btn"><span class="dbx-icon">\ud83d\udcc2</span> Show Folder</a>';
+    }
+    if (contentUrl) {
+        html += '<a href="' + escapeHtml(contentUrl) + '" target="_blank" class="files-dropbox-btn"><span class="dbx-icon">\ud83c\udfa8</span> Content</a>';
+    }
+    if (quotesUrl) {
+        html += '<a href="' + escapeHtml(quotesUrl) + '" target="_blank" class="files-dropbox-btn"><span class="dbx-icon">\ud83d\udcb0</span> Quotes</a>';
+    }
+
+    if (!html) {
+        html = '<div class="files-empty">No Dropbox links configured</div>';
+    }
+    grid.innerHTML = html;
+}
+
+function renderFilesList(eventId, fields) {
+    var listEl = document.getElementById('files-list-' + eventId);
+    var divider = document.getElementById('files-divider-' + eventId);
+    var label = document.getElementById('files-label-' + eventId);
+    if (!listEl) return;
+
+    // The Files field uses the field ID as key when fetched by field ID
+    var files = fields[AIRTABLE_FILES_FIELD] || [];
+
+    if (!files || files.length === 0) {
+        listEl.innerHTML = '<div class="files-empty">No attachments</div>';
+        if (divider) divider.style.display = 'block';
+        if (label) label.style.display = 'block';
+        return;
+    }
+
+    if (divider) divider.style.display = 'block';
+    if (label) label.style.display = 'block';
+
+    var html = '';
+    for (var i = 0; i < files.length; i++) {
+        var f = files[i];
+        var icon = getFileIcon(f.type || '', f.filename || '');
+        var name = f.filename || 'Untitled';
+        var size = formatFileSize(f.size);
+        var fileUrl = f.url || '#';
+
+        html += '<div class="file-item">';
+        html += '<span class="file-icon">' + icon + '</span>';
+        html += '<div class="file-info">';
+        html += '<div class="file-name" title="' + escapeHtml(name) + '">' + escapeHtml(name) + '</div>';
+        if (size) html += '<div class="file-meta">' + size + (f.type ? ' \u2022 ' + escapeHtml(f.type.split('/').pop()) : '') + '</div>';
+        html += '</div>';
+        html += '<a href="' + escapeHtml(fileUrl) + '" target="_blank" class="file-link">Open</a>';
+        html += '</div>';
+    }
+    listEl.innerHTML = html;
+}
+
+function uploadFileToAirtable(eventId, inputEl) {
+    var file = inputEl.files && inputEl.files[0];
+    if (!file) return;
+
+    var statusEl = document.getElementById('files-upload-status-' + eventId);
+    if (!statusEl) return;
+
+    var token = localStorage.getItem('airtable_pat');
+    if (!token) {
+        token = resetAirtableToken();
+        if (!token) {
+            statusEl.className = 'files-upload-status error';
+            statusEl.textContent = 'No token provided.';
+            return;
+        }
+    }
+
+    statusEl.className = 'files-upload-status active';
+    statusEl.textContent = 'Uploading ' + file.name + '...';
+
+    // Read file as base64 data URL
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        var dataUrl = e.target.result;
+
+        // Build attachment array — append to existing
+        var existingFiles = [];
+        if (filesCache[eventId] && filesCache[eventId].fields) {
+            var cached = filesCache[eventId].fields[AIRTABLE_FILES_FIELD] || [];
+            for (var i = 0; i < cached.length; i++) {
+                existingFiles.push({ url: cached[i].url });
+            }
+        }
+        existingFiles.push({ url: dataUrl, filename: file.name });
+
+        var patchBody = { fields: {} };
+        patchBody.fields[AIRTABLE_FILES_FIELD] = existingFiles;
+
+        var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId;
+
+        fetch(url, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': 'Bearer ' + token,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(patchBody)
+        })
+        .then(function(response) {
+            if (!response.ok) {
+                return response.json().then(function(err) {
+                    throw new Error(err.error ? err.error.message : 'HTTP ' + response.status);
+                });
+            }
+            return response.json();
+        })
+        .then(function(data) {
+            statusEl.className = 'files-upload-status success';
+            statusEl.textContent = file.name + ' uploaded successfully!';
+            // Clear the file input
+            inputEl.value = '';
+            // Refresh file list
+            filesCache[eventId] = data;
+            renderFilesList(eventId, data.fields || {});
+            // Auto-hide success after 3s
+            setTimeout(function() {
+                statusEl.className = 'files-upload-status';
+                statusEl.textContent = '';
+            }, 3000);
+        })
+        .catch(function(err) {
+            statusEl.className = 'files-upload-status error';
+            statusEl.textContent = 'Upload failed: ' + (err.message || 'Unknown error') + '. Try uploading directly in Airtable.';
+            inputEl.value = '';
+        });
+    };
+    reader.onerror = function() {
+        statusEl.className = 'files-upload-status error';
+        statusEl.textContent = 'Could not read file. Try uploading directly in Airtable.';
+        inputEl.value = '';
+    };
+    reader.readAsDataURL(file);
+}
+
+function onFilesToggle(eventId) {
+    var details = document.getElementById('files-accordion-' + eventId);
+    if (details && details.open && !filesCache[eventId]) {
+        fetchFiles(eventId);
     }
 }
 
