@@ -3870,7 +3870,7 @@ function fetchFiles(eventId) {
 
     // Fetch specific fields: Files attachment, Dropbox URLs
     var fields = [
-        'fields%5B%5D=' + AIRTABLE_FILES_FIELD,
+        'fields%5B%5D=Files',
         'fields%5B%5D=Dropbox+URL',
         'fields%5B%5D=Dropbox+Content+URL',
         'fields%5B%5D=Dropbox+Quotes+Folder'
@@ -3944,8 +3944,8 @@ function renderFilesList(eventId, fields) {
     var label = document.getElementById('files-label-' + eventId);
     if (!listEl) return;
 
-    // The Files field uses the field ID as key when fetched by field ID
-    var files = fields[AIRTABLE_FILES_FIELD] || [];
+    // The Files field returns under the field name key
+    var files = fields['Files'] || fields[AIRTABLE_FILES_FIELD] || [];
 
     if (!files || files.length === 0) {
         listEl.innerHTML = '<div class="files-empty">No attachments</div>';
@@ -4005,7 +4005,7 @@ function uploadFileToAirtable(eventId, inputEl) {
         // Build attachment array — append to existing
         var existingFiles = [];
         if (filesCache[eventId] && filesCache[eventId].fields) {
-            var cached = filesCache[eventId].fields[AIRTABLE_FILES_FIELD] || [];
+            var cached = filesCache[eventId].fields['Files'] || filesCache[eventId].fields[AIRTABLE_FILES_FIELD] || [];
             for (var i = 0; i < cached.length; i++) {
                 existingFiles.push({ url: cached[i].url });
             }
