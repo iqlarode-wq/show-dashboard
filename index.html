@@ -3874,15 +3874,8 @@ function fetchFiles(eventId) {
         }
     }
 
-    // Fetch specific fields: Files attachment, Dropbox URLs
-    var fields = [
-        'fields%5B%5D=Files',
-        'fields%5B%5D=Dropbox+URL',
-        'fields%5B%5D=Dropbox+Content+URL',
-        'fields%5B%5D=Dropbox+Quotes+Folder'
-    ].join('&');
-
-    var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId + '?' + fields;
+    // Fetch the full record (files + dropbox URLs are extracted from the response)
+    var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId;
     console.log('[Files] Fetching:', url);
 
     fetch(url, {
