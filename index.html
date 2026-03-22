@@ -604,6 +604,33 @@ body {
     color: var(--text-tertiary);
 }
 
+.crew-contact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 2px;
+}
+
+.crew-contact a {
+    font-size: 11px;
+    color: var(--accent);
+    text-decoration: none;
+    opacity: 0.85;
+}
+
+.crew-contact a:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.crew-phone::before {
+    content: '\260E\00a0';
+}
+
+.crew-email::before {
+    content: '\2709\00a0';
+}
+
 .crew-status {
     font-size: 10px;
     padding: 2px 6px;
@@ -2051,14 +2078,12 @@ body {
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div><div class="crew-contact"><a href="tel:4434169087" class="crew-phone">(443) 416-9087</a> <a href="mailto:bzackld@gmail.com" class="crew-email">bzackld@gmail.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div><div class="crew-contact"><a href="tel:5165472935" class="crew-phone">516-547-2935</a> <a href="mailto:kbarry@fuse-tg.com" class="crew-email">kbarry@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 50 open)</summary>
@@ -2187,14 +2212,12 @@ body {
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:5166065450" class="crew-phone">516-606-5450</a> <a href="mailto:Ilarode@fuse-tg.com" class="crew-email">Ilarode@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Michael Mathews</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Michael Mathews</div><div class="crew-role">RIG</div><div class="crew-contact"><a href="tel:5163514991" class="crew-phone">(516) 351-4991</a> <a href="mailto:mmatthews@riggingdynamics.com" class="crew-email">mmatthews@riggingdynamics.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 50 open)</summary>
@@ -2323,10 +2346,9 @@ body {
         <details class="accordion-section">
     <summary>Crew (1)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">David Devore</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">David Devore</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:6014059938" class="crew-phone">(601) 405-9938</a> <a href="mailto:davidadevore@gmail.com" class="crew-email">davidadevore@gmail.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 44 open)</summary>
@@ -2454,34 +2476,27 @@ body {
         <details class="accordion-section">
     <summary>Crew (7)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:5166065450" class="crew-phone">516-606-5450</a> <a href="mailto:Ilarode@fuse-tg.com" class="crew-email">Ilarode@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Luke Irvine</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Luke Irvine</div><div class="crew-role">LoadIn</div><div class="crew-contact"><a href="tel:9792502037" class="crew-phone">979-250-2037</a> <a href="mailto:lirvine@fuse-tg.com" class="crew-email">lirvine@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Dan Sonnenberg</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Dan Sonnenberg</div><div class="crew-role">LoadIn</div><div class="crew-contact"><a href="tel:8178944096" class="crew-phone">817-894-4096</a> <a href="mailto:dsonnenberg@fuse-tg.com" class="crew-email">dsonnenberg@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Kevin Barry</div><div class="crew-role">LoadIn</div><div class="crew-contact"><a href="tel:5165472935" class="crew-phone">516-547-2935</a> <a href="mailto:kbarry@fuse-tg.com" class="crew-email">kbarry@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">LED2</div><div class="crew-contact"><a href="tel:4045803773" class="crew-phone">(404) 580-3773</a> <a href="mailto:johnnyjordan01@yahoo.com" class="crew-email">johnnyjordan01@yahoo.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Will Johnson</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Will Johnson</div><div class="crew-role">—</div><div class="crew-contact"><a href="tel:7037744021" class="crew-phone">703-774-4021</a> <a href="mailto:willjld@me.com" class="crew-email">willjld@me.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Justice Simpson</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:5157769938" class="crew-phone">515-776-9938</a> <a href="mailto:jsimpson@justicesimpson.com" class="crew-email">jsimpson@justicesimpson.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 50 open)</summary>
@@ -2610,14 +2625,12 @@ body {
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Tavis Parker</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:2693776142" class="crew-phone">(269) 377-6142</a> <a href="mailto:tavis@payparker.com" class="crew-email">tavis@payparker.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Eric Petty</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Eric Petty</div><div class="crew-role">S/S TECH</div><div class="crew-contact"><a href="tel:7703642932" class="crew-phone">(770) 364-2932</a> <a href="mailto:installsbyeric@gmail.com" class="crew-email">installsbyeric@gmail.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 50 open)</summary>
@@ -2873,14 +2886,12 @@ body {
         <details class="accordion-section">
     <summary>Crew (2)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Stephen Rowell</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:9135228328" class="crew-phone">913-522-8328</a> <a href="mailto:srmedia90@gmail.com" class="crew-email">srmedia90@gmail.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Eric Weston</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Eric Weston</div><div class="crew-role">—</div><div class="crew-contact"><a href="tel:7046077327" class="crew-phone">(704) 607-7327</a> <a href="mailto:eric@wildwestlighting.net" class="crew-email">eric@wildwestlighting.net</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 68 open)</summary>
@@ -3009,22 +3020,18 @@ body {
         <details class="accordion-section">
     <summary>Crew (4)</summary>
     <div class="accordion-content"><div class="crew-list"><div class="crew-member">
-    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">—</div></div>
+    <div><div class="crew-name">Iqral La Rode</div><div class="crew-role">PM</div><div class="crew-contact"><a href="tel:5166065450" class="crew-phone">516-606-5450</a> <a href="mailto:Ilarode@fuse-tg.com" class="crew-email">Ilarode@fuse-tg.com</a></div></div>
     <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Jonathan Jordan</div><div class="crew-role">LED2</div><div class="crew-contact"><a href="tel:4045803773" class="crew-phone">(404) 580-3773</a> <a href="mailto:johnnyjordan01@yahoo.com" class="crew-email">johnnyjordan01@yahoo.com</a></div></div>
+    <span class="crew-status status-confirmed">Confirmed</span>
+</div><div class="crew-member">
+    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">—</div><div class="crew-contact"><a href="tel:3123200804" class="crew-phone">312.320.0804</a> <a href="mailto:aaron@aaronlights.net" class="crew-email">aaron@aaronlights.net</a></div></div>
     <span class="crew-status status-pencilled">Pencilled</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Aaron Swetland</div><div class="crew-role">—</div></div>
+</div><div class="crew-member">
+    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">S/S TECH</div><div class="crew-contact"><a href="tel:4434169087" class="crew-phone">(443) 416-9087</a> <a href="mailto:bzackld@gmail.com" class="crew-email">bzackld@gmail.com</a></div></div>
     <span class="crew-status status-empty">Not Confirmed</span>
-</div>
-<div class="crew-member">
-    <div><div class="crew-name">Zac Edwards</div><div class="crew-role">—</div></div>
-    <span class="crew-status status-confirmed">Confirmed</span>
-</div>
-</div></div>
+</div></div></div>
 </details>
         <details class="accordion-section" open>
     <summary>Tasks (0% complete — 50 open)</summary>
