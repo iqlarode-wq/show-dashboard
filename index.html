@@ -38,7 +38,7 @@ body {
 }
 
 .container {
-    max-width: 1100px;
+    max-width: 1400px;
     margin: 0 auto;
     padding: 16px;
 }
@@ -212,9 +212,15 @@ body {
 
 /* ─── Shows Grid ─── */
 .shows-grid {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
+    align-items: start;
+}
+
+/* Expanded cards span full width so accordion content isn't cramped */
+.show-card.expanded {
+    grid-column: 1 / -1;
 }
 
 /* ─── Show Card ─── */
@@ -1550,6 +1556,7 @@ body {
     margin-top: 24px;
     border-top: 2px solid var(--border);
     padding-top: 16px;
+    grid-column: 1 / -1;
 }
 .archived-header {
     display: flex;
@@ -1862,7 +1869,16 @@ body {
     }
 
     .shows-grid {
+        grid-template-columns: 1fr;
         gap: 8px;
+    }
+
+    .show-card.expanded {
+        grid-column: auto;
+    }
+
+    .container {
+        max-width: 100%;
     }
 
     .card-header {
@@ -3110,13 +3126,16 @@ body {
 function toggleCard(id) {
     var body = document.getElementById('body-' + id);
     var icon = document.getElementById('icon-' + id);
+    var card = body ? body.closest('.show-card') : null;
     if (!body) return;
     if (body.style.display === 'none' || body.style.display === '') {
         body.style.display = 'block';
         if (icon) icon.textContent = '\u2212';
+        if (card) card.classList.add('expanded');
     } else {
         body.style.display = 'none';
         if (icon) icon.textContent = '+';
+        if (card) card.classList.remove('expanded');
     }
 }
 
