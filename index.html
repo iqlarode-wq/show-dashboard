@@ -900,7 +900,12 @@ body {
     text-decoration: underline;
 }
 
-/* ─── Files & Links Section ─── */
+/* ══════════════════════════════════════════════════════════════════
+   FILES & LINKS SECTION — DO NOT REMOVE
+   This CSS block (through .files-upload-status) is required for the
+   Files & Links accordion on every show card. Removing it will break
+   file browsing, Dropbox links, and Airtable attachment display.
+   ══════════════════════════════════════════════════════════════════ */
 .files-area {
     padding: 4px 0;
 }
@@ -3832,7 +3837,12 @@ function onCommentsToggle(eventId) {
 }
 
 
-// ═══ Files & Links Section ═══
+// ══════════════════════════════════════════════════════════════════
+// FILES & LINKS JS — DO NOT REMOVE
+// Functions: fetchFiles, renderDropboxLinks, renderFilesList,
+// getFileIcon, formatFileSize, uploadFileToAirtable, onFilesToggle
+// Removing these will break the Files & Links accordion on all cards.
+// ══════════════════════════════════════════════════════════════════
 var filesCache = {};
 var AIRTABLE_FILES_FIELD = 'fldcAZQcavyAZIOH2';
 
