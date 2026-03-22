@@ -3844,7 +3844,7 @@ function onCommentsToggle(eventId) {
 // Removing these will break the Files & Links accordion on all cards.
 // ══════════════════════════════════════════════════════════════════
 var filesCache = {};
-var AIRTABLE_FILES_FIELD = 'fldcAZQcavyAZIOH2';
+var AIRTABLE_FILES_TABLE = 'tblivTW2lEP56DiuQ';
 
 function getFileIcon(type, filename) {
     if (!type) type = '';
@@ -3884,9 +3884,9 @@ function fetchFiles(eventId) {
         }
     }
 
-    // Fetch the full record (files + dropbox URLs are extracted from the response)
+    // Step 1: Fetch the Event record to get Dropbox URLs + linked File record IDs
     var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId;
-    console.log('[Files] Fetching:', url);
+    console.log('[Files] Fetching event:', url);
 
     fetch(url, {
         method: 'GET',
@@ -3908,7 +3908,42 @@ function fetchFiles(eventId) {
         var fields = data.fields || {};
         filesCache[eventId] = data;
         renderDropboxLinks(eventId, fields);
-        renderFilesList(eventId, fields);
+
+        // Step 2: The Files field contains linked record IDs (strings), not attachments.
+        // Fetch each linked record from the Files table to get the actual File attachment.
+        var linkedIds = fields['Files'] || [];
+        if (!linkedIds || linkedIds.length === 0) {
+            renderFilesList(eventId, []);
+            return;
+        }
+
+        console.log('[Files] Resolving ' + linkedIds.length + ' linked records from Files table');
+
+        // Fetch all linked records in parallel
+        var fetches = linkedIds.map(function(recId) {
+            var fileUrl = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_FILES_TABLE + '/' + recId;
+            return fetch(fileUrl, {
+                method: 'GET',
+                headers: { 'Authorization': 'Bearer ' + token }
+            }).then(function(r) {
+                if (!r.ok) return null;
+                return r.json();
+            }).catch(function() { return null; });
+        });
+
+        return Promise.all(fetches).then(function(records) {
+            // Extract actual attachment objects from each Files table record
+            var allAttachments = [];
+            for (var i = 0; i < records.length; i++) {
+                if (!records[i] || !records[i].fields) continue;
+                var fileField = records[i].fields['File'] || [];
+                // File field is an attachment array — usually 1 attachment per record
+                for (var j = 0; j < fileField.length; j++) {
+                    allAttachments.push(fileField[j]);
+                }
+            }
+            renderFilesList(eventId, allAttachments);
+        });
     })
     .catch(function(err) {
         var msg = err.message || '';
@@ -3947,16 +3982,14 @@ function renderDropboxLinks(eventId, fields) {
     grid.innerHTML = html;
 }
 
-function renderFilesList(eventId, fields) {
+// renderFilesList now receives resolved attachment objects (not linked record IDs)
+function renderFilesList(eventId, attachments) {
     var listEl = document.getElementById('files-list-' + eventId);
     var divider = document.getElementById('files-divider-' + eventId);
     var label = document.getElementById('files-label-' + eventId);
     if (!listEl) return;
 
-    // The Files field returns under the field name key
-    var files = fields['Files'] || fields[AIRTABLE_FILES_FIELD] || [];
-
-    if (!files || files.length === 0) {
+    if (!attachments || attachments.length === 0) {
         listEl.innerHTML = '<div class="files-empty">No attachments</div>';
         if (divider) divider.style.display = 'block';
         if (label) label.style.display = 'block';
@@ -3967,8 +4000,8 @@ function renderFilesList(eventId, fields) {
     if (label) label.style.display = 'block';
 
     var html = '';
-    for (var i = 0; i < files.length; i++) {
-        var f = files[i];
+    for (var i = 0; i < attachments.length; i++) {
+        var f = attachments[i];
         var icon = getFileIcon(f.type || '', f.filename || '');
         var name = f.filename || 'Untitled';
         var size = formatFileSize(f.size);
@@ -3987,87 +4020,17 @@ function renderFilesList(eventId, fields) {
 }
 
 function uploadFileToAirtable(eventId, inputEl) {
-    var file = inputEl.files && inputEl.files[0];
-    if (!file) return;
-
+    // Files are linked records — upload must go through Airtable directly
     var statusEl = document.getElementById('files-upload-status-' + eventId);
-    if (!statusEl) return;
-
-    var token = localStorage.getItem('airtable_pat');
-    if (!token) {
-        token = resetAirtableToken();
-        if (!token) {
-            statusEl.className = 'files-upload-status error';
-            statusEl.textContent = 'No token provided.';
-            return;
-        }
-    }
-
-    statusEl.className = 'files-upload-status active';
-    statusEl.textContent = 'Uploading ' + file.name + '...';
-
-    // Read file as base64 data URL
-    var reader = new FileReader();
-    reader.onload = function(e) {
-        var dataUrl = e.target.result;
-
-        // Build attachment array — append to existing
-        var existingFiles = [];
-        if (filesCache[eventId] && filesCache[eventId].fields) {
-            var cached = filesCache[eventId].fields['Files'] || filesCache[eventId].fields[AIRTABLE_FILES_FIELD] || [];
-            for (var i = 0; i < cached.length; i++) {
-                existingFiles.push({ url: cached[i].url });
-            }
-        }
-        existingFiles.push({ url: dataUrl, filename: file.name });
-
-        var patchBody = { fields: {} };
-        patchBody.fields[AIRTABLE_FILES_FIELD] = existingFiles;
-
-        var url = 'https://api.airtable.com/v0/' + AIRTABLE_BASE + '/' + AIRTABLE_EVENTS_TABLE + '/' + eventId;
-
-        fetch(url, {
-            method: 'PATCH',
-            headers: {
-                'Authorization': 'Bearer ' + token,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(patchBody)
-        })
-        .then(function(response) {
-            if (!response.ok) {
-                return response.json().then(function(err) {
-                    throw new Error(err.error ? err.error.message : 'HTTP ' + response.status);
-                });
-            }
-            return response.json();
-        })
-        .then(function(data) {
-            statusEl.className = 'files-upload-status success';
-            statusEl.textContent = file.name + ' uploaded successfully!';
-            // Clear the file input
-            inputEl.value = '';
-            // Refresh file list
-            filesCache[eventId] = data;
-            renderFilesList(eventId, data.fields || {});
-            // Auto-hide success after 3s
-            setTimeout(function() {
-                statusEl.className = 'files-upload-status';
-                statusEl.textContent = '';
-            }, 3000);
-        })
-        .catch(function(err) {
-            statusEl.className = 'files-upload-status error';
-            statusEl.textContent = 'Upload failed: ' + (err.message || 'Unknown error') + '. Try uploading directly in Airtable.';
-            inputEl.value = '';
-        });
-    };
-    reader.onerror = function() {
+    if (statusEl) {
         statusEl.className = 'files-upload-status error';
-        statusEl.textContent = 'Could not read file. Try uploading directly in Airtable.';
+        statusEl.textContent = 'Upload via dashboard not supported. Use "Open in Airtable" to upload files.';
         inputEl.value = '';
-    };
-    reader.readAsDataURL(file);
+        setTimeout(function() {
+            statusEl.className = 'files-upload-status';
+            statusEl.textContent = '';
+        }, 5000);
+    }
 }
 
 function onFilesToggle(eventId) {
