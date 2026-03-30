@@ -4002,17 +4002,61 @@ function renderFilesList(eventId, attachments) {
 }
 
 function uploadFileToAirtable(eventId, inputEl) {
-    // Files are linked records — upload must go through Airtable directly
     var statusEl = document.getElementById('files-upload-status-' + eventId);
+    var file = inputEl.files[0];
+    if (!file) return;
+
+    // Show uploading state
     if (statusEl) {
-        statusEl.className = 'files-upload-status error';
-        statusEl.textContent = 'Upload via dashboard not supported. Use "Open in Airtable" to upload files.';
+        statusEl.className = 'files-upload-status active';
+        statusEl.textContent = 'Uploading ' + file.name + '...';
+    }
+
+    var formData = new FormData();
+    formData.append('file', file);
+
+    fetch(AIRTABLE_PROXY + '/upload?eventId=' + encodeURIComponent(eventId), {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) {
+        if (!response.ok) {
+            return response.json().then(function(err) {
+                throw new Error(err.error || 'Upload failed (HTTP ' + response.status + ')');
+            });
+        }
+        return response.json();
+    })
+    .then(function(data) {
+        if (statusEl) {
+            statusEl.className = 'files-upload-status success';
+            statusEl.textContent = 'Uploaded ' + data.fileName;
+        }
+        inputEl.value = '';
+        // Refresh the files list to show the new file
+        delete filesCache[eventId];
+        fetchFiles(eventId);
+        // Clear status after 4 seconds
+        setTimeout(function() {
+            if (statusEl) {
+                statusEl.className = 'files-upload-status';
+                statusEl.textContent = '';
+            }
+        }, 4000);
+    })
+    .catch(function(err) {
+        if (statusEl) {
+            statusEl.className = 'files-upload-status error';
+            statusEl.textContent = 'Upload failed: ' + err.message;
+        }
         inputEl.value = '';
         setTimeout(function() {
-            statusEl.className = 'files-upload-status';
-            statusEl.textContent = '';
-        }, 5000);
-    }
+            if (statusEl) {
+                statusEl.className = 'files-upload-status';
+                statusEl.textContent = '';
+            }
+        }, 6000);
+    });
 }
 
 function onFilesToggle(eventId) {
