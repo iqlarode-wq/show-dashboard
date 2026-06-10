@@ -7,178 +7,197 @@
 <title>Show Ops</title>
 <style>
   :root {
-    --bg: #0e1117;
-    --card: #161b24;
-    --card2: #1c2230;
-    --line: #2a3242;
-    --text: #e8ecf3;
-    --dim: #8b96a8;
-    --accent: #4da3ff;
-    --green: #3ddc84;
-    --amber: #ffb454;
-    --red: #ff6b6b;
-    --chip: #232b3b;
+    --bg: #101214;
+    --panel: #16191c;
+    --panel2: #1b1f23;
+    --line: #2a2f35;
+    --text: #dde2e8;
+    --dim: #848e99;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --amber: #d29922;
+    --red: #f85149;
+    --sel: #1f2937;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; }
   body {
     background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    font-size: 15px; line-height: 1.45;
-    padding-bottom: 40px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    font-size: 13px; line-height: 1.4; height: 100dvh; overflow: hidden;
   }
   a { color: var(--accent); text-decoration: none; }
+  .mono { font-variant-numeric: tabular-nums; }
 
   /* ── PIN gate ── */
   #pinGate {
     position: fixed; inset: 0; background: var(--bg); z-index: 100;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px;
-    padding: 24px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px;
   }
-  #pinGate h1 { font-size: 22px; }
-  #pinGate p { color: var(--dim); font-size: 14px; text-align: center; }
+  #pinGate h1 { font-size: 18px; font-weight: 600; }
   #pinInput {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    color: var(--text); font-size: 28px; letter-spacing: 12px; text-align: center;
-    padding: 12px 8px; width: 220px; outline: none;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    color: var(--text); font-size: 22px; letter-spacing: 10px; text-align: center;
+    padding: 10px 8px; width: 200px; outline: none;
   }
   #pinInput:focus { border-color: var(--accent); }
   #pinBtn {
-    background: var(--accent); color: #06121f; border: none; border-radius: 12px;
-    font-size: 16px; font-weight: 700; padding: 12px 36px; cursor: pointer;
+    background: var(--accent); color: #04101f; border: none; border-radius: 6px;
+    font-size: 14px; font-weight: 600; padding: 9px 32px; cursor: pointer;
   }
-  #pinErr { color: var(--red); font-size: 14px; min-height: 20px; }
+  #pinErr { color: var(--red); font-size: 13px; min-height: 18px; }
 
-  /* ── Header ── */
-  header {
-    position: sticky; top: 0; z-index: 50;
-    background: rgba(14,17,23,.92); backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--line);
-    padding: 12px 16px; display: flex; align-items: center; gap: 10px;
+  /* ── App frame ── */
+  #app { display: none; height: 100dvh; flex-direction: column; }
+  #topbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 14px; height: 42px; flex: none;
+    background: var(--panel); border-bottom: 1px solid var(--line);
   }
-  header h1 { font-size: 18px; flex: 1; }
-  #updated { color: var(--dim); font-size: 12px; }
+  #topbar h1 { font-size: 14px; font-weight: 700; letter-spacing: .3px; }
+  #topStats { display: flex; gap: 14px; color: var(--dim); font-size: 12px; flex: 1; overflow: hidden; white-space: nowrap; }
+  #topStats b { color: var(--text); font-weight: 600; }
+  #updated { color: var(--dim); font-size: 11px; white-space: nowrap; }
   #refreshBtn {
-    background: var(--chip); border: 1px solid var(--line); color: var(--text);
-    border-radius: 10px; padding: 7px 14px; font-size: 14px; cursor: pointer;
+    background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 5px;
+    padding: 4px 10px; font-size: 13px; cursor: pointer;
   }
-  #refreshBtn:active { opacity: .6; }
+  #refreshBtn:hover { color: var(--text); border-color: var(--dim); }
 
-  /* ── Stat chips ── */
-  #stats { display: flex; gap: 8px; padding: 12px 16px 4px; flex-wrap: wrap; max-width: 980px; margin: 0 auto; }
-  .stat {
-    background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-    padding: 8px 14px; font-size: 13px; color: var(--dim);
+  #main { display: flex; flex: 1; min-height: 0; }
+
+  /* ── Show list (left) ── */
+  #list {
+    width: 330px; flex: none; overflow-y: auto;
+    border-right: 1px solid var(--line); background: var(--panel);
   }
-  .stat b { color: var(--text); font-size: 15px; margin-right: 4px; }
-
-  /* ── Cards ── */
-  #shows { padding: 10px 12px; display: grid; gap: 12px; max-width: 980px; margin: 0 auto; }
-  @media (min-width: 760px) { #shows { grid-template-columns: 1fr 1fr; padding: 10px 16px; } }
-  .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: 16px;
-    padding: 14px 14px 10px; overflow: hidden;
+  .lrow {
+    padding: 9px 12px 8px; border-bottom: 1px solid var(--line); cursor: pointer;
   }
-  .card.urgent { border-color: var(--amber); }
-  .card.live { border-color: var(--green); }
-  .title { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
-  .sub { color: var(--dim); font-size: 13px; margin-bottom: 8px; }
-  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
-  .chip {
-    background: var(--chip); border-radius: 999px; padding: 3px 10px;
-    font-size: 12px; font-weight: 600; color: var(--dim);
+  .lrow:hover { background: var(--panel2); }
+  .lrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
+  .lrow .t { font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: baseline; }
+  .lrow .t .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lrow .m { display: flex; gap: 8px; color: var(--dim); font-size: 11.5px; margin-top: 2px; align-items: center; }
+  .tag { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .4px; flex: none; }
+  .tag.travel { color: #9ecbff; background: rgba(88,166,255,.15); }
+  .tag.remote { color: var(--dim); background: rgba(132,142,153,.15); }
+  .tag.live   { color: var(--green); background: rgba(63,185,80,.15); }
+  .tag.urgent { color: var(--amber); background: rgba(210,153,34,.18); }
+  .tag.done   { color: var(--dim); background: rgba(132,142,153,.1); }
+  .lrow .cnt { margin-left: auto; }
+  .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; }
+
+  /* ── Detail (right) ── */
+  #detail { flex: 1; overflow-y: auto; min-width: 0; }
+  #detail .inner { padding: 14px 18px 60px; max-width: 1100px; }
+  #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 14px; padding: 10px 14px 0; cursor: pointer; }
+
+  .dhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 4px; }
+  .dhead h2 { font-size: 17px; font-weight: 700; }
+  .dhead .meta { color: var(--dim); font-size: 12.5px; }
+  .dsub { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; color: var(--dim); font-size: 12.5px; margin-bottom: 12px; }
+
+  .datebar {
+    display: flex; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel);
   }
-  .chip.green { color: var(--green); background: rgba(61,220,132,.12); }
-  .chip.amber { color: var(--amber); background: rgba(255,180,84,.12); }
-  .chip.red   { color: var(--red);   background: rgba(255,107,107,.12); }
-  .chip.blue  { color: var(--accent);background: rgba(77,163,255,.12); }
+  .datebar .d { flex: 1; min-width: 86px; padding: 7px 10px; border-right: 1px solid var(--line); }
+  .datebar .d:last-child { border-right: none; }
+  .datebar .k { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
+  .datebar .v { font-size: 13.5px; font-weight: 600; margin-top: 1px; white-space: nowrap; }
+  .datebar .d.today { background: rgba(210,153,34,.12); }
+  .datebar .d.today .v { color: var(--amber); }
+  .datebar .d.past .v { color: var(--dim); font-weight: 400; }
 
-  .banner {
-    border-radius: 10px; padding: 8px 12px; font-size: 14px; font-weight: 700;
-    margin-bottom: 10px;
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
+  .box { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  .box h3 {
+    font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .7px;
+    padding: 7px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px;
   }
-  .banner.amber { background: rgba(255,180,84,.14); color: var(--amber); }
-  .banner.green { background: rgba(61,220,132,.14); color: var(--green); }
-  .banner.blue  { background: rgba(77,163,255,.14); color: var(--accent); }
+  .box h3 .r { margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0; }
+  .box .pad { padding: 8px 12px; }
 
-  .dates { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-bottom: 10px; }
-  .d { background: var(--card2); border-radius: 10px; padding: 6px 8px; }
-  .d .k { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .4px; }
-  .d .v { font-size: 13px; font-weight: 600; }
-  .d.past .v { color: var(--dim); font-weight: 400; }
+  table.grid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.grid td { padding: 6px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.grid tr:last-child td { border-bottom: none; }
+  table.grid td.dim { color: var(--dim); white-space: nowrap; }
+  table.grid td.r { text-align: right; white-space: nowrap; }
+  .stat-ok { color: var(--green); } .stat-pencil { color: var(--amber); } .stat-other { color: var(--dim); }
 
-  .row { padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
-  .row .lbl { color: var(--dim); font-size: 12px; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 3px; }
-
-  details.sec { border-top: 1px solid var(--line); }
-  details.sec summary {
-    list-style: none; cursor: pointer; padding: 10px 0;
-    display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600;
+  .linkbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+  .linkbar a {
+    border: 1px solid var(--line); background: var(--panel); color: var(--text);
+    border-radius: 5px; padding: 5px 12px; font-size: 12.5px; font-weight: 600;
   }
-  details.sec summary::-webkit-details-marker { display: none; }
-  details.sec summary .count { color: var(--dim); font-weight: 400; font-size: 13px; flex: 1; }
-  details.sec summary::after { content: "›"; color: var(--dim); transform: rotate(90deg); transition: transform .15s; }
-  details.sec[open] summary::after { transform: rotate(-90deg); }
-  .crewRow { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 14px; }
-  .crewRow .nm { flex: 1; min-width: 0; }
-  .crewRow .role { color: var(--dim); font-size: 12px; }
-  .crewRow .st { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: var(--chip); color: var(--dim); white-space: nowrap; }
-  .crewRow .st.ok { color: var(--green); background: rgba(61,220,132,.12); }
-  .crewRow .st.pencil { color: var(--amber); background: rgba(255,180,84,.12); }
-  .crewRow a.ic {
-    width: 34px; height: 34px; border-radius: 10px; background: var(--chip);
-    display: flex; align-items: center; justify-content: center; font-size: 15px; flex: none;
-  }
-  .mailRow { padding: 7px 0; border-top: 1px dashed var(--line); }
-  .mailRow:first-of-type { border-top: none; }
-  .mailRow .meta { color: var(--dim); font-size: 12px; }
-  .mailRow .subj { font-size: 13.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .linkbar a:hover { border-color: var(--accent); color: var(--accent); }
 
-  .links { display: flex; gap: 8px; flex-wrap: wrap; padding: 10px 0 6px; border-top: 1px solid var(--line); }
-  .links a {
-    background: var(--chip); border: 1px solid var(--line); border-radius: 10px;
-    padding: 8px 12px; font-size: 13px; font-weight: 600; color: var(--text);
+  /* ── Emails ── */
+  .mail { border-bottom: 1px solid var(--line); }
+  .mail:last-child { border-bottom: none; }
+  .mail > .hd { display: flex; gap: 10px; padding: 7px 12px; cursor: pointer; align-items: baseline; }
+  .mail > .hd:hover { background: var(--panel2); }
+  .mail .from { font-weight: 600; white-space: nowrap; flex: none; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+  .mail .sub { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
+  .mail.open .sub { white-space: normal; color: var(--text); }
+  .mail .dt { color: var(--dim); font-size: 11.5px; white-space: nowrap; flex: none; }
+  .mail .body {
+    display: none; padding: 4px 12px 12px; color: #c4ccd4; font-size: 12.5px;
+    white-space: pre-wrap; word-break: break-word; border-top: 1px dashed var(--line);
+    max-height: 420px; overflow-y: auto;
   }
+  .mail.open .body { display: block; }
+  .mail .to { color: var(--dim); font-size: 11px; padding: 4px 12px 0; display: none; }
+  .mail.open .to { display: block; }
+  .mailfoot { padding: 7px 12px; font-size: 12px; }
 
-  /* wrapped section */
-  #wrappedWrap { max-width: 980px; margin: 4px auto 0; padding: 0 12px; }
-  #wrappedWrap > details > summary {
-    list-style: none; cursor: pointer; color: var(--dim); font-size: 14px; padding: 10px 4px;
-  }
-  #wrappedWrap summary::-webkit-details-marker { display: none; }
-  .wrapped .card { opacity: .65; }
-
-  #msg { text-align: center; color: var(--dim); padding: 40px 20px; }
+  #msg { text-align: center; color: var(--dim); padding: 50px 20px; }
   #errBar {
-    display: none; margin: 10px auto; max-width: 948px; background: rgba(255,107,107,.12); color: var(--red);
-    border-radius: 12px; padding: 10px 14px; font-size: 14px;
+    display: none; margin: 8px 14px; background: rgba(248,81,73,.1); color: var(--red);
+    border: 1px solid rgba(248,81,73,.4); border-radius: 6px; padding: 8px 12px; font-size: 13px;
   }
-  #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 8px; padding: 4px 12px; margin-left: 10px; cursor: pointer; }
+  #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 5px; padding: 3px 10px; margin-left: 10px; cursor: pointer; }
   .spin { display: inline-block; animation: rot 1s linear infinite; }
   @keyframes rot { to { transform: rotate(360deg); } }
+
+  /* ── Mobile ── */
+  @media (max-width: 760px) {
+    #main.show-detail #list { display: none; }
+    #main:not(.show-detail) #detail { display: none; }
+    #list { width: 100%; border-right: none; }
+    #backBtn { display: block; }
+    #detail .inner { padding: 10px 12px 60px; }
+    #topStats { display: none; }
+    .datebar .d { min-width: 78px; }
+  }
 </style>
 </head>
 <body>
 
 <div id="pinGate">
   <h1>Show Ops</h1>
-  <p>Enter PIN to unlock</p>
-  <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="8">
+  <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN">
   <div id="pinErr"></div>
   <button id="pinBtn">Unlock</button>
 </div>
 
-<header style="display:none" id="hdr">
-  <h1>Show Ops</h1>
-  <span id="updated"></span>
-  <button id="refreshBtn">↻</button>
-</header>
-
-<div id="errBar"><span id="errTxt"></span><button onclick="loadAll()">Retry</button></div>
-<div id="stats"></div>
-<div id="shows"></div>
-<div id="wrappedWrap"></div>
-<div id="msg"></div>
+<div id="app">
+  <div id="topbar">
+    <h1>SHOW OPS</h1>
+    <div id="topStats"></div>
+    <span id="updated"></span>
+    <button id="refreshBtn">↻</button>
+  </div>
+  <div id="errBar"><span id="errTxt"></span><button onclick="loadAll()">Retry</button></div>
+  <div id="main">
+    <div id="list"></div>
+    <div id="detail">
+      <button id="backBtn">‹ All shows</button>
+      <div class="inner" id="detailInner"><div id="msg">Loading shows…</div></div>
+    </div>
+  </div>
+</div>
 
 <script>
 "use strict";
@@ -193,7 +212,7 @@ const MAIL_TBL = "tblu9DkXv7Z8e7vNq";
 const IQRAL_VIEW = "viwT3CcaSHtTVAZBi";
 const ME = "Iqral";
 const URGENT_DAYS = 5;            // urgency window (Iq preference)
-const WRAPPED_LOOKBACK = 7;       // keep just-ended shows visible this many days
+const WRAPPED_LOOKBACK = 14;      // keep just-ended shows listed this many days
 
 const EVENT_FIELDS = [
   "Combined Name","Name","Timeline Start","Timeline End","Status",
@@ -202,10 +221,11 @@ const EVENT_FIELDS = [
   "Travel In","Load In","Show Start","Show End","Load Out","Travel Out",
   "Dropbox URL","Dropbox Content URL","AV Binder Live Link","infoDocs link",
   "Account Manager Name","Account Manager Phone","Account Manager Name Email",
-  "Zapier Emails"
+  "Zapier Emails","PM Notes","Client Notes"
 ];
 const POS_FIELDS = ["Name (from Crew)","Email (from Crew)","Phone Number (from Crew)","Status","Short Name (from Roles)","id (from Event)"];
-const MAIL_FIELDS = ["From","Subject","Received Date","Related Event"];
+const MAIL_META_FIELDS = ["From","Subject","Received Date","Related Event"];
+const MAIL_FULL_FIELDS = ["From","To","Subject","Received Date","Body"];
 
 // ════════════════════════════════════════════════
 // API LAYER
@@ -221,7 +241,7 @@ async function api(table, params) {
   qs.append("key", pin());
   let url = `${WORKER}/v0/${BASE}/${encodeURIComponent(table)}?${qs}`;
   let out = [];
-  for (let page = 0; page < 5; page++) {
+  for (let page = 0; page < 6; page++) {
     const res = await fetch(url);
     if (res.status === 401) { const e = new Error("PIN rejected"); e.auth = true; throw e; }
     if (!res.ok) throw new Error(`Airtable error ${res.status}`);
@@ -243,9 +263,9 @@ const first = v => Array.isArray(v) ? v[0] : v;
 function parseDate(v) {
   v = first(v);
   if (!v) return null;
-  let m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);          // 2026-06-13
+  let m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return new Date(+m[1], +m[2]-1, +m[3], 12);
-  m = String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);        // 06/14/2026
+  m = String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
   if (m) return new Date(+m[3], +m[1]-1, +m[2], 12);
   const d = new Date(v);
   return isNaN(d) ? null : d;
@@ -253,9 +273,10 @@ function parseDate(v) {
 function today0() { const d = new Date(); d.setHours(12,0,0,0); return d; }
 function daysFromToday(d) { return Math.round((d - today0()) / 86400000); }
 function fmtD(d) { return d ? d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—"; }
+function sameDay(a, b) { return a && b && a.toDateString() === b.toDateString(); }
 function fmtRange(a, b) {
   if (!a && !b) return "";
-  if (a && b) return fmtD(a) + " – " + fmtD(b);
+  if (a && b) return fmtD(a) + "–" + fmtD(b);
   return fmtD(a || b);
 }
 function agoTxt(d) {
@@ -269,18 +290,29 @@ function senderName(from) {
   const f = String(from);
   return f.includes("@") ? f.split("@")[0].replace(/[._]/g, " ") : f;
 }
+function cleanBody(b) {
+  return String(b || "")
+    .replace(/^#{1,6}\s*/gm, "")        // markdown headers
+    .replace(/\*\*([^*]*)\*\*/g, "$1")  // bold
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+function telHref(p) { return "tel:" + String(p).replace(/[^\d+]/g, ""); }
+
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let SHOWS = [];           // models
+let selectedId = null;
+let lastLoad = 0;
+const mailCache = {};     // eventId -> full email records
 
 // ════════════════════════════════════════════════
 // DATA LOAD
 // ════════════════════════════════════════════════
-let lastLoad = 0;
-
 async function loadAll() {
-  const showsEl = document.getElementById("shows");
-  const msg = document.getElementById("msg");
   document.getElementById("errBar").style.display = "none";
   document.getElementById("refreshBtn").innerHTML = '<span class="spin">↻</span>';
-  if (!showsEl.children.length) msg.textContent = "Loading shows…";
 
   try {
     const events = await api(EVENTS_TBL, {
@@ -302,22 +334,32 @@ async function loadAll() {
       const mailFormula = "OR(" + quotes.map(q => `FIND('${q}',ARRAYJOIN({Related Event}))`).join(",") + ")";
       jobs.push(api(MAIL_TBL, {
         filterByFormula: mailFormula,
-        "fields[]": MAIL_FIELDS,
+        "fields[]": MAIL_META_FIELDS,
         "sort[0][field]": "Received Date",
         "sort[0][direction]": "desc",
         pageSize: 100
-      }).then(r => mails = r).catch(() => mails = [])); // email layer is non-fatal
+      }).then(r => mails = r).catch(() => mails = []));
     }
     await Promise.all(jobs);
 
-    render(events, positions, mails);
+    SHOWS = events.map(e => buildModel(e, positions, mails))
+      .sort((a, b) => (a.tlStart || 0) - (b.tlStart || 0));
+
     lastLoad = Date.now();
-    msg.textContent = events.length ? "" : "No active shows assigned to you in Airtable.";
+    Object.keys(mailCache).forEach(k => delete mailCache[k]);
+
+    renderList();
+    renderStats();
+    const t = today0();
+    if (!selectedId || !SHOWS.find(s => s.id === selectedId)) {
+      const def = SHOWS.find(s => !s.tlEnd || s.tlEnd >= t) || SHOWS[0];
+      selectedId = def ? def.id : null;
+    }
+    renderDetail();
     document.getElementById("updated").textContent =
-      "Live · " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      "Live " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
   } catch (err) {
     if (err.auth) { localStorage.removeItem("dash_pin"); showGate("PIN no longer valid — re-enter."); return; }
-    msg.textContent = "";
     document.getElementById("errTxt").textContent = "Couldn't load data: " + err.message;
     document.getElementById("errBar").style.display = "block";
   } finally {
@@ -325,14 +367,10 @@ async function loadAll() {
   }
 }
 
-// ════════════════════════════════════════════════
-// MODEL + RENDER
-// ════════════════════════════════════════════════
 function buildModel(ev, positions, mails) {
   const f = ev.fields;
   const combined = f["Combined Name"] || f["Name"] || "Untitled";
-  const title = combined.split("•")[0].trim();
-  const quote = f["QuoteNumber(string)"] || "";
+  const title = combined.split("•")[0].replace(/#\s*$/, "").trim();
 
   const crew = positions
     .filter(p => {
@@ -351,7 +389,8 @@ function buildModel(ev, positions, mails) {
   const myMails = mails.filter(m => (m.fields["Related Event"] || []).includes(ev.id));
 
   return {
-    id: ev.id, title, quote,
+    id: ev.id, title,
+    quote: f["QuoteNumber(string)"] || "",
     booth: f["Booth Number"] || "",
     status: f["Status"] || "",
     venue: first(f["Venue"]) || "",
@@ -376,10 +415,13 @@ function buildModel(ev, positions, mails) {
       phone: first(f["Account Manager Phone"]) || "",
       email: first(f["Account Manager Name Email"]) || ""
     },
+    pmNotes: f["PM Notes"] || "",
+    clientNotes: f["Client Notes"] || "",
     crew,
     travel: crew.some(c => c.name.includes(ME)),
     mailTotal: (f["Zapier Emails"] || []).length,
-    mailRecent: myMails.slice(0, 5).map(m => ({
+    mailMeta: myMails.map(m => ({
+      id: m.id,
       from: senderName(m.fields["From"]),
       subj: m.fields["Subject"] || "(no subject)",
       date: parseDate(m.fields["Received Date"])
@@ -387,112 +429,198 @@ function buildModel(ev, positions, mails) {
   };
 }
 
-function cardHTML(s) {
+// ════════════════════════════════════════════════
+// STATE HELPERS
+// ════════════════════════════════════════════════
+function stateOf(s) {
   const t = today0();
+  if (s.tlEnd && s.tlEnd < t) return "done";
+  if (s.tlStart && s.tlStart <= t) return "live";
   const loadIn = s.dates["Load In"] || s.tlStart;
-  const end = s.tlEnd;
-  const dLoad = loadIn ? daysFromToday(loadIn) : null;
-
-  let stateCls = "", banner = "";
-  if (end && end < t) {
-    banner = "";
-  } else if (s.tlStart && s.tlStart <= t) {
-    stateCls = "live";
-    banner = `<div class="banner green">● LIVE — runs through ${fmtD(end)}</div>`;
-  } else if (dLoad !== null && dLoad <= URGENT_DAYS) {
-    stateCls = "urgent";
-    banner = `<div class="banner amber">⚠ Load-in ${dLoad === 0 ? "TODAY" : "in " + dLoad + "d"} — ${fmtD(loadIn)}</div>`;
-  } else if (dLoad !== null) {
-    banner = `<div class="banner blue">Load-in in ${dLoad}d — ${fmtD(loadIn)}</div>`;
-  }
-
-  const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
-    `<div class="d ${d < t ? "past" : ""}"><div class="k">${k}</div><div class="v">${fmtD(d)}</div></div>`).join("");
-
-  const crewRows = s.crew.map(c => {
-    const st = String(c.status).toLowerCase();
-    const stCls = st.includes("confirm") ? "ok" : (st.includes("pencil") ? "pencil" : "");
-    return `<div class="crewRow">
-      <div class="nm">${esc(c.name)} <span class="role">${esc(c.role)}</span></div>
-      ${c.status ? `<span class="st ${stCls}">${esc(c.status)}</span>` : ""}
-      ${c.phone ? `<a class="ic" href="tel:${esc(String(c.phone).replace(/[^\d+]/g, ""))}">📞</a>` : ""}
-      ${c.email ? `<a class="ic" href="mailto:${esc(c.email)}">✉️</a>` : ""}
-    </div>`;
-  }).join("") || `<div class="crewRow" style="color:var(--red)">No crew assigned</div>`;
-
-  const latest = s.mailRecent[0];
-  const mailSummary = s.mailTotal
-    ? `${s.mailTotal} email${s.mailTotal > 1 ? "s" : ""}${latest && latest.date ? " · last " + agoTxt(latest.date) : ""}`
-    : "no emails";
-  const mailRows = s.mailRecent.map(m =>
-    `<div class="mailRow">
-       <div class="meta">${m.date ? fmtD(m.date) : ""} · ${esc(m.from)}</div>
-       <div class="subj">${esc(m.subj)}</div>
-     </div>`).join("");
-  const gmailQ = encodeURIComponent('"' + (s.quote || s.title) + '"');
-  const gmail = `<div style="padding:6px 0 10px"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Open thread in Gmail →</a></div>`;
-
-  const linkBtns = Object.entries(s.links).filter(([, u]) => u)
-    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k}</a>`).join("")
-    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable</a>`;
-
-  const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
-  const venueLine = s.venue
-    ? `<div class="row"><div class="lbl">Venue</div><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.city ? ` <span style="color:var(--dim)">· ${esc(s.city)}</span>` : ""}</div>`
-    : "";
-
-  const amLine = s.am.name
-    ? `<div class="row"><div class="lbl">Account Manager</div>${esc(s.am.name)}
-        ${s.am.phone ? ` · <a href="tel:${esc(String(s.am.phone).replace(/[^\d+]/g, ""))}">${esc(s.am.phone)}</a>` : ""}
-        ${s.am.email ? ` · <a href="mailto:${esc(s.am.email)}">email</a>` : ""}</div>`
-    : "";
-
-  return `<div class="card ${stateCls}">
-    <div class="title">${esc(s.title)}</div>
-    <div class="sub">${s.quote ? "Quote #" + esc(s.quote) + " · " : ""}${s.booth ? "Booth " + esc(s.booth) + " · " : ""}${fmtRange(s.tlStart, s.tlEnd)}</div>
-    <div class="chips">
-      <span class="chip ${s.travel ? "blue" : ""}">${s.travel ? "✈ TRAVEL" : "REMOTE"}</span>
-      ${s.status ? `<span class="chip ${s.status === "Confirmed" ? "green" : "amber"}">${esc(s.status)}</span>` : ""}
-      <span class="chip">✉ ${esc(mailSummary)}</span>
-    </div>
-    ${banner}
-    <div class="dates">${dateCells}</div>
-    ${venueLine}
-    ${amLine}
-    <details class="sec">
-      <summary>Crew <span class="count">${s.crew.length}</span></summary>
-      ${crewRows}
-    </details>
-    <details class="sec">
-      <summary>Emails <span class="count">${esc(mailSummary)}</span></summary>
-      ${mailRows || '<div class="mailRow" style="color:var(--dim);font-size:13px">No emails linked in Airtable</div>'}
-      ${gmail}
-    </details>
-    <div class="links">${linkBtns}</div>
-  </div>`;
+  const d = loadIn ? daysFromToday(loadIn) : null;
+  if (d !== null && d <= URGENT_DAYS) return "urgent";
+  return "upcoming";
+}
+function countdownTxt(s) {
+  const st = stateOf(s);
+  if (st === "done") return "wrapped " + agoTxt(s.tlEnd);
+  if (st === "live") return "LIVE thru " + fmtD(s.tlEnd);
+  const loadIn = s.dates["Load In"] || s.tlStart;
+  const d = daysFromToday(loadIn);
+  return d === 0 ? "load-in TODAY" : "load-in in " + d + "d";
 }
 
-function render(events, positions, mails) {
+// ════════════════════════════════════════════════
+// RENDER — list + stats
+// ════════════════════════════════════════════════
+function renderList() {
   const t = today0();
-  const models = events.map(e => buildModel(e, positions, mails))
-    .sort((a, b) => (a.tlStart || 0) - (b.tlStart || 0));
+  const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
+  const wrapped = SHOWS.filter(s => s.tlEnd && s.tlEnd < t).reverse();
 
-  const active = models.filter(s => !s.tlEnd || s.tlEnd >= t);
-  const wrapped = models.filter(s => s.tlEnd && s.tlEnd < t);
+  const row = s => {
+    const st = stateOf(s);
+    const tag = st === "live" ? '<span class="tag live">LIVE</span>'
+      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).replace("load-in ", "LOAD-IN "))}</span>`
+      : st === "done" ? '<span class="tag done">DONE</span>' : "";
+    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}">
+      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}</div>
+      <div class="m mono">
+        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
+        <span>${esc(s.city || "")}</span>
+        <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
+        <span class="cnt">✉${s.mailTotal} 👥${s.crew.length}</span>
+      </div>
+    </div>`;
+  };
 
-  const live = active.filter(s => s.tlStart && s.tlStart <= t).length;
+  document.getElementById("list").innerHTML =
+    `<div class="lsec">Active · ${active.length}</div>` +
+    (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
+    (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "");
+
+  document.querySelectorAll(".lrow[data-id]").forEach(el =>
+    el.addEventListener("click", () => {
+      selectedId = el.dataset.id;
+      renderList(); renderDetail();
+      document.getElementById("main").classList.add("show-detail");
+    }));
+}
+
+function renderStats() {
+  const t = today0();
+  const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
+  const live = active.filter(s => stateOf(s) === "live").length;
   const travel = active.filter(s => s.travel).length;
-  const nextUp = active.find(s => s.tlStart && s.tlStart > t);
-  const nextTxt = nextUp ? `<div class="stat"><b>${daysFromToday(nextUp.dates["Load In"] || nextUp.tlStart)}d</b> to next load-in</div>` : "";
-  document.getElementById("stats").innerHTML =
-    `<div class="stat"><b>${active.length}</b> active</div>
-     <div class="stat"><b>${live}</b> live now</div>
-     <div class="stat"><b>${travel}</b> travel</div>${nextTxt}`;
+  const next = active.filter(s => s.tlStart && s.tlStart > t)[0];
+  document.getElementById("topStats").innerHTML =
+    `<span><b>${active.length}</b> active</span><span><b>${live}</b> live</span><span><b>${travel}</b> travel</span>` +
+    (next ? `<span>next: <b>${esc(next.title.split("@")[0].trim())}</b> ${countdownTxt(next)}</span>` : "");
+}
 
-  document.getElementById("shows").innerHTML = active.map(cardHTML).join("");
-  document.getElementById("wrappedWrap").innerHTML = wrapped.length
-    ? `<details><summary>Just wrapped (${wrapped.length}) ›</summary><div class="wrapped" style="display:grid;gap:12px;padding-top:6px">${wrapped.map(cardHTML).join("")}</div></details>`
-    : "";
+// ════════════════════════════════════════════════
+// RENDER — detail
+// ════════════════════════════════════════════════
+function renderDetail() {
+  const el = document.getElementById("detailInner");
+  const s = SHOWS.find(x => x.id === selectedId);
+  if (!s) { el.innerHTML = `<div id="msg">${SHOWS.length ? "Select a show" : "No active shows assigned to you in Airtable."}</div>`; return; }
+  const t = today0();
+
+  const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
+    `<div class="d ${sameDay(d, t) ? "today" : (d < t ? "past" : "")}">
+       <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
+     </div>`).join("");
+
+  const crewRows = s.crew.map(c => {
+    const stl = String(c.status).toLowerCase();
+    const cls = stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
+    return `<tr>
+      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}</td>
+      <td class="dim">${esc(c.role)}</td>
+      <td class="${cls}">${esc(c.status)}</td>
+      <td class="r">${c.phone ? `<a href="${telHref(c.phone)}">${esc(c.phone)}</a>` : ""}</td>
+      <td class="r">${c.email ? `<a href="mailto:${esc(c.email)}">✉</a>` : ""}</td>
+    </tr>`;
+  }).join("") || `<tr><td style="color:var(--red)">No crew assigned</td></tr>`;
+
+  const gmailQ = encodeURIComponent('"' + (s.quote || s.title) + '"');
+  const mailRows = s.mailMeta.map(m =>
+    `<div class="mail" data-mail="${m.id}">
+       <div class="hd">
+         <span class="from">${esc(m.from)}</span>
+         <span class="sub">${esc(m.subj)}</span>
+         <span class="dt mono">${m.date ? fmtD(m.date) : ""}</span>
+       </div>
+       <div class="to"></div>
+       <div class="body"></div>
+     </div>`).join("");
+
+  const linkBtns = Object.entries(s.links).filter(([, u]) => u)
+    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} ↗</a>`).join("")
+    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable ↗</a>`;
+
+  const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
+
+  const notes = (s.pmNotes || s.clientNotes) ? `
+    <div class="box" style="margin-bottom:14px">
+      <h3>Notes</h3>
+      ${s.pmNotes ? `<div class="pad" style="white-space:pre-wrap">${esc(s.pmNotes)}</div>` : ""}
+      ${s.clientNotes ? `<div class="pad" style="white-space:pre-wrap;color:var(--dim);border-top:1px dashed var(--line)"><b style="color:var(--text)">Client:</b> ${esc(s.clientNotes)}</div>` : ""}
+    </div>` : "";
+
+  el.innerHTML = `
+    <div class="dhead">
+      <h2>${esc(s.title)}</h2>
+      <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
+      ${stateOf(s) === "live" ? '<span class="tag live">LIVE</span>' : ""}
+      ${stateOf(s) === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
+    </div>
+    <div class="dsub mono">
+      ${s.quote ? `<span>Quote #${esc(s.quote)}</span>` : ""}
+      ${s.booth ? `<span>Booth ${esc(s.booth)}</span>` : ""}
+      ${s.status ? `<span style="color:${s.status === "Confirmed" ? "var(--green)" : "var(--amber)"}">${esc(s.status)}</span>` : ""}
+      ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.city ? " · " + esc(s.city) : ""}</span>` : ""}
+      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a href="${telHref(s.am.phone)}" class="mono">${esc(s.am.phone)}</a>` : ""}${s.am.email ? ` · <a href="mailto:${esc(s.am.email)}">✉</a>` : ""}</span>` : ""}
+    </div>
+
+    <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
+
+    <div class="linkbar">${linkBtns}</div>
+
+    ${notes}
+
+    <div class="cols">
+      <div class="box">
+        <h3>Crew <span class="r">${s.crew.length}</span></h3>
+        <table class="grid">${crewRows}</table>
+      </div>
+      <div class="box">
+        <h3>Emails <span class="r">${s.mailTotal} total${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + agoTxt(s.mailMeta[0].date) : ""}</span></h3>
+        <div id="mailList">${mailRows || '<div class="pad" style="color:var(--dim)">No emails linked in Airtable</div>'}</div>
+        <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>
+      </div>
+    </div>`;
+
+  el.querySelectorAll(".mail .hd").forEach(hd =>
+    hd.addEventListener("click", () => toggleMail(s, hd.parentElement)));
+}
+
+// ════════════════════════════════════════════════
+// EMAIL BODIES — lazy load per show, cached
+// ════════════════════════════════════════════════
+async function toggleMail(s, mailEl) {
+  if (mailEl.classList.contains("open")) { mailEl.classList.remove("open"); return; }
+  mailEl.classList.add("open");
+  const bodyEl = mailEl.querySelector(".body");
+  if (bodyEl.dataset.loaded) return;
+
+  bodyEl.textContent = "Loading…";
+  try {
+    if (!mailCache[s.id]) {
+      const formula = s.quote
+        ? `FIND('${s.quote}',ARRAYJOIN({Related Event}))`
+        : `FIND('${s.title.replace(/'/g, "\\'")}',ARRAYJOIN({Related Event}))`;
+      mailCache[s.id] = await api(MAIL_TBL, {
+        filterByFormula: formula,
+        "fields[]": MAIL_FULL_FIELDS,
+        "sort[0][field]": "Received Date",
+        "sort[0][direction]": "desc",
+        pageSize: 100
+      });
+    }
+    const rec = mailCache[s.id].find(r => r.id === mailEl.dataset.mail);
+    if (rec) {
+      const f = rec.fields;
+      mailEl.querySelector(".to").textContent = "To: " + (f["To"] || "—");
+      bodyEl.textContent = cleanBody(f["Body"]) || "(empty body)";
+    } else {
+      bodyEl.textContent = "(couldn't find this email)";
+    }
+    bodyEl.dataset.loaded = "1";
+  } catch (e) {
+    bodyEl.textContent = "Failed to load: " + e.message;
+  }
 }
 
 // ════════════════════════════════════════════════
@@ -500,13 +628,13 @@ function render(events, positions, mails) {
 // ════════════════════════════════════════════════
 function showGate(errMsg) {
   document.getElementById("pinGate").style.display = "flex";
-  document.getElementById("hdr").style.display = "none";
+  document.getElementById("app").style.display = "none";
   document.getElementById("pinErr").textContent = errMsg || "";
   setTimeout(() => document.getElementById("pinInput").focus(), 50);
 }
 function hideGate() {
   document.getElementById("pinGate").style.display = "none";
-  document.getElementById("hdr").style.display = "flex";
+  document.getElementById("app").style.display = "flex";
 }
 
 async function tryPin() {
@@ -537,6 +665,8 @@ async function tryPin() {
 document.getElementById("pinBtn").addEventListener("click", tryPin);
 document.getElementById("pinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryPin(); });
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
+document.getElementById("backBtn").addEventListener("click", () =>
+  document.getElementById("main").classList.remove("show-detail"));
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && lastLoad && Date.now() - lastLoad > 10 * 60 * 1000) loadAll();
 });
