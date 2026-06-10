@@ -4,8 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#101214">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Show Ops">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-06-10 r4 (crew schedules + richer emails) -->
+<!-- build: 2026-06-10 r5 (audit batch: PWA, cache, flags, badges, replyall, ics, weather, notes) -->
 <style>
   :root {
     --bg: #101214;
@@ -29,6 +36,10 @@
   }
   a { color: var(--accent); text-decoration: none; }
   .mono { font-variant-numeric: tabular-nums; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+  /* generous hit area without changing layout */
+  .tap { padding: 12px; margin: -12px; display: inline-block; }
+  button { font-family: inherit; }
 
   /* ── PIN gate ── */
   #pinGate {
@@ -44,7 +55,7 @@
   #pinInput:focus { border-color: var(--accent); }
   #pinBtn {
     background: var(--accent); color: #04101f; border: none; border-radius: 6px;
-    font-size: 14px; font-weight: 600; padding: 9px 32px; cursor: pointer;
+    font-size: 14px; font-weight: 600; padding: 12px 36px; cursor: pointer; min-height: 44px;
   }
   #pinErr { color: var(--red); font-size: 13px; min-height: 18px; }
 
@@ -52,16 +63,17 @@
   #app { display: none; height: 100dvh; flex-direction: column; }
   #topbar {
     display: flex; align-items: center; gap: 12px;
-    padding: 0 14px; height: 42px; flex: none;
+    padding: env(safe-area-inset-top) 14px 0; min-height: calc(42px + env(safe-area-inset-top)); flex: none;
     background: var(--panel); border-bottom: 1px solid var(--line);
   }
   #topbar h1 { font-size: 14px; font-weight: 700; letter-spacing: .3px; }
   #topStats { display: flex; gap: 14px; color: var(--dim); font-size: 12px; flex: 1; overflow: hidden; white-space: nowrap; }
   #topStats b { color: var(--text); font-weight: 600; }
   #updated { color: var(--dim); font-size: 11px; white-space: nowrap; }
+  #updated.stale { color: var(--amber); }
   #refreshBtn {
-    background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 5px;
-    padding: 4px 10px; font-size: 13px; cursor: pointer;
+    background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 6px;
+    min-width: 44px; min-height: 36px; font-size: 15px; cursor: pointer;
   }
   #refreshBtn:hover { color: var(--text); border-color: var(--dim); }
 
@@ -71,10 +83,9 @@
   #list {
     width: 330px; flex: none; overflow-y: auto;
     border-right: 1px solid var(--line); background: var(--panel);
+    padding-bottom: env(safe-area-inset-bottom);
   }
-  .lrow {
-    padding: 9px 12px 8px; border-bottom: 1px solid var(--line); cursor: pointer;
-  }
+  .lrow { padding: 10px 12px 9px; border-bottom: 1px solid var(--line); cursor: pointer; }
   .lrow:hover { background: var(--panel2); }
   .lrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
   .lrow .t { font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: baseline; }
@@ -85,19 +96,24 @@
   .tag.remote { color: var(--dim); background: rgba(132,142,153,.15); }
   .tag.live   { color: var(--green); background: rgba(63,185,80,.15); }
   .tag.urgent { color: var(--amber); background: rgba(210,153,34,.18); }
+  .tag.danger { color: var(--red); background: rgba(248,81,73,.18); }
   .tag.done   { color: var(--dim); background: rgba(132,142,153,.1); }
-  .lrow .cnt { margin-left: auto; }
-  .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; }
+  .lrow .cnt { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .newdot { color: var(--amber); font-weight: 700; }
+  .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
 
   /* ── Detail (right) ── */
   #detail { flex: 1; overflow-y: auto; min-width: 0; }
-  #detail .inner { padding: 14px 18px 60px; max-width: 1100px; }
-  #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 14px; padding: 10px 14px 0; cursor: pointer; }
+  #detail .inner { padding: 14px 18px calc(60px + env(safe-area-inset-bottom)); max-width: 1400px; }
+  #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 15px; padding: 12px 14px 2px; cursor: pointer; }
 
   .dhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 4px; }
   .dhead h2 { font-size: 17px; font-weight: 700; }
-  .dhead .meta { color: var(--dim); font-size: 12.5px; }
   .dsub { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; color: var(--dim); font-size: 12.5px; margin-bottom: 12px; }
+
+  .alert { border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+  .alert.red { background: rgba(248,81,73,.12); color: var(--red); border: 1px solid rgba(248,81,73,.4); }
+  .alert.amber { background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.35); }
 
   .datebar {
     display: flex; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel);
@@ -110,7 +126,11 @@
   .datebar .d.today .v { color: var(--amber); }
   .datebar .d.past .v { color: var(--dim); font-weight: 400; }
 
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+  #wx { display: flex; gap: 6px; overflow-x: auto; margin: -4px 0 12px; }
+  #wx .w { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; font-size: 12px; white-space: nowrap; color: var(--dim); }
+  #wx .w b { color: var(--text); font-weight: 600; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1.15fr; gap: 14px; margin-bottom: 14px; }
   @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
   .box { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
   .box h3 {
@@ -119,27 +139,28 @@
   }
   .box h3 .r { margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0; }
   .box .pad { padding: 8px 12px; }
+  .box h3 button { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px; margin: -6px; }
 
   table.grid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.grid td { padding: 6px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  table.grid td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
   table.grid tr:last-child td { border-bottom: none; }
   table.grid td.dim { color: var(--dim); white-space: nowrap; }
   table.grid td.r { text-align: right; white-space: nowrap; }
   .stat-ok { color: var(--green); } .stat-pencil { color: var(--amber); } .stat-other { color: var(--dim); }
 
   .linkbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .linkbar a {
+  .linkbar a, .linkbar button {
     border: 1px solid var(--line); background: var(--panel); color: var(--text);
-    border-radius: 5px; padding: 5px 12px; font-size: 12.5px; font-weight: 600;
+    border-radius: 6px; padding: 9px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; min-height: 38px;
   }
-  .linkbar a:hover { border-color: var(--accent); color: var(--accent); }
+  .linkbar a:hover, .linkbar button:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ── Emails ── */
   .mail { border-bottom: 1px solid var(--line); }
   .mail:last-child { border-bottom: none; }
-  .mail > .hd { display: flex; gap: 10px; padding: 7px 12px; cursor: pointer; align-items: baseline; }
+  .mail > .hd { display: flex; gap: 10px; padding: 11px 12px; cursor: pointer; align-items: baseline; }
   .mail > .hd:hover { background: var(--panel2); }
-  .mail .from { font-weight: 600; white-space: nowrap; flex: none; max-width: 140px; overflow: hidden; text-overflow: ellipsis; }
+  .mail .from { font-weight: 600; white-space: nowrap; flex: none; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
   .mail .sub { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
   .mail.open .sub { white-space: normal; color: var(--text); }
   .mail .dt { color: var(--dim); font-size: 11.5px; white-space: nowrap; flex: none; }
@@ -151,16 +172,29 @@
   .mail.open .body { display: block; }
   .mail .to { color: var(--dim); font-size: 11px; padding: 4px 12px 0; display: none; }
   .mail.open .to { display: block; }
-  .mailfoot { padding: 7px 12px; font-size: 12px; }
+  .mailfoot { padding: 10px 12px; font-size: 12px; display: flex; gap: 16px; }
+
+  #notesView { white-space: pre-wrap; }
+  #notesEdit { display: none; padding: 8px 12px; }
+  #notesEdit textarea {
+    width: 100%; min-height: 120px; background: var(--bg); color: var(--text);
+    border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; resize: vertical;
+  }
+  #notesEdit .row2 { display: flex; gap: 8px; margin-top: 8px; }
+  #notesEdit button { border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; min-height: 38px; }
+  #notesSave { background: var(--accent); color: #04101f; border: none; font-weight: 700; }
+  #notesCancel { background: none; color: var(--dim); border: 1px solid var(--line); }
+  #notesMsg { color: var(--green); font-size: 12px; align-self: center; }
 
   #msg { text-align: center; color: var(--dim); padding: 50px 20px; }
   #errBar {
     display: none; margin: 8px 14px; background: rgba(248,81,73,.1); color: var(--red);
     border: 1px solid rgba(248,81,73,.4); border-radius: 6px; padding: 8px 12px; font-size: 13px;
   }
-  #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 5px; padding: 3px 10px; margin-left: 10px; cursor: pointer; }
+  #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 5px; padding: 6px 12px; margin-left: 10px; cursor: pointer; }
   .spin { display: inline-block; animation: rot 1s linear infinite; }
   @keyframes rot { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
 
   /* ── Mobile ── */
   @media (max-width: 760px) {
@@ -168,9 +202,10 @@
     #main:not(.show-detail) #detail { display: none; }
     #list { width: 100%; border-right: none; }
     #backBtn { display: block; }
-    #detail .inner { padding: 10px 12px 60px; }
-    #topStats { display: none; }
+    #detail .inner { padding: 10px 12px calc(60px + env(safe-area-inset-bottom)); }
+    #topStats span:nth-child(n+4) { display: none; }
     .datebar .d { min-width: 78px; }
+    .lrow { padding: 13px 12px 12px; }
   }
 </style>
 </head>
@@ -188,7 +223,7 @@
     <h1>SHOW OPS</h1>
     <div id="topStats"></div>
     <span id="updated"></span>
-    <button id="refreshBtn">↻</button>
+    <button id="refreshBtn" aria-label="Refresh">↻</button>
   </div>
   <div id="errBar"><span id="errTxt"></span><button onclick="loadAll()">Retry</button></div>
   <div id="main">
@@ -212,8 +247,9 @@ const POS_TBL = "tblloB4sAREi8YqrC";
 const MAIL_TBL = "tblu9DkXv7Z8e7vNq";
 const IQRAL_VIEW = "viwT3CcaSHtTVAZBi";
 const ME = "Iqral";
-const URGENT_DAYS = 5;            // urgency window (Iq preference)
-const WRAPPED_LOOKBACK = 14;      // keep just-ended shows listed this many days
+const MY_EMAILS = ["ilarode@fuse-tg.com", "iqlarode@gmail.com"];
+const URGENT_DAYS = 5;
+const WRAPPED_LOOKBACK = 14;
 
 const EVENT_FIELDS = [
   "Combined Name","Name","Timeline Start","Timeline End","Status",
@@ -234,14 +270,22 @@ const MAIL_FULL_FIELDS = ["From","To","CC","Subject","Received Date","Body","Att
 // ════════════════════════════════════════════════
 function pin() { return localStorage.getItem("dash_pin") || ""; }
 
-async function api(table, params) {
+async function api(table, params, method, recordId, body) {
   const qs = new URLSearchParams();
   for (const [k, v] of Object.entries(params || {})) {
     if (Array.isArray(v)) v.forEach(x => qs.append(k, x));
     else qs.append(k, v);
   }
   qs.append("key", pin());
-  let url = `${WORKER}/v0/${BASE}/${encodeURIComponent(table)}?${qs}`;
+  const base = `${WORKER}/v0/${BASE}/${encodeURIComponent(table)}` + (recordId ? `/${recordId}` : "");
+  if (method === "PATCH") {
+    const res = await fetch(`${base}?${qs}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+    if (res.status === 401) { const e = new Error("PIN rejected"); e.auth = true; throw e; }
+    const data = await res.json();
+    if (!res.ok || data.error) throw new Error((data.error && (data.error.message || data.error)) || ("HTTP " + res.status));
+    return data;
+  }
+  let url = `${base}?${qs}`;
   let out = [];
   for (let page = 0; page < 6; page++) {
     const res = await fetch(url);
@@ -251,7 +295,7 @@ async function api(table, params) {
     if (data.error) throw new Error(data.error.message || data.error);
     out = out.concat(data.records || []);
     if (!data.offset) break;
-    url = `${WORKER}/v0/${BASE}/${encodeURIComponent(table)}?${qs}&offset=${data.offset}`;
+    url = `${base}?${qs}&offset=${data.offset}`;
   }
   return out;
 }
@@ -265,6 +309,7 @@ const first = v => Array.isArray(v) ? v[0] : v;
 function parseDate(v) {
   v = first(v);
   if (!v) return null;
+  if (v instanceof Date) return v;
   let m = String(v).match(/^(\d{4})-(\d{2})-(\d{2})/);
   if (m) return new Date(+m[1], +m[2]-1, +m[3], 12);
   m = String(v).match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
@@ -278,7 +323,12 @@ function fmtD(d) { return d ? d.toLocaleDateString("en-US", { month: "short", da
 function sameDay(a, b) { return a && b && a.toDateString() === b.toDateString(); }
 function fmtRange(a, b) {
   if (!a && !b) return "";
-  if (a && b) return fmtD(a) + "–" + fmtD(b);
+  if (a && b) {
+    if (a.getTime() === b.getTime()) return fmtD(a);
+    if (a.getMonth() === b.getMonth() && a.getFullYear() === b.getFullYear())
+      return fmtD(a) + "–" + b.getDate();          // Jun 13–21
+    return fmtD(a) + " – " + fmtD(b);
+  }
   return fmtD(a || b);
 }
 function agoTxt(d) {
@@ -287,44 +337,86 @@ function agoTxt(d) {
   if (n === 1) return "1d ago";
   return n + "d ago";
 }
+function titleName(s) {
+  return String(s || "").split(/\s+/).map(w => w ? w[0].toUpperCase() + w.slice(1) : w).join(" ");
+}
 function senderName(from) {
   if (!from) return "";
   const f = String(from);
-  return f.includes("@") ? f.split("@")[0].replace(/[._]/g, " ") : f;
+  return titleName(f.includes("@") ? f.split("@")[0].replace(/[._]/g, " ") : f);
 }
+function fmtPhone(p) {
+  let d = String(p).replace(/\D/g, "");
+  if (d.length === 11 && d[0] === "1") d = d.slice(1);
+  if (d.length === 10) return `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+  return String(p);
+}
+function telHref(p) { return "tel:" + String(p).replace(/[^\d+]/g, ""); }
 function cleanBody(b) {
   let t = String(b || "");
-  // markdown link [text](url) -> text (keeps real labels, drops giant tracking URLs)
   t = t.replace(/\[([^\]]*)\]\(([^)]*)\)/g, (m, txt, url) => {
     if (!txt || /^https?:/.test(txt)) return /sophos|wearesparks|facebook|instagram|linkedin|youtube/i.test(url) ? "" : (txt || url);
     return txt;
   });
-  // bare sophos-wrapped / social footer URLs
   t = t.split("\n").filter(line =>
     !/protection\.sophos\.com/.test(line) &&
     !/^<?https?:\/\/(www\.)?(facebook|instagram|youtube|linkedin)\./.test(line.trim()) &&
     !/This email and any attachments are intended only for the person/.test(line)
   ).join("\n");
-  t = t.replace(/\*\*([^*]*)\*\*/g, "$1")   // bold
-       .replace(/\\\*/g, "")                 // escaped asterisk debris
-       .replace(/^\s*[#>]{1,6}\s*/gm, "")    // markdown headers / quotes
+  t = t.replace(/\*\*([^*]*)\*\*/g, "$1")
+       .replace(/\\\*/g, "")
+       .replace(/^\s*[#>]{1,6}\s*/gm, "")
        .replace(/\n{3,}/g, "\n\n")
        .trim();
   return t;
 }
-function telHref(p) { return "tel:" + String(p).replace(/[^\d+]/g, ""); }
+function extractEmails(s) {
+  return [...new Set((String(s || "").match(/[\w.+-]+@[\w.-]+\.\w+/g) || []).map(x => x.toLowerCase()))];
+}
+
+// seen-email tracking (new-mail badges)
+function seenKey(id) { return "seen_" + id; }
+function latestMailTime(s) { return s.mailMeta[0] && s.mailMeta[0].date ? s.mailMeta[0].date.getTime() : 0; }
+function newMailCount(s) {
+  const seen = +localStorage.getItem(seenKey(s.id));
+  if (!seen) { localStorage.setItem(seenKey(s.id), String(latestMailTime(s) || 1)); return 0; }
+  return s.mailMeta.filter(m => m.date && m.date.getTime() > seen).length;
+}
+function markSeen(s) { if (s) localStorage.setItem(seenKey(s.id), String(Math.max(latestMailTime(s), 1))); }
 
 // ════════════════════════════════════════════════
 // STATE
 // ════════════════════════════════════════════════
-let SHOWS = [];           // models
+let SHOWS = [];
+let RAW = null;            // {events, positions, mails}
 let selectedId = null;
 let lastLoad = 0;
-const mailCache = {};     // eventId -> full email records
+const mailCache = {};
 
 // ════════════════════════════════════════════════
 // DATA LOAD
 // ════════════════════════════════════════════════
+function applyData(events, positions, mails, fromCache) {
+  RAW = { events, positions, mails };
+  SHOWS = events.map(e => buildModel(e, positions, mails))
+    .sort((a, b) => (a.tlStart || 0) - (b.tlStart || 0));
+  const t = today0();
+  if (!selectedId || !SHOWS.find(s => s.id === selectedId)) {
+    const def = SHOWS.find(s => !s.tlEnd || s.tlEnd >= t) || SHOWS[0];
+    selectedId = def ? def.id : null;
+  }
+  renderList();
+  renderStats();
+  renderDetail();
+  document.getElementById("msg") && (document.getElementById("msg").textContent = SHOWS.length ? "" : "No active shows assigned to you in Airtable.");
+  const up = document.getElementById("updated");
+  if (fromCache) { up.textContent = "Cached — refreshing…"; up.classList.add("stale"); }
+  else {
+    up.textContent = "Live " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    up.classList.remove("stale");
+  }
+}
+
 async function loadAll() {
   document.getElementById("errBar").style.display = "none";
   document.getElementById("refreshBtn").innerHTML = '<span class="spin">↻</span>';
@@ -357,26 +449,17 @@ async function loadAll() {
     }
     await Promise.all(jobs);
 
-    SHOWS = events.map(e => buildModel(e, positions, mails))
-      .sort((a, b) => (a.tlStart || 0) - (b.tlStart || 0));
-
     lastLoad = Date.now();
     Object.keys(mailCache).forEach(k => delete mailCache[k]);
+    try { localStorage.setItem("dash_cache", JSON.stringify({ t: lastLoad, events, positions, mails })); } catch (e) {}
 
-    renderList();
-    renderStats();
-    const t = today0();
-    if (!selectedId || !SHOWS.find(s => s.id === selectedId)) {
-      const def = SHOWS.find(s => !s.tlEnd || s.tlEnd >= t) || SHOWS[0];
-      selectedId = def ? def.id : null;
-    }
-    renderDetail();
-    document.getElementById("updated").textContent =
-      "Live " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    applyData(events, positions, mails, false);
   } catch (err) {
     if (err.auth) { localStorage.removeItem("dash_pin"); showGate("PIN no longer valid — re-enter."); return; }
     document.getElementById("errTxt").textContent = "Couldn't load data: " + err.message;
     document.getElementById("errBar").style.display = "block";
+    const up = document.getElementById("updated");
+    if (RAW) { up.textContent = "Offline — showing cached"; up.classList.add("stale"); }
   } finally {
     document.getElementById("refreshBtn").innerHTML = "↻";
   }
@@ -394,7 +477,6 @@ function buildModel(ev, positions, mails) {
     })
     .map(p => {
       const pf = p.fields;
-      // schedule: one or more stints from Timeline Dates, else the position's own range
       const starts = [].concat(pf["Start (from Timeline Dates)"] || []);
       const ends = [].concat(pf["End (from Timeline Dates)"] || []);
       let stints = starts.map((st, i) => ({ a: parseDate(st), b: parseDate(ends[i]) })).filter(x => x.a || x.b);
@@ -421,12 +503,13 @@ function buildModel(ev, positions, mails) {
 
   return {
     id: ev.id, title,
-    quote: f["QuoteNumber(string)"] || "",
+    quote: quoteStr,
     booth: f["Booth Number"] || "",
     status: f["Status"] || "",
     venue: first(f["Venue"]) || "",
     address: first(f["Venue Address Combined"]) || "",
-    city: [f["Venue City"], f["Venue State"]].filter(Boolean).join(", "),
+    city: f["Venue City"] || "",
+    cityState: [f["Venue City"], f["Venue State"]].filter(Boolean).join(", "),
     tlStart: parseDate(f["Timeline Start"]),
     tlEnd: parseDate(f["Timeline End"]),
     dates: {
@@ -480,6 +563,14 @@ function countdownTxt(s) {
   const d = daysFromToday(loadIn);
   return d === 0 ? "load-in TODAY" : "load-in in " + d + "d";
 }
+function crewRisk(s) {
+  const st = stateOf(s);
+  if (st !== "urgent" && st !== "live") return null;
+  if (!s.crew.length) return { level: "red", txt: "NO CREW ASSIGNED" };
+  const pencilled = s.crew.filter(c => String(c.status).toLowerCase().includes("pencil")).length;
+  if (pencilled) return { level: "amber", txt: pencilled + " crew still pencilled" };
+  return null;
+}
 
 // ════════════════════════════════════════════════
 // RENDER — list + stats
@@ -491,16 +582,19 @@ function renderList() {
 
   const row = s => {
     const st = stateOf(s);
-    const tag = st === "live" ? '<span class="tag live">LIVE</span>'
+    const risk = crewRisk(s);
+    const tag = risk && risk.level === "red" ? '<span class="tag danger">NO CREW</span>'
+      : st === "live" ? '<span class="tag live">LIVE</span>'
       : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).replace("load-in ", "LOAD-IN "))}</span>`
       : st === "done" ? '<span class="tag done">DONE</span>' : "";
-    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}">
+    const nNew = s.id === selectedId ? 0 : newMailCount(s);
+    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
       <div class="t"><span class="nm">${esc(s.title)}</span>${tag}</div>
       <div class="m mono">
         <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
-        <span>${esc(s.city || "")}</span>
+        <span>${esc(s.cityState || "")}</span>
         <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
-        <span class="cnt">✉${s.mailTotal} 👥${s.crew.length}</span>
+        <span class="cnt">${nNew ? `<span class="newdot">● ${nNew} new</span>` : ""}✉${s.mailTotal} 👥${s.crew.length}</span>
       </div>
     </div>`;
   };
@@ -510,12 +604,15 @@ function renderList() {
     (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
     (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "");
 
-  document.querySelectorAll(".lrow[data-id]").forEach(el =>
-    el.addEventListener("click", () => {
+  document.querySelectorAll(".lrow[data-id]").forEach(el => {
+    const go = () => {
       selectedId = el.dataset.id;
       renderList(); renderDetail();
       document.getElementById("main").classList.add("show-detail");
-    }));
+    };
+    el.addEventListener("click", go);
+    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
 }
 
 function renderStats() {
@@ -523,9 +620,11 @@ function renderStats() {
   const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
   const live = active.filter(s => stateOf(s) === "live").length;
   const travel = active.filter(s => s.travel).length;
+  const risks = active.filter(s => crewRisk(s)).length;
   const next = active.filter(s => s.tlStart && s.tlStart > t)[0];
   document.getElementById("topStats").innerHTML =
     `<span><b>${active.length}</b> active</span><span><b>${live}</b> live</span><span><b>${travel}</b> travel</span>` +
+    (risks ? `<span style="color:var(--red)"><b>${risks}</b> at risk</span>` : "") +
     (next ? `<span>next: <b>${esc(next.title.split("@")[0].trim())}</b> ${countdownTxt(next)}</span>` : "");
 }
 
@@ -537,35 +636,36 @@ function renderDetail() {
   const s = SHOWS.find(x => x.id === selectedId);
   if (!s) { el.innerHTML = `<div id="msg">${SHOWS.length ? "Select a show" : "No active shows assigned to you in Airtable."}</div>`; return; }
   const t = today0();
+  markSeen(s);
+
+  const risk = crewRisk(s);
+  const riskBar = risk ? `<div class="alert ${risk.level}">${risk.level === "red" ? "⛔" : "⚠"} ${esc(risk.txt)} — ${esc(countdownTxt(s))}</div>` : "";
 
   const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
     `<div class="d ${sameDay(d, t) ? "today" : (d < t ? "past" : "")}">
        <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
      </div>`).join("");
 
-  const fmtStints = c => c.stints.map(x => {
-    if (x.a && x.b && x.a.getTime() === x.b.getTime()) return fmtD(x.a);
-    return fmtRange(x.a, x.b);
-  }).join(", ") || "—";
+  const fmtStints = c => c.stints.map(x => fmtRange(x.a, x.b)).join(", ") || "—";
 
   const crewRows = s.crew.map(c => {
     const stl = String(c.status).toLowerCase();
     const cls = stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
     const extra = [c.notes, c.travelInfo].filter(Boolean).join(" · ");
     return `<tr>
-      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}${extra ? `<div class="dim" style="font-size:11.5px;white-space:normal">${esc(extra)}</div>` : ""}</td>
+      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}${extra ? `<div class="dim" style="font-size:11.5px;white-space:normal;color:var(--dim)">${esc(extra)}</div>` : ""}</td>
       <td class="dim">${esc(c.role)}</td>
       <td class="mono" style="white-space:nowrap">${esc(fmtStints(c))}</td>
       <td class="${cls}">${esc(c.status)}</td>
-      <td class="r">${c.phone ? `<a href="${telHref(c.phone)}">${esc(c.phone)}</a>` : ""}</td>
-      <td class="r">${c.email ? `<a href="mailto:${esc(c.email)}">✉</a>` : ""}</td>
+      <td class="r">${c.phone ? `<a class="tap" href="${telHref(c.phone)}">${esc(fmtPhone(c.phone))}</a>` : ""}</td>
+      <td class="r">${c.email ? `<a class="tap" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.name)}">✉</a>` : ""}</td>
     </tr>`;
-  }).join("") || `<tr><td style="color:var(--red)">No crew assigned</td></tr>`;
+  }).join("") || `<tr><td style="color:var(--red);padding:10px 12px">No crew assigned</td></tr>`;
 
   const gmailQ = encodeURIComponent('"' + (s.quote || s.title) + '"');
   const mailRows = s.mailMeta.map(m =>
     `<div class="mail" data-mail="${m.id}">
-       <div class="hd">
+       <div class="hd" tabindex="0" role="button">
          <span class="from">${esc(m.from)}</span>
          <span class="sub">${esc(m.subj)}</span>
          <span class="dt mono">${m.date ? fmtD(m.date) : ""}</span>
@@ -576,16 +676,25 @@ function renderDetail() {
 
   const linkBtns = Object.entries(s.links).filter(([, u]) => u)
     .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} ↗</a>`).join("")
-    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable ↗</a>`;
+    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable ↗</a>`
+    + `<button id="icsBtn">📅 Add to Calendar</button>`;
 
   const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
 
-  const notes = (s.pmNotes || s.clientNotes) ? `
+  const notesBox = `
     <div class="box" style="margin-bottom:14px">
-      <h3>Notes</h3>
-      ${s.pmNotes ? `<div class="pad" style="white-space:pre-wrap">${esc(s.pmNotes)}</div>` : ""}
+      <h3>Notes <span class="r"><button id="notesEditBtn">✎ Edit</button></span></h3>
+      <div class="pad" id="notesView">${s.pmNotes ? esc(s.pmNotes) : '<span style="color:var(--dim)">No PM notes — tap Edit to add.</span>'}</div>
+      <div id="notesEdit">
+        <textarea id="notesTa"></textarea>
+        <div class="row2">
+          <button id="notesSave">Save to Airtable</button>
+          <button id="notesCancel">Cancel</button>
+          <span id="notesMsg"></span>
+        </div>
+      </div>
       ${s.clientNotes ? `<div class="pad" style="white-space:pre-wrap;color:var(--dim);border-top:1px dashed var(--line)"><b style="color:var(--text)">Client:</b> ${esc(s.clientNotes)}</div>` : ""}
-    </div>` : "";
+    </div>`;
 
   el.innerHTML = `
     <div class="dhead">
@@ -598,15 +707,18 @@ function renderDetail() {
       ${s.quote ? `<span>Quote #${esc(s.quote)}</span>` : ""}
       ${s.booth ? `<span>Booth ${esc(s.booth)}</span>` : ""}
       ${s.status ? `<span style="color:${s.status === "Confirmed" ? "var(--green)" : "var(--amber)"}">${esc(s.status)}</span>` : ""}
-      ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.city ? " · " + esc(s.city) : ""}</span>` : ""}
-      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a href="${telHref(s.am.phone)}" class="mono">${esc(s.am.phone)}</a>` : ""}${s.am.email ? ` · <a href="mailto:${esc(s.am.email)}">✉</a>` : ""}</span>` : ""}
+      ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.cityState ? " · " + esc(s.cityState) : ""}</span>` : ""}
+      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a class="tap" href="${telHref(s.am.phone)}">${esc(fmtPhone(s.am.phone))}</a>` : ""}${s.am.email ? ` · <a class="tap" href="mailto:${esc(s.am.email)}">✉</a>` : ""}</span>` : ""}
     </div>
 
+    ${riskBar}
+
     <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
+    <div id="wx"></div>
 
     <div class="linkbar">${linkBtns}</div>
 
-    ${notes}
+    ${notesBox}
 
     <div class="cols">
       <div class="box">
@@ -620,13 +732,137 @@ function renderDetail() {
       </div>
     </div>`;
 
-  el.querySelectorAll(".mail .hd").forEach(hd =>
-    hd.addEventListener("click", () => toggleMail(s, hd.parentElement)));
+  el.querySelectorAll(".mail .hd").forEach(hd => {
+    const open = () => toggleMail(s, hd.parentElement);
+    hd.addEventListener("click", open);
+    hd.addEventListener("keydown", e => { if (e.key === "Enter") open(); });
+  });
+  document.getElementById("icsBtn").addEventListener("click", () => downloadIcs(s));
+  setupNotes(s);
+  loadWeather(s);
+}
+
+// ════════════════════════════════════════════════
+// NOTES — edit PM Notes, save back to Airtable
+// ════════════════════════════════════════════════
+function setupNotes(s) {
+  const view = document.getElementById("notesView");
+  const edit = document.getElementById("notesEdit");
+  const ta = document.getElementById("notesTa");
+  const msg = document.getElementById("notesMsg");
+  document.getElementById("notesEditBtn").addEventListener("click", () => {
+    ta.value = s.pmNotes || "";
+    view.style.display = "none"; edit.style.display = "block"; ta.focus();
+  });
+  document.getElementById("notesCancel").addEventListener("click", () => {
+    edit.style.display = "none"; view.style.display = "block"; msg.textContent = "";
+  });
+  document.getElementById("notesSave").addEventListener("click", async () => {
+    const btn = document.getElementById("notesSave");
+    btn.disabled = true; btn.textContent = "Saving…"; msg.textContent = "";
+    try {
+      await api(EVENTS_TBL, {}, "PATCH", s.id, { fields: { "PM Notes": ta.value } });
+      s.pmNotes = ta.value;
+      const ev = RAW && RAW.events.find(e => e.id === s.id);
+      if (ev) ev.fields["PM Notes"] = ta.value;
+      try { localStorage.setItem("dash_cache", JSON.stringify({ t: lastLoad, ...RAW })); } catch (e) {}
+      view.innerHTML = ta.value ? esc(ta.value) : '<span style="color:var(--dim)">No PM notes — tap Edit to add.</span>';
+      edit.style.display = "none"; view.style.display = "block";
+    } catch (e) {
+      msg.style.color = "var(--red)"; msg.textContent = "Save failed: " + e.message;
+    } finally {
+      btn.disabled = false; btn.textContent = "Save to Airtable";
+    }
+  });
+}
+
+// ════════════════════════════════════════════════
+// CALENDAR EXPORT (.ics)
+// ════════════════════════════════════════════════
+function downloadIcs(s) {
+  const pad = n => String(n).padStart(2, "0");
+  const dstr = d => `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`;
+  const stamp = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+  const short = s.title.split("@")[0].trim();
+  let ics = "BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//ShowOps//EN\r\n";
+  Object.entries(s.dates).filter(([, d]) => d).forEach(([k, d], i) => {
+    const end = new Date(d); end.setDate(end.getDate() + 1);
+    ics += "BEGIN:VEVENT\r\n" +
+      `UID:${s.id}-${i}@showops\r\n` +
+      `DTSTAMP:${stamp}\r\n` +
+      `DTSTART;VALUE=DATE:${dstr(d)}\r\n` +
+      `DTEND;VALUE=DATE:${dstr(end)}\r\n` +
+      `SUMMARY:${short} — ${k}\r\n` +
+      `LOCATION:${(s.venue + (s.cityState ? ", " + s.cityState : "")).replace(/[,;]/g, "\\$&")}\r\n` +
+      "END:VEVENT\r\n";
+  });
+  ics += "END:VCALENDAR\r\n";
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([ics], { type: "text/calendar" }));
+  a.download = short.replace(/[^\w]+/g, "-") + ".ics";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+}
+
+// ════════════════════════════════════════════════
+// WEATHER — open-meteo, free, no key; cached 3h
+// ════════════════════════════════════════════════
+const WMO = c =>
+  c === 0 ? "☀" : c <= 2 ? "🌤" : c === 3 ? "☁" : c <= 48 ? "🌫" :
+  c <= 57 ? "🌦" : c <= 67 ? "🌧" : c <= 77 ? "🌨" : c <= 82 ? "🌧" : c <= 86 ? "🌨" : "⛈";
+
+async function loadWeather(s) {
+  const el = document.getElementById("wx");
+  if (!el || !s.city) return;
+  const from = s.dates["Travel In"] || s.dates["Load In"] || s.tlStart;
+  const end = s.tlEnd || from;
+  if (!from || daysFromToday(from) > 14 || (end && end < today0())) return;
+
+  try {
+    const geoKey = "wx_geo_" + s.city.toLowerCase();
+    let geo = JSON.parse(localStorage.getItem(geoKey) || "null");
+    if (!geo) {
+      const g = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(s.city)}&count=1&language=en&format=json`).then(r => r.json());
+      if (!g.results || !g.results[0]) return;
+      geo = { la: g.results[0].latitude, lo: g.results[0].longitude };
+      localStorage.setItem(geoKey, JSON.stringify(geo));
+    }
+    const fcKey = "wx_fc_" + geo.la.toFixed(2) + "_" + geo.lo.toFixed(2);
+    let fc = JSON.parse(localStorage.getItem(fcKey) || "null");
+    if (!fc || Date.now() - fc.t > 3 * 3600 * 1000) {
+      const data = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${geo.la}&longitude=${geo.lo}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&timezone=auto&forecast_days=16`).then(r => r.json());
+      if (!data.daily) return;
+      fc = { t: Date.now(), d: data.daily };
+      localStorage.setItem(fcKey, JSON.stringify(fc));
+    }
+    const t = today0();
+    const cells = [];
+    fc.d.time.forEach((ds, i) => {
+      const d = parseDate(ds);
+      if (!d || d < t || (from && d < new Date(from.getTime() - 86400000)) && d < t) return;
+      if (from && d > new Date(Math.min((end || from).getTime(), t.getTime() + 15 * 86400000))) return;
+      if (d < from && daysFromToday(from) > 2) return;   // only lead-in days when show is close
+      if (cells.length >= 8) return;
+      const pr = fc.d.precipitation_probability_max[i];
+      cells.push(`<div class="w"><b>${d.toLocaleDateString("en-US", { weekday: "short", day: "numeric" })}</b> ${WMO(fc.d.weather_code[i])} ${Math.round(fc.d.temperature_2m_max[i])}°/${Math.round(fc.d.temperature_2m_min[i])}°${pr >= 30 ? ` <span style="color:var(--accent)">${pr}%</span>` : ""}</div>`);
+    });
+    if (cells.length) el.innerHTML = `<div class="w" style="border:none;background:none;padding-left:0">${esc(s.city)}:</div>` + cells.join("");
+  } catch (e) { /* weather is decorative — fail silent */ }
 }
 
 // ════════════════════════════════════════════════
 // EMAIL BODIES — lazy load per show, cached
 // ════════════════════════════════════════════════
+function replyAllHref(f, subj) {
+  const all = extractEmails(String(f["From"] || "") + "," + String(f["To"] || "") + "," + String(f["CC"] || ""))
+    .filter(a => !MY_EMAILS.includes(a));
+  if (!all.length) return null;
+  const to = extractEmails(f["From"])[0] || all[0];
+  const cc = all.filter(a => a !== to);
+  const sub = /^re:/i.test(subj) ? subj : "Re: " + subj;
+  return `mailto:${to}?cc=${encodeURIComponent(cc.join(","))}&subject=${encodeURIComponent(sub)}`;
+}
+
 async function toggleMail(s, mailEl) {
   if (mailEl.classList.contains("open")) { mailEl.classList.remove("open"); return; }
   mailEl.classList.add("open");
@@ -652,24 +888,30 @@ async function toggleMail(s, mailEl) {
       const f = rec.fields;
       let hdr = "To: " + (f["To"] || "—");
       if (f["CC"]) {
-        const ccAddrs = [...String(f["CC"]).matchAll(/'address':\s*'([^']+)'/g)].map(m => m[1]);
+        const ccAddrs = extractEmails(f["CC"]);
         hdr += "  ·  CC: " + (ccAddrs.length ? ccAddrs.join(", ") : String(f["CC"]).slice(0, 120));
       }
       mailEl.querySelector(".to").textContent = hdr;
       bodyEl.textContent = cleanBody(f["Body"]) || "(empty body)";
-      const atts = f["Attachments"] || [];
-      if (atts.length) {
-        const bar = document.createElement("div");
-        bar.style.cssText = "padding-top:8px;display:flex;gap:8px;flex-wrap:wrap";
-        atts.forEach(a => {
-          const link = document.createElement("a");
-          link.href = a.url; link.target = "_blank"; link.rel = "noopener";
-          link.textContent = "📎 " + (a.filename || "attachment") + (a.size ? " (" + Math.round(a.size / 1024) + " KB)" : "");
-          link.style.cssText = "border:1px solid var(--line);border-radius:5px;padding:3px 9px;font-size:12px";
-          bar.appendChild(link);
-        });
-        bodyEl.appendChild(bar);
+
+      const bar = document.createElement("div");
+      bar.style.cssText = "padding-top:10px;display:flex;gap:8px;flex-wrap:wrap";
+      const reply = replyAllHref(f, f["Subject"] || s.title);
+      if (reply) {
+        const rb = document.createElement("a");
+        rb.href = reply;
+        rb.textContent = "↩ Reply All";
+        rb.style.cssText = "border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-size:12.5px;font-weight:600";
+        bar.appendChild(rb);
       }
+      (f["Attachments"] || []).forEach(a => {
+        const link = document.createElement("a");
+        link.href = a.url; link.target = "_blank"; link.rel = "noopener";
+        link.textContent = "📎 " + (a.filename || "attachment") + (a.size ? " (" + Math.round(a.size / 1024) + " KB)" : "");
+        link.style.cssText = "border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-size:12px";
+        bar.appendChild(link);
+      });
+      if (bar.children.length) bodyEl.appendChild(bar);
     } else {
       bodyEl.textContent = "(couldn't find this email)";
     }
@@ -728,8 +970,14 @@ document.addEventListener("visibilitychange", () => {
 });
 
 (function boot() {
-  if (pin()) { hideGate(); loadAll(); }
-  else showGate();
+  if (!pin()) { showGate(); return; }
+  hideGate();
+  // instant open from cache, then refresh live
+  try {
+    const c = JSON.parse(localStorage.getItem("dash_cache") || "null");
+    if (c && c.events) applyData(c.events, c.positions || [], c.mails || [], true);
+  } catch (e) {}
+  loadAll();
 })();
 </script>
 </body>
