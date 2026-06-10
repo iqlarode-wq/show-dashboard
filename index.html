@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <title>Show Ops</title>
-<!-- build: 2026-06-10 r3 (fresh deploy after cancelling stuck run) -->
+<!-- build: 2026-06-10 r4 (crew schedules + richer emails) -->
 <style>
   :root {
     --bg: #101214;
@@ -224,9 +224,10 @@ const EVENT_FIELDS = [
   "Account Manager Name","Account Manager Phone","Account Manager Name Email",
   "Zapier Emails","PM Notes","Client Notes"
 ];
-const POS_FIELDS = ["Name (from Crew)","Email (from Crew)","Phone Number (from Crew)","Status","Short Name (from Roles)","id (from Event)"];
+const POS_FIELDS = ["Name (from Crew)","Email (from Crew)","Phone Number (from Crew)","Status","Short Name (from Roles)","id (from Event)",
+  "Timeline Start","Timeline End","Start (from Timeline Dates)","End (from Timeline Dates)","Position Notes","Flight/Hotel Info","Hotel Info"];
 const MAIL_META_FIELDS = ["From","Subject","Received Date","Related Event"];
-const MAIL_FULL_FIELDS = ["From","To","Subject","Received Date","Body"];
+const MAIL_FULL_FIELDS = ["From","To","CC","Subject","Received Date","Body","Attachments"];
 
 // ════════════════════════════════════════════════
 // API LAYER
@@ -292,11 +293,24 @@ function senderName(from) {
   return f.includes("@") ? f.split("@")[0].replace(/[._]/g, " ") : f;
 }
 function cleanBody(b) {
-  return String(b || "")
-    .replace(/^#{1,6}\s*/gm, "")        // markdown headers
-    .replace(/\*\*([^*]*)\*\*/g, "$1")  // bold
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  let t = String(b || "");
+  // markdown link [text](url) -> text (keeps real labels, drops giant tracking URLs)
+  t = t.replace(/\[([^\]]*)\]\(([^)]*)\)/g, (m, txt, url) => {
+    if (!txt || /^https?:/.test(txt)) return /sophos|wearesparks|facebook|instagram|linkedin|youtube/i.test(url) ? "" : (txt || url);
+    return txt;
+  });
+  // bare sophos-wrapped / social footer URLs
+  t = t.split("\n").filter(line =>
+    !/protection\.sophos\.com/.test(line) &&
+    !/^<?https?:\/\/(www\.)?(facebook|instagram|youtube|linkedin)\./.test(line.trim()) &&
+    !/This email and any attachments are intended only for the person/.test(line)
+  ).join("\n");
+  t = t.replace(/\*\*([^*]*)\*\*/g, "$1")   // bold
+       .replace(/\\\*/g, "")                 // escaped asterisk debris
+       .replace(/^\s*[#>]{1,6}\s*/gm, "")    // markdown headers / quotes
+       .replace(/\n{3,}/g, "\n\n")
+       .trim();
+  return t;
 }
 function telHref(p) { return "tel:" + String(p).replace(/[^\d+]/g, ""); }
 
@@ -332,7 +346,7 @@ async function loadAll() {
       jobs.push(api(POS_TBL, { filterByFormula: posFormula, "fields[]": POS_FIELDS }).then(r => positions = r));
     }
     if (quotes.length) {
-      const mailFormula = "OR(" + quotes.map(q => `FIND('${q}',ARRAYJOIN({Related Event}))`).join(",") + ")";
+      const mailFormula = "OR(" + quotes.map(q => `FIND('${q}',ARRAYJOIN({Related Event})&' '&{Subject})`).join(",") + ")";
       jobs.push(api(MAIL_TBL, {
         filterByFormula: mailFormula,
         "fields[]": MAIL_META_FIELDS,
@@ -378,16 +392,32 @@ function buildModel(ev, positions, mails) {
       const pid = p.fields["id (from Event)"];
       return Array.isArray(pid) ? pid.includes(ev.id) : pid === ev.id;
     })
-    .map(p => ({
-      name: (first(p.fields["Name (from Crew)"]) || "").replace(/^\*/, ""),
-      email: first(p.fields["Email (from Crew)"]) || "",
-      phone: first(p.fields["Phone Number (from Crew)"]) || "",
-      role: first(p.fields["Short Name (from Roles)"]) || "",
-      status: p.fields["Status"] || ""
-    }))
+    .map(p => {
+      const pf = p.fields;
+      // schedule: one or more stints from Timeline Dates, else the position's own range
+      const starts = [].concat(pf["Start (from Timeline Dates)"] || []);
+      const ends = [].concat(pf["End (from Timeline Dates)"] || []);
+      let stints = starts.map((st, i) => ({ a: parseDate(st), b: parseDate(ends[i]) })).filter(x => x.a || x.b);
+      if (!stints.length && (pf["Timeline Start"] || pf["Timeline End"])) {
+        stints = [{ a: parseDate(pf["Timeline Start"]), b: parseDate(pf["Timeline End"]) }];
+      }
+      return {
+        name: (first(pf["Name (from Crew)"]) || "").replace(/^\*/, ""),
+        email: first(pf["Email (from Crew)"]) || "",
+        phone: first(pf["Phone Number (from Crew)"]) || "",
+        role: first(pf["Short Name (from Roles)"]) || "",
+        status: pf["Status"] || "",
+        stints,
+        notes: pf["Position Notes"] || "",
+        travelInfo: [first(pf["Flight/Hotel Info"]), first(pf["Hotel Info"])].filter(Boolean).join(" · ")
+      };
+    })
     .filter(c => c.name);
 
-  const myMails = mails.filter(m => (m.fields["Related Event"] || []).includes(ev.id));
+  const quoteStr = f["QuoteNumber(string)"] || "";
+  const myMails = mails.filter(m =>
+    (m.fields["Related Event"] || []).includes(ev.id) ||
+    (quoteStr && String(m.fields["Subject"] || "").includes(quoteStr)));
 
   return {
     id: ev.id, title,
@@ -420,7 +450,7 @@ function buildModel(ev, positions, mails) {
     clientNotes: f["Client Notes"] || "",
     crew,
     travel: crew.some(c => c.name.includes(ME)),
-    mailTotal: (f["Zapier Emails"] || []).length,
+    mailTotal: Math.max((f["Zapier Emails"] || []).length, myMails.length),
     mailMeta: myMails.map(m => ({
       id: m.id,
       from: senderName(m.fields["From"]),
@@ -513,12 +543,19 @@ function renderDetail() {
        <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
      </div>`).join("");
 
+  const fmtStints = c => c.stints.map(x => {
+    if (x.a && x.b && x.a.getTime() === x.b.getTime()) return fmtD(x.a);
+    return fmtRange(x.a, x.b);
+  }).join(", ") || "—";
+
   const crewRows = s.crew.map(c => {
     const stl = String(c.status).toLowerCase();
     const cls = stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
+    const extra = [c.notes, c.travelInfo].filter(Boolean).join(" · ");
     return `<tr>
-      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}</td>
+      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}${extra ? `<div class="dim" style="font-size:11.5px;white-space:normal">${esc(extra)}</div>` : ""}</td>
       <td class="dim">${esc(c.role)}</td>
+      <td class="mono" style="white-space:nowrap">${esc(fmtStints(c))}</td>
       <td class="${cls}">${esc(c.status)}</td>
       <td class="r">${c.phone ? `<a href="${telHref(c.phone)}">${esc(c.phone)}</a>` : ""}</td>
       <td class="r">${c.email ? `<a href="mailto:${esc(c.email)}">✉</a>` : ""}</td>
@@ -600,8 +637,8 @@ async function toggleMail(s, mailEl) {
   try {
     if (!mailCache[s.id]) {
       const formula = s.quote
-        ? `FIND('${s.quote}',ARRAYJOIN({Related Event}))`
-        : `FIND('${s.title.replace(/'/g, "\\'")}',ARRAYJOIN({Related Event}))`;
+        ? `FIND('${s.quote}',ARRAYJOIN({Related Event})&' '&{Subject})`
+        : `FIND('${s.title.replace(/'/g, "\\'")}',ARRAYJOIN({Related Event})&' '&{Subject})`;
       mailCache[s.id] = await api(MAIL_TBL, {
         filterByFormula: formula,
         "fields[]": MAIL_FULL_FIELDS,
@@ -613,8 +650,26 @@ async function toggleMail(s, mailEl) {
     const rec = mailCache[s.id].find(r => r.id === mailEl.dataset.mail);
     if (rec) {
       const f = rec.fields;
-      mailEl.querySelector(".to").textContent = "To: " + (f["To"] || "—");
+      let hdr = "To: " + (f["To"] || "—");
+      if (f["CC"]) {
+        const ccAddrs = [...String(f["CC"]).matchAll(/'address':\s*'([^']+)'/g)].map(m => m[1]);
+        hdr += "  ·  CC: " + (ccAddrs.length ? ccAddrs.join(", ") : String(f["CC"]).slice(0, 120));
+      }
+      mailEl.querySelector(".to").textContent = hdr;
       bodyEl.textContent = cleanBody(f["Body"]) || "(empty body)";
+      const atts = f["Attachments"] || [];
+      if (atts.length) {
+        const bar = document.createElement("div");
+        bar.style.cssText = "padding-top:8px;display:flex;gap:8px;flex-wrap:wrap";
+        atts.forEach(a => {
+          const link = document.createElement("a");
+          link.href = a.url; link.target = "_blank"; link.rel = "noopener";
+          link.textContent = "📎 " + (a.filename || "attachment") + (a.size ? " (" + Math.round(a.size / 1024) + " KB)" : "");
+          link.style.cssText = "border:1px solid var(--line);border-radius:5px;padding:3px 9px;font-size:12px";
+          bar.appendChild(link);
+        });
+        bodyEl.appendChild(bar);
+      }
     } else {
       bodyEl.textContent = "(couldn't find this email)";
     }
