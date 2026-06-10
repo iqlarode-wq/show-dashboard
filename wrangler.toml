@@ -1,6 +1,11 @@
 name = "fuse-dashboard-proxy"
 main = "worker.js"
-compatibility_date = "2024-01-01"
+compatibility_date = "2025-03-01"
+
+# Static dashboard served from ./public at the worker's root URL.
+# Requests with no matching asset (e.g. /v0/*, /upload, /tmp/*) fall through to worker.js.
+[assets]
+directory = "./public"
 
 [[kv_namespaces]]
 binding = "TEMP_FILES"
