@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-06-10 r5 (audit batch: PWA, cache, flags, badges, replyall, ics, weather, notes) -->
+<!-- build: 2026-06-10 r6 (files: view + upload restored) -->
 <style>
   :root {
     --bg: #101214;
@@ -264,6 +264,8 @@ const POS_FIELDS = ["Name (from Crew)","Email (from Crew)","Phone Number (from C
   "Timeline Start","Timeline End","Start (from Timeline Dates)","End (from Timeline Dates)","Position Notes","Flight/Hotel Info","Hotel Info"];
 const MAIL_META_FIELDS = ["From","Subject","Received Date","Related Event"];
 const MAIL_FULL_FIELDS = ["From","To","CC","Subject","Received Date","Body","Attachments"];
+const FILES_TBL = "tblivTW2lEP56DiuQ";
+const FILE_FIELDS = ["Name","File","Notes","Created","Created By","id (from Events)"];
 
 // ════════════════════════════════════════════════
 // API LAYER
@@ -392,6 +394,7 @@ let RAW = null;            // {events, positions, mails}
 let selectedId = null;
 let lastLoad = 0;
 const mailCache = {};
+const filesCache = {};     // eventId -> {t, recs}  (attachment URLs expire, so re-fetch after 15 min)
 
 // ════════════════════════════════════════════════
 // DATA LOAD
@@ -730,6 +733,15 @@ function renderDetail() {
         <div id="mailList">${mailRows || '<div class="pad" style="color:var(--dim)">No emails linked in Airtable</div>'}</div>
         <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>
       </div>
+    </div>
+
+    <div class="box" style="margin-bottom:14px">
+      <h3>Files <span class="r">
+        <span id="fileMsg" style="margin-right:10px"></span>
+        <button id="uploadBtn">⬆ Upload</button>
+        <input id="fileInput" type="file" multiple style="display:none">
+      </span></h3>
+      <div id="filesList"><div class="pad" style="color:var(--dim)">Loading files…</div></div>
     </div>`;
 
   el.querySelectorAll(".mail .hd").forEach(hd => {
@@ -740,6 +752,89 @@ function renderDetail() {
   document.getElementById("icsBtn").addEventListener("click", () => downloadIcs(s));
   setupNotes(s);
   loadWeather(s);
+  setupFiles(s);
+}
+
+// ════════════════════════════════════════════════
+// FILES — view + upload (worker /upload → KV → Airtable)
+// ════════════════════════════════════════════════
+async function loadFiles(s, force) {
+  const el = document.getElementById("filesList");
+  if (!el) return;
+  try {
+    const c = filesCache[s.id];
+    if (force || !c || Date.now() - c.t > 15 * 60 * 1000) {
+      filesCache[s.id] = {
+        t: Date.now(),
+        recs: await api(FILES_TBL, {
+          filterByFormula: `FIND('${s.id}',ARRAYJOIN({id (from Events)}))`,
+          "fields[]": FILE_FIELDS,
+          "sort[0][field]": "Created",
+          "sort[0][direction]": "desc"
+        })
+      };
+    }
+    const recs = filesCache[s.id].recs;
+    if (!recs.length) { el.innerHTML = '<div class="pad" style="color:var(--dim)">No files yet — upload drawings, photos, or docs.</div>'; return; }
+    el.innerHTML = recs.map(r => {
+      const f = r.fields;
+      const atts = f["File"] || [];
+      const by = f["Created By"] && f["Created By"].name ? f["Created By"].name : "";
+      const when = f["Created"] ? fmtD(parseDate(f["Created"])) : "";
+      const links = atts.map(a => {
+        const img = a.thumbnails && a.thumbnails.large && String(a.type || "").startsWith("image/");
+        return `<a href="${esc(a.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:12.5px;margin:0 8px 6px 0">
+          ${img ? `<img src="${esc(a.thumbnails.small.url)}" alt="" style="height:24px;border-radius:3px">` : "📄"}
+          ${esc(a.filename || "file")} <span style="color:var(--dim)">${a.size ? Math.round(a.size / 1024) + " KB" : ""}</span>
+        </a>`;
+      }).join("") || '<span style="color:var(--dim)">(no attachment)</span>';
+      return `<div style="padding:9px 12px;border-bottom:1px solid var(--line)">
+        <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:5px">
+          <b>${esc(f["Name"] || "Untitled")}</b>
+          ${f["Notes"] ? `<span style="color:var(--dim);font-size:12px">${esc(f["Notes"])}</span>` : ""}
+          <span class="mono" style="margin-left:auto;color:var(--dim);font-size:11.5px">${esc(by)}${by && when ? " · " : ""}${when}</span>
+        </div>
+        <div style="display:flex;flex-wrap:wrap">${links}</div>
+      </div>`;
+    }).join("");
+  } catch (e) {
+    el.innerHTML = `<div class="pad" style="color:var(--red)">Couldn't load files: ${esc(e.message)}</div>`;
+  }
+}
+
+function setupFiles(s) {
+  loadFiles(s, false);
+  const input = document.getElementById("fileInput");
+  const btn = document.getElementById("uploadBtn");
+  const msg = document.getElementById("fileMsg");
+  btn.addEventListener("click", () => input.click());
+  input.addEventListener("change", async () => {
+    const files = [...input.files];
+    if (!files.length) return;
+    btn.disabled = true;
+    let ok = 0;
+    for (let i = 0; i < files.length; i++) {
+      msg.textContent = `Uploading ${i + 1}/${files.length}…`;
+      try {
+        const fd = new FormData();
+        fd.append("file", files[i]);
+        const res = await fetch(`${WORKER}/upload?eventId=${s.id}&key=${encodeURIComponent(pin())}`, { method: "POST", body: fd });
+        const data = await res.json();
+        if (!res.ok || data.error) throw new Error(data.error || "HTTP " + res.status);
+        ok++;
+      } catch (e) {
+        msg.textContent = `Failed: ${files[i].name} — ${e.message}`;
+      }
+    }
+    if (ok) {
+      msg.textContent = `✓ ${ok} uploaded`;
+      setTimeout(() => { msg.textContent = ""; }, 4000);
+      setTimeout(() => loadFiles(s, true), 2500);   // give Airtable a moment to ingest from KV
+      setTimeout(() => loadFiles(s, true), 12000);  // attachments finish processing
+    }
+    btn.disabled = false;
+    input.value = "";
+  });
 }
 
 // ════════════════════════════════════════════════
