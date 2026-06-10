@@ -1,0 +1,7 @@
+name = "fuse-dashboard-proxy"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "TEMP_FILES"
+id = "bd577f39e7ef43bda4c082f8e0e2b7db"

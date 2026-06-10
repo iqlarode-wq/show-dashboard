@@ -2,8 +2,10 @@
 # Push Dashboard to GitHub Pages
 # Usage: bash ~/show-dashboard-test/push-dashboard.sh
 #
-# Expects index.html to already be updated in the repo folder
-# (Cowork scheduled task writes directly here)
+# Architecture (since 2026-06-10): index.html is a lightweight live app —
+# it fetches current data from Airtable through the Cloudflare Worker proxy
+# on every page load. Pushing is only needed when the PAGE itself changes,
+# never for data updates.
 
 REPO_DIR="$HOME/show-dashboard-test"
 FILE="$REPO_DIR/index.html"
@@ -11,63 +13,50 @@ FILE="$REPO_DIR/index.html"
 cd "$REPO_DIR" || exit 1
 
 # ══════════════════════════════════════════════════════
-# PRE-PUSH VALIDATION — ensures critical features exist
+# PRE-PUSH VALIDATION — live-app architecture
 # ══════════════════════════════════════════════════════
 echo "🔍 Validating dashboard before push..."
 
 ERRORS=0
 
-# Check file exists and has reasonable size (>3500 lines = has all features)
-LINES=$(wc -l < "$FILE" 2>/dev/null)
-if [ -z "$LINES" ] || [ "$LINES" -lt 3500 ]; then
-    echo "❌ FAIL: index.html is too short ($LINES lines, expected 3500+). A feature may have been removed."
+# File exists and is a sane size for the live app (roughly 15–80 KB)
+BYTES=$(wc -c < "$FILE" 2>/dev/null)
+if [ -z "$BYTES" ] || [ "$BYTES" -lt 15000 ]; then
+    echo "❌ FAIL: index.html is too small ($BYTES bytes). Core code may be missing."
+    ERRORS=$((ERRORS + 1))
+fi
+if [ -n "$BYTES" ] && [ "$BYTES" -gt 300000 ]; then
+    echo "❌ FAIL: index.html is huge ($BYTES bytes) — looks like baked-in data crept back in."
     ERRORS=$((ERRORS + 1))
 fi
 
-# Check Files & Links CSS exists
-if ! grep -q "files-area" "$FILE"; then
-    echo "❌ FAIL: Files & Links CSS is missing (.files-area)"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# Check Files & Links JS functions exist
-for FUNC in "function fetchFiles" "function renderDropboxLinks" "function renderFilesList" "function onFilesToggle"; do
-    if ! grep -q "$FUNC" "$FILE"; then
-        echo "❌ FAIL: Missing JS function: $FUNC"
+# Critical pieces of the live app
+for TOKEN in "fuse-dashboard-proxy" "async function loadAll" "function cardHTML" "function buildModel" "function tryPin" "pinGate" "dash_pin" "viwT3CcaSHtTVAZBi"; do
+    if ! grep -q "$TOKEN" "$FILE"; then
+        echo "❌ FAIL: Missing critical piece: $TOKEN"
         ERRORS=$((ERRORS + 1))
     fi
 done
 
-# Check Files & Links HTML accordions exist
-ACCORDION_COUNT=$(grep -c "files-accordion-" "$FILE")
-if [ "$ACCORDION_COUNT" -lt 8 ]; then
-    echo "❌ FAIL: Only $ACCORDION_COUNT Files accordion blocks found (expected 8)"
+# No hardcoded stale data (old static dashboard had baked 'Updated:' stamps)
+if grep -q 'Updated: [A-Z][a-z]* [0-9]' "$FILE"; then
+    echo "❌ FAIL: Found a hardcoded 'Updated:' date — data must come live from Airtable."
     ERRORS=$((ERRORS + 1))
 fi
 
-# Check Comments section exists
-if ! grep -q "function fetchComments" "$FILE"; then
-    echo "❌ FAIL: Comments JS is missing (function fetchComments)"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# Check navigateToDetail has the toggleCard guard
-if ! grep -q "toggleCard" "$FILE"; then
-    echo "❌ FAIL: navigateToDetail guard (toggleCard fallback) is missing"
-    ERRORS=$((ERRORS + 1))
-fi
-
-# Check show cards exist
-CARD_COUNT=$(grep -c 'data-event-id=' "$FILE")
-if [ "$CARD_COUNT" -lt 8 ]; then
-    echo "❌ FAIL: Only $CARD_COUNT show cards found (expected 8)"
-    ERRORS=$((ERRORS + 1))
+# JS syntax check if node is available
+if command -v node >/dev/null 2>&1; then
+    awk '/<script>/{f=1;next} /<\/script>/{f=0} f' "$FILE" > /tmp/dash-check.js
+    if ! node --check /tmp/dash-check.js 2>/tmp/dash-check-err; then
+        echo "❌ FAIL: JavaScript syntax error:"
+        cat /tmp/dash-check-err
+        ERRORS=$((ERRORS + 1))
+    fi
 fi
 
 if [ "$ERRORS" -gt 0 ]; then
     echo ""
     echo "🚫 BLOCKED: $ERRORS validation error(s). Fix the issues before pushing."
-    echo "   DO NOT remove features to fix bugs — fix the bugs themselves."
     exit 1
 fi
 
@@ -78,13 +67,13 @@ echo ""
 git config user.email "iqlarode@gmail.com" 2>/dev/null
 git config user.name "Iq" 2>/dev/null
 
-# Stage and commit if there are changes
-git add index.html
+# Stage page + worker + this script (worker.js is versioned here; deployed via Cloudflare)
+git add index.html worker.js push-dashboard.sh wrangler.toml 2>/dev/null
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit -m "Update dashboard $(date '+%Y-%m-%d %H:%M')"
 fi
 
-# Push any unpushed commits (including empty commits from Cowork)
+# Push any unpushed commits
 LOCAL=$(git rev-parse HEAD 2>/dev/null)
 REMOTE=$(git rev-parse origin/main 2>/dev/null)
 if [ "$LOCAL" = "$REMOTE" ]; then
