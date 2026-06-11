@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-06-10 r6 (files: view + upload restored) -->
+<!-- build: 2026-06-11 r7 (booth ship date = real deadline when before load-in) -->
 <style>
   :root {
     --bg: #101214;
@@ -124,6 +124,8 @@
   .datebar .v { font-size: 13.5px; font-weight: 600; margin-top: 1px; white-space: nowrap; }
   .datebar .d.today { background: rgba(210,153,34,.12); }
   .datebar .d.today .v { color: var(--amber); }
+  .datebar .d.ship:not(.past) { background: rgba(210,153,34,.08); }
+  .datebar .d.ship:not(.past) .v, .datebar .d.ship:not(.past) .k { color: var(--amber); }
   .datebar .d.past .v { color: var(--dim); font-weight: 400; }
 
   #wx { display: flex; gap: 6px; overflow-x: auto; margin: -4px 0 12px; }
@@ -255,7 +257,7 @@ const EVENT_FIELDS = [
   "Combined Name","Name","Timeline Start","Timeline End","Status",
   "Booth Number","QuoteNumber(string)",
   "Venue","Venue Address Combined","Venue City","Venue State",
-  "Travel In","Load In","Show Start","Show End","Load Out","Travel Out",
+  "Booth Ship Date","Travel In","Load In","Show Start","Show End","Load Out","Travel Out",
   "Dropbox URL","Dropbox Content URL","AV Binder Live Link","infoDocs link",
   "Account Manager Name","Account Manager Phone","Account Manager Name Email",
   "Zapier Emails","PM Notes","Client Notes"
@@ -516,6 +518,7 @@ function buildModel(ev, positions, mails) {
     tlStart: parseDate(f["Timeline Start"]),
     tlEnd: parseDate(f["Timeline End"]),
     dates: {
+      "Booth Ship": parseDate(f["Booth Ship Date"]),
       "Travel In": parseDate(f["Travel In"]),
       "Load In": parseDate(f["Load In"]),
       "Show Start": parseDate(f["Show Start"]),
@@ -549,12 +552,19 @@ function buildModel(ev, positions, mails) {
 // ════════════════════════════════════════════════
 // STATE HELPERS
 // ════════════════════════════════════════════════
+// Real deadline = Booth Ship Date when it lands before load-in (or when there's no load-in yet)
+function deadlineOf(s) {
+  const ship = s.dates["Booth Ship"];
+  const loadIn = s.dates["Load In"] || s.tlStart;
+  if (ship && (!loadIn || ship < loadIn)) return { d: ship, label: "ship", ship: true };
+  return { d: loadIn, label: "load-in", ship: false };
+}
 function stateOf(s) {
   const t = today0();
   if (s.tlEnd && s.tlEnd < t) return "done";
   if (s.tlStart && s.tlStart <= t) return "live";
-  const loadIn = s.dates["Load In"] || s.tlStart;
-  const d = loadIn ? daysFromToday(loadIn) : null;
+  const dl = deadlineOf(s).d;
+  const d = dl ? daysFromToday(dl) : null;
   if (d !== null && d <= URGENT_DAYS) return "urgent";
   return "upcoming";
 }
@@ -562,9 +572,10 @@ function countdownTxt(s) {
   const st = stateOf(s);
   if (st === "done") return "wrapped " + agoTxt(s.tlEnd);
   if (st === "live") return "LIVE thru " + fmtD(s.tlEnd);
-  const loadIn = s.dates["Load In"] || s.tlStart;
-  const d = daysFromToday(loadIn);
-  return d === 0 ? "load-in TODAY" : "load-in in " + d + "d";
+  const dl = deadlineOf(s);
+  const d = daysFromToday(dl.d);
+  const verb = dl.ship ? "📦 ships" : "load-in";
+  return d === 0 ? verb + " TODAY" : verb + " in " + d + "d";
 }
 function crewRisk(s) {
   const st = stateOf(s);
@@ -588,13 +599,16 @@ function renderList() {
     const risk = crewRisk(s);
     const tag = risk && risk.level === "red" ? '<span class="tag danger">NO CREW</span>'
       : st === "live" ? '<span class="tag live">LIVE</span>'
-      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).replace("load-in ", "LOAD-IN "))}</span>`
+      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).replace("load-in ", "LOAD-IN ").replace("ships ", "SHIPS "))}</span>`
       : st === "done" ? '<span class="tag done">DONE</span>' : "";
+    const dl = deadlineOf(s);
+    const shipChip = dl.ship && st !== "done" && st !== "live" && st !== "urgent"
+      ? `<span style="color:var(--amber)">📦 ${fmtD(dl.d)}</span>` : "";
     const nNew = s.id === selectedId ? 0 : newMailCount(s);
     return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
       <div class="t"><span class="nm">${esc(s.title)}</span>${tag}</div>
       <div class="m mono">
-        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
+        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>${shipChip}
         <span>${esc(s.cityState || "")}</span>
         <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
         <span class="cnt">${nNew ? `<span class="newdot">● ${nNew} new</span>` : ""}✉${s.mailTotal} 👥${s.crew.length}</span>
@@ -644,9 +658,15 @@ function renderDetail() {
   const risk = crewRisk(s);
   const riskBar = risk ? `<div class="alert ${risk.level}">${risk.level === "red" ? "⛔" : "⚠"} ${esc(risk.txt)} — ${esc(countdownTxt(s))}</div>` : "";
 
+  const dl = deadlineOf(s);
+  const loadInD = s.dates["Load In"];
+  const shipBar = dl.ship && stateOf(s) !== "done" && stateOf(s) !== "live" && dl.d >= t
+    ? `<div class="alert amber">📦 BOOTH SHIPS ${esc(fmtD(dl.d))}${loadInD ? ` — ${Math.round((loadInD - dl.d) / 86400000)}d before load-in` : ""} · this is the real deadline</div>`
+    : "";
+
   const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
-    `<div class="d ${sameDay(d, t) ? "today" : (d < t ? "past" : "")}">
-       <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
+    `<div class="d ${sameDay(d, t) ? "today" : (d < t ? "past" : "")}${k === "Booth Ship" && dl.ship ? " ship" : ""}">
+       <div class="k">${k}${k === "Booth Ship" && dl.ship ? " ⚑" : ""}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
      </div>`).join("");
 
   const fmtStints = c => c.stints.map(x => fmtRange(x.a, x.b)).join(", ") || "—";
@@ -715,6 +735,7 @@ function renderDetail() {
     </div>
 
     ${riskBar}
+    ${shipBar}
 
     <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
     <div id="wx"></div>
