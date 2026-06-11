@@ -552,11 +552,12 @@ function buildModel(ev, positions, mails) {
 // ════════════════════════════════════════════════
 // STATE HELPERS
 // ════════════════════════════════════════════════
-// Real deadline = Booth Ship Date when it lands before load-in (or when there's no load-in yet)
+// Real deadline = Booth Ship Date when it lands before load-in (or when there's no load-in yet).
+// Once the ship date has passed, the deadline reverts to load-in.
 function deadlineOf(s) {
   const ship = s.dates["Booth Ship"];
   const loadIn = s.dates["Load In"] || s.tlStart;
-  if (ship && (!loadIn || ship < loadIn)) return { d: ship, label: "ship", ship: true };
+  if (ship && ship >= today0() && (!loadIn || ship < loadIn)) return { d: ship, label: "ship", ship: true };
   return { d: loadIn, label: "load-in", ship: false };
 }
 function stateOf(s) {
