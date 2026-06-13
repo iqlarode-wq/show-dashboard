@@ -102,6 +102,17 @@
   .newdot { color: var(--amber); font-weight: 700; }
   .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
 
+  /* ── Date-conflict summary banner ── */
+  #conflicts { border-bottom: 1px solid var(--line); background: rgba(210,153,34,.07); }
+  #conflicts .ch { display: flex; align-items: center; gap: 8px; padding: 9px 12px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--amber); }
+  #conflicts .ch .chev { margin-left: auto; color: var(--amber); font-size: 11px; transition: transform .15s; }
+  #conflicts.collapsed .chev { transform: rotate(-90deg); }
+  #conflicts.collapsed .clist { display: none; }
+  #conflicts .ci { padding: 7px 12px 8px 14px; border-top: 1px solid var(--line); cursor: pointer; }
+  #conflicts .ci:hover { background: rgba(210,153,34,.1); }
+  #conflicts .ci .cs { font-size: 11.5px; font-weight: 700; color: var(--text); }
+  #conflicts .ci .ct { font-size: 11.5px; color: var(--dim); margin-top: 1px; }
+
   /* ── Detail (right) ── */
   #detail { flex: 1; overflow-y: auto; min-width: 0; }
   #detail .inner { padding: 14px 18px calc(60px + env(safe-area-inset-bottom)); max-width: 1400px; }
@@ -635,10 +646,26 @@ function crewRisk(s) {
 // ════════════════════════════════════════════════
 // RENDER — list + stats
 // ════════════════════════════════════════════════
+function allConflicts() {
+  const out = [];
+  SHOWS.forEach(s => (s.meetings || []).forEach(m => (m.dateFlags || []).forEach(fl =>
+    out.push({ id: s.id, title: s.title, mtg: m.title, date: m.date, text: fl.text }))));
+  return out;
+}
+
 function renderList() {
   const t = today0();
   const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
   const wrapped = SHOWS.filter(s => s.tlEnd && s.tlEnd < t).reverse();
+  const conflicts = allConflicts();
+  const collapsed = localStorage.getItem("conflicts_open") === "0";
+  const conflictBanner = conflicts.length ? `
+    <div id="conflicts" class="${collapsed ? "collapsed" : ""}">
+      <div class="ch" id="conflictsHead" role="button" tabindex="0">⚑ ${conflicts.length} date conflict${conflicts.length === 1 ? "" : "s"} to reconcile<span class="chev">▾</span></div>
+      <div class="clist">${conflicts.map(c =>
+        `<div class="ci" data-cid="${c.id}"><div class="cs">${esc(c.title.split("@")[0].trim())} · <span style="color:var(--dim);font-weight:400">${esc(c.mtg)}</span></div><div class="ct">${esc(c.text)}</div></div>`
+      ).join("")}</div>
+    </div>` : "";
 
   const row = s => {
     const st = stateOf(s);
@@ -666,6 +693,7 @@ function renderList() {
   };
 
   document.getElementById("list").innerHTML =
+    conflictBanner +
     `<div class="lsec">Active · ${active.length}</div>` +
     (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
     (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "");
@@ -678,6 +706,24 @@ function renderList() {
     };
     el.addEventListener("click", go);
     el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+  });
+
+  const ch = document.getElementById("conflictsHead");
+  if (ch) {
+    const toggle = () => {
+      const box = document.getElementById("conflicts");
+      box.classList.toggle("collapsed");
+      localStorage.setItem("conflicts_open", box.classList.contains("collapsed") ? "0" : "1");
+    };
+    ch.addEventListener("click", toggle);
+    ch.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+  }
+  document.querySelectorAll("#conflicts .ci[data-cid]").forEach(el => {
+    el.addEventListener("click", () => {
+      selectedId = el.dataset.cid;
+      renderList(); renderDetail();
+      document.getElementById("main").classList.add("show-detail");
+    });
   });
 }
 
