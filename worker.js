@@ -158,6 +158,33 @@ export default {
         return await handleUpload(request, env, cors);
       }
 
+      // ═══ Granola notes: GET reads the synced blob, POST stores it ═══
+      // The daily sync (Claude session) POSTs matched notes here; the
+      // dashboard GETs them. Personal to Iq — nothing touches Airtable.
+      if (url.pathname === '/notes') {
+        if (request.method === 'GET') {
+          const blob = await env.DASH_NOTES.get('notes_index');
+          return new Response(blob || '{"generatedAt":null,"shows":{},"unmatched":[]}', {
+            status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        if (request.method === 'POST') {
+          const body = await request.text();
+          try { JSON.parse(body); } catch (e) {
+            return new Response(JSON.stringify({ error: 'invalid JSON' }), {
+              status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
+            });
+          }
+          await env.DASH_NOTES.put('notes_index', body);
+          return new Response(JSON.stringify({ success: true, bytes: body.length }), {
+            status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+          status: 405, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+
       // ═══ Standard Airtable proxy ═══
       const airtablePath = url.pathname;
 

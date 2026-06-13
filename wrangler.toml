@@ -10,3 +10,7 @@ directory = "./public"
 [[kv_namespaces]]
 binding = "TEMP_FILES"
 id = "bd577f39e7ef43bda4c082f8e0e2b7db"
+
+[[kv_namespaces]]
+binding = "DASH_NOTES"
+id = "186c741d14df4bf08a94d273a7d2e29f"
