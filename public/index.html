@@ -102,6 +102,26 @@
   .newdot { color: var(--amber); font-weight: 700; }
   .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
 
+  /* ── Archive ── */
+  .arch-btn {
+    background: none; border: none; color: var(--dim); cursor: pointer;
+    font-size: 11px; padding: 4px 6px; margin: -4px -6px -4px 2px; border-radius: 4px;
+    opacity: 0; transition: opacity .15s, color .15s; flex: none;
+  }
+  .lrow:hover .arch-btn, .lrow:focus-within .arch-btn { opacity: 1; }
+  .arch-btn:hover { color: var(--red); }
+  .restore-btn {
+    background: none; border: 1px solid var(--line); color: var(--dim); cursor: pointer;
+    font-size: 10px; padding: 2px 8px; border-radius: 4px; flex: none;
+    transition: color .15s, border-color .15s;
+  }
+  .restore-btn:hover { color: var(--green); border-color: var(--green); }
+  .arch-sec .lrow { opacity: 0.55; }
+  .arch-sec .lrow:hover { opacity: 0.85; }
+  .arch-toggle { cursor: pointer; user-select: none; }
+  .arch-toggle .chev { font-size: 9px; margin-left: 4px; display: inline-block; transition: transform .15s; }
+  .arch-toggle.collapsed .chev { transform: rotate(-90deg); }
+
   /* ── Date-conflict summary banner ── */
   #conflicts { border-bottom: 1px solid var(--line); background: rgba(210,153,34,.07); }
   #conflicts .ch { display: flex; align-items: center; gap: 8px; padding: 9px 12px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--amber); }
@@ -447,6 +467,44 @@ let lastLoad = 0;
 const mailCache = {};
 const filesCache = {};     // eventId -> {t, recs}  (attachment URLs expire, so re-fetch after 15 min)
 
+// ═══ Archive state ═══
+// Manual: user clicked ✕. Restored: user un-archived an auto-archived show.
+let _archivedIds = JSON.parse(localStorage.getItem("dashboard_archived") || "[]");
+let _restoredIds = JSON.parse(localStorage.getItem("dashboard_restored") || "[]");
+
+function autoArchiveDate(s) {
+  return s.dates["Load Out"] || s.tlEnd;
+}
+function isAutoArchived(s) {
+  const d = autoArchiveDate(s);
+  return d ? daysFromToday(d) <= -7 : false;
+}
+function isArchived(s) {
+  if (_archivedIds.includes(s.id)) return true;
+  if (isAutoArchived(s) && !_restoredIds.includes(s.id)) return true;
+  return false;
+}
+function archiveShow(id) {
+  if (!_archivedIds.includes(id)) _archivedIds.push(id);
+  const ri = _restoredIds.indexOf(id);
+  if (ri !== -1) _restoredIds.splice(ri, 1);
+  _saveArchiveState();
+  renderList(); renderStats();
+}
+function unarchiveShow(id) {
+  const ai = _archivedIds.indexOf(id);
+  if (ai !== -1) _archivedIds.splice(ai, 1);
+  if (!_restoredIds.includes(id)) _restoredIds.push(id);
+  _saveArchiveState();
+  renderList(); renderStats();
+}
+function _saveArchiveState() {
+  try {
+    localStorage.setItem("dashboard_archived", JSON.stringify(_archivedIds));
+    localStorage.setItem("dashboard_restored", JSON.stringify(_restoredIds));
+  } catch (e) {}
+}
+
 // ════════════════════════════════════════════════
 // DATA LOAD
 // ════════════════════════════════════════════════
@@ -655,8 +713,11 @@ function allConflicts() {
 
 function renderList() {
   const t = today0();
-  const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
-  const wrapped = SHOWS.filter(s => s.tlEnd && s.tlEnd < t).reverse();
+  const allActive = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
+  const allWrapped = SHOWS.filter(s => s.tlEnd && s.tlEnd < t).reverse();
+  const active = allActive.filter(s => !isArchived(s));
+  const wrapped = allWrapped.filter(s => !isArchived(s));
+  const archived = SHOWS.filter(s => isArchived(s));
   const conflicts = allConflicts();
   const collapsed = localStorage.getItem("conflicts_open") === "0";
   const conflictBanner = conflicts.length ? `
@@ -682,7 +743,7 @@ function renderList() {
     const mtgChip = s.meetings && s.meetings.length
       ? `<span title="meeting notes"${nNewMtg ? ' style="color:var(--green);font-weight:700"' : ""}>🗒${s.meetings.length}</span>` : "";
     return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
-      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}</div>
+      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}<button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button></div>
       <div class="m mono">
         <span>${fmtRange(s.tlStart, s.tlEnd)}</span>${shipChip}
         <span>${esc(s.cityState || "")}</span>
@@ -692,11 +753,34 @@ function renderList() {
     </div>`;
   };
 
+  const archRow = s => {
+    const st = stateOf(s);
+    const tag = st === "done" ? '<span class="tag done">DONE</span>' : "";
+    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
+      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}<button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button></div>
+      <div class="m mono">
+        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
+        <span>${esc(s.cityState || "")}</span>
+        <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
+      </div>
+    </div>`;
+  };
+
+  const archCollapsed = localStorage.getItem("arch_collapsed") !== "0";
+  const archSec = archived.length ? `
+    <div class="arch-sec">
+      <div class="lsec arch-toggle${archCollapsed ? " collapsed" : ""}" id="archHead" role="button" tabindex="0">
+        Archived · ${archived.length}<span class="chev">▾</span>
+      </div>
+      <div id="archList"${archCollapsed ? ' style="display:none"' : ''}>${archived.map(archRow).join("")}</div>
+    </div>` : "";
+
   document.getElementById("list").innerHTML =
     conflictBanner +
     `<div class="lsec">Active · ${active.length}</div>` +
     (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
-    (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "");
+    (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "") +
+    archSec;
 
   document.querySelectorAll(".lrow[data-id]").forEach(el => {
     const go = () => {
@@ -725,11 +809,34 @@ function renderList() {
       document.getElementById("main").classList.add("show-detail");
     });
   });
+
+  // Archive buttons
+  document.querySelectorAll(".arch-btn[data-arch]").forEach(btn => {
+    btn.addEventListener("click", e => { e.stopPropagation(); archiveShow(btn.dataset.arch); });
+  });
+
+  // Restore buttons
+  document.querySelectorAll(".restore-btn[data-restore]").forEach(btn => {
+    btn.addEventListener("click", e => { e.stopPropagation(); unarchiveShow(btn.dataset.restore); });
+  });
+
+  // Archived section toggle
+  const ah = document.getElementById("archHead");
+  if (ah) {
+    const toggleArch = () => {
+      ah.classList.toggle("collapsed");
+      const list = document.getElementById("archList");
+      list.style.display = ah.classList.contains("collapsed") ? "none" : "";
+      localStorage.setItem("arch_collapsed", ah.classList.contains("collapsed") ? "1" : "0");
+    };
+    ah.addEventListener("click", toggleArch);
+    ah.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleArch(); } });
+  }
 }
 
 function renderStats() {
   const t = today0();
-  const active = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
+  const active = SHOWS.filter(s => (!s.tlEnd || s.tlEnd >= t) && !isArchived(s));
   const live = active.filter(s => stateOf(s) === "live").length;
   const travel = active.filter(s => s.travel).length;
   const risks = active.filter(s => crewRisk(s)).length;
