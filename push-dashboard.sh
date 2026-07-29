@@ -88,4 +88,5 @@ git add index.html public/index.html worker.js push-dashboard.sh wrangler.toml S
 if ! git diff --cached --quiet 2>/dev/null; then
     git commit -m "Update dashboard $(date '+%Y-%m-%d %H:%M')"
 fi
-git push origin main 2>/dev/null && echo "📦 GitHub backup pushed." || echo "⚠️  GitHub backup push failed (non-critical — Cloudflare is live)."
+# GIT_TERMINAL_PROMPT=0: if credentials are missing, fail fast instead of hanging at a username prompt (bit us 2026-07-29)
+GIT_TERMINAL_PROMPT=0 git push origin main 2>/dev/null && echo "📦 GitHub backup pushed." || echo "⚠️  GitHub backup push failed (non-critical — Cloudflare is live). To retry by hand: git -C ~/show-dashboard-test push origin main"
