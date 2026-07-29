@@ -306,6 +306,9 @@ const IQRAL_VIEW = "viwT3CcaSHtTVAZBi";
 const ME = "Iqral";
 const MY_EMAILS = ["ilarode@fuse-tg.com", "iqlarode@gmail.com"];
 const URGENT_DAYS = 5;
+// Shows hidden from the Iqral view that Iq still wants tracked (fetched by record ID and merged in).
+// recUJJejrpkD1j5K0 = JM Novartis Pod Roof Build/Demo, Aug 24-27 — Event Type "Cal" keeps it out of the view; Iq attending. Added 2026-07-29.
+const PINNED_EVENTS = ["recUJJejrpkD1j5K0"];
 const WRAPPED_LOOKBACK = 14;
 
 const EVENT_FIELDS = [
@@ -539,6 +542,14 @@ async function loadAll() {
       filterByFormula: `IS_AFTER({Timeline End},DATEADD(TODAY(),-${WRAPPED_LOOKBACK},'days'))`,
       "fields[]": EVENT_FIELDS
     });
+
+    // Merge pinned shows the view filtered out (see PINNED_EVENTS above)
+    const pinMissing = PINNED_EVENTS.filter(id => !events.some(e => e.id === id));
+    if (pinMissing.length) {
+      const pinFormula = "OR(" + pinMissing.map(id => `RECORD_ID()='${id}'`).join(",") + ")";
+      const pinned = await api(EVENTS_TBL, { filterByFormula: pinFormula, "fields[]": EVENT_FIELDS });
+      events.push(...pinned);
+    }
 
     // Granola notes (personal layer — KV via worker, never touches Airtable)
     fetch(`${WORKER}/notes?key=${encodeURIComponent(pin())}`)
