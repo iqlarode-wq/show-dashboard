@@ -716,9 +716,13 @@ function crewRisk(s) {
 // RENDER — list + stats
 // ════════════════════════════════════════════════
 function allConflicts() {
+  const t = today0();
   const out = [];
-  SHOWS.forEach(s => (s.meetings || []).forEach(m => (m.dateFlags || []).forEach(fl =>
-    out.push({ id: s.id, title: s.title, mtg: m.title, date: m.date, text: fl.text }))));
+  SHOWS.forEach(s => {
+    if (s.tlEnd && s.tlEnd < t) return; // skip wrapped shows — their date flags are moot (added 2026-09-14)
+    (s.meetings || []).forEach(m => (m.dateFlags || []).forEach(fl =>
+      out.push({ id: s.id, title: s.title, mtg: m.title, date: m.date, text: fl.text })));
+  });
   return out;
 }
 
