@@ -185,6 +185,24 @@ export default {
         });
       }
 
+      // ═══ Delete a file record (Files table ONLY — cannot touch any other table) ═══
+      if (url.pathname === '/delete-file' && request.method === 'POST') {
+        const id = url.searchParams.get('id');
+        if (!id || !/^rec[A-Za-z0-9]{14}$/.test(id)) {
+          return new Response(JSON.stringify({ error: 'missing or invalid record id' }), {
+            status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        const delRes = await fetch('https://api.airtable.com/v0/' + ALLOWED_BASE + '/' + FILES_TABLE + '/' + id, {
+          method: 'DELETE',
+          headers: { 'Authorization': 'Bearer ' + env.AIRTABLE_PAT }
+        });
+        const delBody = await delRes.text();
+        return new Response(delBody, {
+          status: delRes.status, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+
       // ═══ Standard Airtable proxy ═══
       const airtablePath = url.pathname;
 
