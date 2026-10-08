@@ -5,7 +5,7 @@
 //   AIRTABLE_PAT — Airtable personal access token (existing)
 //   DASH_PIN     — shared PIN; every request must include ?key=<PIN>.
 //                  If DASH_PIN is not set, requests are allowed (pre-migration mode).
-// KV Namespaces: TEMP_FILES (for temporary file upload storage)
+// KV Namespaces: TEMP_FILES (temporary file upload storage), DASH_NOTES (Granola notes + Radar analyst catches)
 //
 // Deploy: npx wrangler deploy   (then: npx wrangler secret put DASH_PIN)
 // Or paste this file into the Cloudflare dashboard editor and add the
@@ -177,6 +177,36 @@ export default {
           }
           await env.DASH_NOTES.put('notes_index', body);
           return new Response(JSON.stringify({ success: true, bytes: body.length }), {
+            status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+          status: 405, headers: { ...cors, 'Content-Type': 'application/json' }
+        });
+      }
+
+      // ═══ Radar analyst catches: GET reads the blob, POST stores it ═══
+      // Judgement-call catches written by a Claude run (things only reading the email
+      // trail / calendar reveals). The page merges them with its own live checks.
+      // Personal to Iq — nothing touches Airtable.
+      if (url.pathname === '/radar') {
+        if (request.method === 'GET') {
+          const blob = await env.DASH_NOTES.get('radar_index');
+          return new Response(blob || '{"generatedAt":null,"items":[]}', {
+            status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
+          });
+        }
+        if (request.method === 'POST') {
+          const body = await request.text();
+          let parsed;
+          try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
+          if (!parsed || !Array.isArray(parsed.items)) {
+            return new Response(JSON.stringify({ error: 'expected JSON with an items array' }), {
+              status: 400, headers: { ...cors, 'Content-Type': 'application/json' }
+            });
+          }
+          await env.DASH_NOTES.put('radar_index', body);
+          return new Response(JSON.stringify({ success: true, items: parsed.items.length }), {
             status: 200, headers: { ...cors, 'Content-Type': 'application/json' }
           });
         }

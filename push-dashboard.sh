@@ -30,7 +30,7 @@ if [ -n "$BYTES" ] && [ "$BYTES" -gt 300000 ]; then
     ERRORS=$((ERRORS + 1))
 fi
 
-for TOKEN in "fuse-dashboard-proxy" "async function loadAll" "function renderDetail" "function renderList" "function buildModel" "async function toggleMail" "function tryPin" "pinGate" "dash_pin" "viwT3CcaSHtTVAZBi"; do
+for TOKEN in "fuse-dashboard-proxy" "async function loadAll" "function renderDetail" "function renderList" "function buildModel" "function computeRadar" "async function toggleMail" "function tryPin" "pinGate" "dash_pin" "viwT3CcaSHtTVAZBi"; do
     if ! grep -q "$TOKEN" "$FILE"; then
         echo "❌ FAIL: Missing critical piece: $TOKEN"
         ERRORS=$((ERRORS + 1))

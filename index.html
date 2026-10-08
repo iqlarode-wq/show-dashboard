@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta name="theme-color" content="#101214">
+<meta name="theme-color" content="#0b0d0f">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Show Ops">
@@ -12,49 +12,61 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-06-11 r7 (booth ship date = real deadline when before load-in) -->
+<!-- build: 2026-10-08 r9 (Radar: cross-source checks, run of show, agenda, tasks) -->
 <style>
   :root {
-    --bg: #101214;
-    --panel: #16191c;
-    --panel2: #1b1f23;
-    --line: #2a2f35;
-    --text: #dde2e8;
-    --dim: #848e99;
-    --accent: #58a6ff;
-    --green: #3fb950;
-    --amber: #d29922;
-    --red: #f85149;
-    --sel: #1f2937;
+    --bg: #0b0d0f;
+    --panel: #111417;
+    --panel2: #171b1f;
+    --line: #22272d;
+    --line2: #2e343b;
+    --text: #e7ebf0;
+    --dim: #8b95a1;
+    --faint: #5f6873;
+    --accent: #6aaeff;
+    --green: #3fcf7c;
+    --amber: #e3a83a;
+    --red: #ff6257;
+    --sel: #16202d;
+    --accent-t: rgba(106,174,255,.14);
+    --green-t: rgba(63,207,124,.14);
+    --amber-t: rgba(227,168,58,.14);
+    --red-t: rgba(255,98,87,.14);
+    --dim-t: rgba(139,149,161,.13);
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  html { -webkit-text-size-adjust: 100%; }
+  html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
   body {
     background: var(--bg); color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
-    font-size: 13px; line-height: 1.4; height: 100dvh; overflow: hidden;
+    font-family: var(--sans);
+    font-size: 13px; line-height: 1.42; height: 100dvh; overflow: hidden;
+    -webkit-font-smoothing: antialiased;
   }
   a { color: var(--accent); text-decoration: none; }
+  [hidden] { display: none !important; }
   .mono { font-variant-numeric: tabular-nums; }
+  .dimtxt { color: var(--dim); }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
-  /* generous hit area without changing layout */
   .tap { padding: 12px; margin: -12px; display: inline-block; }
-  button { font-family: inherit; }
+  button { font-family: inherit; color: inherit; }
+  .ic { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; vertical-align: -2.5px; flex: none; }
 
   /* ── PIN gate ── */
   #pinGate {
     position: fixed; inset: 0; background: var(--bg); z-index: 100;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px;
   }
-  #pinGate h1 { font-size: 18px; font-weight: 600; }
+  #pinGate h1 { font-size: 13px; font-weight: 700; letter-spacing: .18em; }
   #pinInput {
-    background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+    background: var(--panel); border: 1px solid var(--line2); border-radius: 8px;
     color: var(--text); font-size: 22px; letter-spacing: 10px; text-align: center;
     padding: 10px 8px; width: 200px; outline: none;
   }
   #pinInput:focus { border-color: var(--accent); }
   #pinBtn {
-    background: var(--accent); color: #04101f; border: none; border-radius: 6px;
+    background: var(--accent); color: #04101f; border: none; border-radius: 8px;
     font-size: 14px; font-weight: 600; padding: 12px 36px; cursor: pointer; min-height: 44px;
   }
   #pinErr { color: var(--red); font-size: 13px; min-height: 18px; }
@@ -62,56 +74,78 @@
   /* ── App frame ── */
   #app { display: none; height: 100dvh; flex-direction: column; }
   #topbar {
-    display: flex; align-items: center; gap: 12px;
-    padding: env(safe-area-inset-top) 14px 0; min-height: calc(42px + env(safe-area-inset-top)); flex: none;
+    display: flex; align-items: center; gap: 14px;
+    padding: env(safe-area-inset-top) 14px 0; min-height: calc(44px + env(safe-area-inset-top)); flex: none;
     background: var(--panel); border-bottom: 1px solid var(--line);
   }
-  #topbar h1 { font-size: 14px; font-weight: 700; letter-spacing: .3px; }
-  #topStats { display: flex; gap: 14px; color: var(--dim); font-size: 12px; flex: 1; overflow: hidden; white-space: nowrap; }
+  #topbar h1 { font-size: 12px; font-weight: 700; letter-spacing: .18em; white-space: nowrap; }
+  #topStats { display: flex; gap: 16px; color: var(--dim); font-size: 12px; flex: 1; overflow: hidden; white-space: nowrap; }
   #topStats b { color: var(--text); font-weight: 600; }
-  #updated { color: var(--dim); font-size: 11px; white-space: nowrap; }
+  #topStats .hot, #topStats .hot b { color: var(--red); }
+  #updated { color: var(--faint); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
   #updated.stale { color: var(--amber); }
   #refreshBtn {
-    background: none; border: 1px solid var(--line); color: var(--dim); border-radius: 6px;
-    min-width: 44px; min-height: 36px; font-size: 15px; cursor: pointer;
+    background: none; border: 1px solid var(--line2); color: var(--dim); border-radius: 8px;
+    min-width: 44px; min-height: 32px; font-size: 15px; cursor: pointer;
   }
   #refreshBtn:hover { color: var(--text); border-color: var(--dim); }
 
   #main { display: flex; flex: 1; min-height: 0; }
 
-  /* ── Show list (left) ── */
+  /* ── List (left) ── */
   #list {
-    width: 330px; flex: none; overflow-y: auto;
+    width: 340px; flex: none; overflow-y: auto;
     border-right: 1px solid var(--line); background: var(--panel);
     padding-bottom: env(safe-area-inset-bottom);
   }
+  .rrow { display: flex; gap: 11px; align-items: center; padding: 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .rrow:hover { background: var(--panel2); }
+  .rrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
+  .rrow .ico { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-t); color: var(--accent); flex: none; }
+  .rrow .ico .ic { width: 17px; height: 17px; vertical-align: 0; }
+  .rrow .rb { min-width: 0; flex: 1; }
+  .rrow .t { font-size: 13px; font-weight: 700; }
+  .rrow .m { color: var(--dim); font-size: 11.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .rrow .cn { display: flex; gap: 5px; flex: none; }
+  .rrow .cn .tag { font-size: 11px; padding: 2px 7px; min-width: 22px; text-align: center; }
+
   .lrow { padding: 10px 12px 9px; border-bottom: 1px solid var(--line); cursor: pointer; }
   .lrow:hover { background: var(--panel2); }
   .lrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
-  .lrow .t { font-size: 13px; font-weight: 600; display: flex; gap: 6px; align-items: baseline; }
+  .lrow .t { font-size: 13px; font-weight: 600; display: flex; gap: 7px; align-items: center; }
   .lrow .t .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .lrow .m { display: flex; gap: 8px; color: var(--dim); font-size: 11.5px; margin-top: 2px; align-items: center; }
-  .tag { font-size: 10px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .4px; flex: none; }
-  .tag.travel { color: #9ecbff; background: rgba(88,166,255,.15); }
-  .tag.remote { color: var(--dim); background: rgba(132,142,153,.15); }
-  .tag.live   { color: var(--green); background: rgba(63,185,80,.15); }
-  .tag.urgent { color: var(--amber); background: rgba(210,153,34,.18); }
-  .tag.danger { color: var(--red); background: rgba(248,81,73,.18); }
-  .tag.done   { color: var(--dim); background: rgba(132,142,153,.1); }
-  .lrow .cnt { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+  .lrow .t .bn { color: var(--faint); font-weight: 400; font-size: 11.5px; flex: none; font-variant-numeric: tabular-nums; }
+  .lrow .m { display: flex; gap: 8px; color: var(--dim); font-size: 11.5px; margin-top: 3px; align-items: center; white-space: nowrap; }
+  .lrow .m .cty { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .lrow .m .shp { color: var(--amber); display: inline-flex; gap: 3px; align-items: center; flex: none; }
+  .lrow .m .shp .ic { width: 12px; height: 12px; vertical-align: 0; }
+  .sp { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  .sp.s3 { background: var(--red); box-shadow: 0 0 0 3px var(--red-t); }
+  .sp.s2 { background: var(--amber); }
+  .tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing: .05em; flex: none; white-space: nowrap; }
+  .tag.travel { color: #a9d0ff; background: var(--accent-t); }
+  .tag.remote { color: var(--dim); background: var(--dim-t); }
+  .tag.live   { color: var(--green); background: var(--green-t); }
+  .tag.urgent { color: var(--amber); background: var(--amber-t); }
+  .tag.danger { color: var(--red); background: var(--red-t); }
+  .tag.done   { color: var(--dim); background: var(--dim-t); }
+  .tag.you    { color: var(--text); background: var(--dim-t); margin-left: 6px; }
+  .lrow .cnt { margin-left: auto; display: flex; gap: 9px; align-items: center; flex: none; }
+  .lrow .cnt span { display: inline-flex; gap: 3px; align-items: center; }
+  .lrow .cnt .ic { width: 12px; height: 12px; vertical-align: 0; }
   .newdot { color: var(--amber); font-weight: 700; }
-  .lsec { padding: 6px 12px 4px; color: var(--dim); font-size: 10.5px; font-weight: 700; letter-spacing: .8px; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
+  .lsec { padding: 7px 12px 5px; color: var(--faint); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
 
   /* ── Archive ── */
   .arch-btn {
     background: none; border: none; color: var(--dim); cursor: pointer;
-    font-size: 11px; padding: 4px 6px; margin: -4px -6px -4px 2px; border-radius: 4px;
+    font-size: 11px; padding: 4px 6px; margin: -4px -6px -4px 0; border-radius: 4px;
     opacity: 0; transition: opacity .15s, color .15s; flex: none;
   }
   .lrow:hover .arch-btn, .lrow:focus-within .arch-btn { opacity: 1; }
   .arch-btn:hover { color: var(--red); }
   .restore-btn {
-    background: none; border: 1px solid var(--line); color: var(--dim); cursor: pointer;
+    background: none; border: 1px solid var(--line2); color: var(--dim); cursor: pointer;
     font-size: 10px; padding: 2px 8px; border-radius: 4px; flex: none;
     transition: color .15s, border-color .15s;
   }
@@ -119,45 +153,28 @@
   .arch-sec .lrow { opacity: 0.55; }
   .arch-sec .lrow:hover { opacity: 0.85; }
   .arch-toggle { cursor: pointer; user-select: none; }
-  .arch-toggle .chev { font-size: 9px; margin-left: 4px; display: inline-block; transition: transform .15s; }
-  .arch-toggle.collapsed .chev { transform: rotate(-90deg); }
-
-  /* ── Date-conflict summary banner ── */
-  #conflicts { border-bottom: 1px solid var(--line); background: rgba(210,153,34,.07); }
-  #conflicts .ch { display: flex; align-items: center; gap: 8px; padding: 9px 12px; cursor: pointer; font-size: 12px; font-weight: 700; color: var(--amber); }
-  #conflicts .ch .chev { margin-left: auto; color: var(--amber); font-size: 11px; transition: transform .15s; }
-  #conflicts.collapsed .chev { transform: rotate(-90deg); }
-  #conflicts.collapsed .clist { display: none; }
-  #conflicts .ci { padding: 7px 12px 8px 14px; border-top: 1px solid var(--line); cursor: pointer; }
-  #conflicts .ci:hover { background: rgba(210,153,34,.1); }
-  #conflicts .ci .cs { font-size: 11.5px; font-weight: 700; color: var(--text); }
-  #conflicts .ci .ct { font-size: 11.5px; color: var(--dim); margin-top: 1px; }
+  .chev { font-size: 9px; margin-left: 4px; display: inline-block; transition: transform .15s; }
+  .collapsed .chev { transform: rotate(-90deg); }
 
   /* ── Detail (right) ── */
   #detail { flex: 1; overflow-y: auto; min-width: 0; }
-  #detail .inner { padding: 14px 18px calc(60px + env(safe-area-inset-bottom)); max-width: 1400px; }
+  #detail .inner { padding: 16px 20px calc(60px + env(safe-area-inset-bottom)); max-width: 1400px; }
   #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 15px; padding: 12px 14px 2px; cursor: pointer; }
 
-  .dhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 14px; margin-bottom: 4px; }
-  .dhead h2 { font-size: 17px; font-weight: 700; }
-  .dsub { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; color: var(--dim); font-size: 12.5px; margin-bottom: 12px; }
+  .dhead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 5px; }
+  .dhead h2 { font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
+  .dsub { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; color: var(--dim); font-size: 12.5px; margin-bottom: 14px; }
 
-  .alert { border-radius: 6px; padding: 8px 12px; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-  .alert.red { background: rgba(248,81,73,.12); color: var(--red); border: 1px solid rgba(248,81,73,.4); }
-  .alert.amber { background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.35); }
-
-  .datebar {
-    display: flex; border: 1px solid var(--line); border-radius: 6px; overflow-x: auto; margin-bottom: 12px; background: var(--panel);
-  }
-  .datebar .d { flex: 1; min-width: 86px; padding: 7px 10px; border-right: 1px solid var(--line); }
+  .datebar { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; margin-bottom: 12px; background: var(--panel); }
+  .datebar .d { flex: 1; min-width: 86px; padding: 8px 11px; border-right: 1px solid var(--line); }
   .datebar .d:last-child { border-right: none; }
-  .datebar .k { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; }
-  .datebar .v { font-size: 13.5px; font-weight: 600; margin-top: 1px; white-space: nowrap; }
-  .datebar .d.today { background: rgba(210,153,34,.12); }
+  .datebar .k { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+  .datebar .v { font-size: 13.5px; font-weight: 600; margin-top: 2px; white-space: nowrap; }
+  .datebar .d.today { background: var(--amber-t); }
   .datebar .d.today .v { color: var(--amber); }
-  .datebar .d.ship:not(.past) { background: rgba(210,153,34,.08); }
+  .datebar .d.ship:not(.past) { background: rgba(227,168,58,.08); }
   .datebar .d.ship:not(.past) .v, .datebar .d.ship:not(.past) .k { color: var(--amber); }
-  .datebar .d.past .v { color: var(--dim); font-weight: 400; }
+  .datebar .d.past .v { color: var(--faint); font-weight: 400; }
 
   #wx { display: flex; gap: 6px; overflow-x: auto; margin: -4px 0 12px; }
   #wx .w { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; font-size: 12px; white-space: nowrap; color: var(--dim); }
@@ -165,93 +182,222 @@
 
   .cols { display: grid; grid-template-columns: 1fr 1.15fr; gap: 14px; margin-bottom: 14px; }
   @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
-  .box { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  .box { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); min-width: 0; overflow: hidden; }
+  .box.gap { margin-bottom: 14px; }
   .box h3 {
-    font-size: 11px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .7px;
-    padding: 7px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px;
+    font-size: 10.5px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .1em;
+    padding: 9px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; min-height: 36px;
   }
-  .box h3 .r { margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0; }
-  .box .pad { padding: 8px 12px; }
-  .box h3 button { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px; margin: -6px; }
-
-  table.grid { width: 100%; border-collapse: collapse; font-size: 12.5px; }
-  table.grid td { padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
-  table.grid tr:last-child td { border-bottom: none; }
-  table.grid td.dim { color: var(--dim); white-space: nowrap; }
-  table.grid td.r { text-align: right; white-space: nowrap; }
-  .stat-ok { color: var(--green); } .stat-pencil { color: var(--amber); } .stat-other { color: var(--dim); }
+  .box h3 .r { margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11.5px; display: flex; gap: 10px; align-items: center; }
+  .box h3.tgl { cursor: pointer; user-select: none; }
+  .box h3.last, .box h3.collapsed { border-bottom: none; }
+  .box .pad { padding: 10px 12px; }
+  .box h3 button { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px; margin: -6px; display: inline-flex; gap: 5px; align-items: center; }
 
   .linkbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .linkbar a, .linkbar button {
-    border: 1px solid var(--line); background: var(--panel); color: var(--text);
-    border-radius: 6px; padding: 9px 14px; font-size: 12.5px; font-weight: 600; cursor: pointer; min-height: 38px;
+    border: 1px solid var(--line2); background: var(--panel); color: var(--text);
+    border-radius: 8px; padding: 8px 13px; font-size: 12.5px; font-weight: 600; cursor: pointer; min-height: 36px;
+    display: inline-flex; gap: 6px; align-items: center;
   }
   .linkbar a:hover, .linkbar button:hover { border-color: var(--accent); color: var(--accent); }
+  .linkbar .arr { color: var(--faint); font-weight: 400; }
+
+  /* ── Crew ── */
+  .cr { display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "n s" "d a" "x x"; gap: 3px 14px; padding: 9px 12px; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .cr:last-child { border-bottom: none; }
+  .cr .n { grid-area: n; font-weight: 600; min-width: 0; }
+  .cr .role { color: var(--dim); font-weight: 400; font-size: 11.5px; margin-left: 7px; }
+  .cr .dts { grid-area: d; color: var(--dim); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cr .st { grid-area: s; font-size: 12px; white-space: nowrap; text-align: right; }
+  .cr .act { grid-area: a; display: flex; gap: 14px; justify-content: flex-end; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cr .x { grid-area: x; color: var(--dim); font-size: 11.5px; }
+  .cr .x:empty { display: none; }
+  .stat-ok { color: var(--green); } .stat-pencil { color: var(--amber); } .stat-other { color: var(--dim); }
 
   /* ── Emails ── */
   .mail { border-bottom: 1px solid var(--line); }
   .mail:last-child { border-bottom: none; }
-  .mail > .hd { display: flex; gap: 10px; padding: 11px 12px; cursor: pointer; align-items: baseline; }
+  .mail > .hd { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; align-items: baseline; }
   .mail > .hd:hover { background: var(--panel2); }
   .mail .from { font-weight: 600; white-space: nowrap; flex: none; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
   .mail .sub { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
   .mail.open .sub { white-space: normal; color: var(--text); }
-  .mail .dt { color: var(--dim); font-size: 11.5px; white-space: nowrap; flex: none; }
+  .mail .dt { color: var(--faint); font-size: 11.5px; white-space: nowrap; flex: none; }
   .mail .body {
-    display: none; padding: 4px 12px 12px; color: #c4ccd4; font-size: 12.5px;
+    display: none; padding: 4px 12px 12px; color: #c6cdd5; font-size: 12.5px;
     white-space: pre-wrap; word-break: break-word; border-top: 1px dashed var(--line);
     max-height: 420px; overflow-y: auto;
   }
   .mail.open .body { display: block; }
   .mail .to { color: var(--dim); font-size: 11px; padding: 4px 12px 0; display: none; }
   .mail.open .to { display: block; }
-  .mailfoot { padding: 10px 12px; font-size: 12px; display: flex; gap: 16px; }
+  .mailfoot { padding: 10px 12px; font-size: 12px; display: flex; gap: 16px; border-top: 1px solid var(--line); }
 
-  /* ── Granola meeting notes ── */
+  /* ── Meeting notes ── */
   .mtg { border-bottom: 1px solid var(--line); }
   .mtg:last-child { border-bottom: none; }
-  .mtg > .hd { display: flex; gap: 10px; padding: 11px 12px; cursor: pointer; align-items: baseline; }
+  .mtg > .hd { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; align-items: baseline; }
   .mtg > .hd:hover { background: var(--panel2); }
   .mtg .ttl { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mtg.open .ttl { white-space: normal; }
-  .mtg .dt { color: var(--dim); font-size: 11.5px; white-space: nowrap; flex: none; }
-  .mtg .mtag { font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .3px; flex: none; }
-  .mtag.spec { color: var(--green); background: rgba(63,185,80,.15); }
-  .mtag.ment { color: var(--dim); background: rgba(132,142,153,.15); }
-  .mtg .flagdot { color: var(--amber); font-weight: 700; flex: none; }
+  .mtg .dt { color: var(--faint); font-size: 11.5px; white-space: nowrap; flex: none; }
+  .mtg .mtag { font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .05em; flex: none; }
+  .mtag.spec { color: var(--green); background: var(--green-t); }
+  .mtag.ment { color: var(--dim); background: var(--dim-t); }
+  .flagdot { color: var(--amber); flex: none; }
   .mtg .body { display: none; padding: 2px 12px 12px; }
   .mtg.open .body { display: block; }
-  .mtg .rel { color: var(--dim); font-size: 11px; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 5px; }
-  .mtg .sum { color: #c4ccd4; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+  .mtg .rel { color: var(--faint); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin-bottom: 5px; }
+  .mtg .sum { color: #c6cdd5; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
   .mtg .ai { margin: 9px 0 0; padding: 8px 10px; background: var(--panel2); border-radius: 6px; }
-  .mtg .ai .h { font-size: 10.5px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 4px; }
+  .mtg .ai .h { font-size: 10.5px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
   .mtg .ai ul { margin: 0; padding-left: 16px; }
   .mtg .ai li { font-size: 12.5px; margin: 2px 0; }
-  .mtg .dflag { margin-top: 9px; padding: 7px 10px; border-radius: 6px; font-size: 12px;
-    background: rgba(210,153,34,.12); color: var(--amber); border: 1px solid rgba(210,153,34,.35); }
-  .mtgfoot { padding: 9px 12px; font-size: 11.5px; color: var(--dim); }
+  .mtg .dflag { margin-top: 9px; padding: 7px 10px; border-radius: 6px; font-size: 12px; background: var(--amber-t); color: var(--amber); border: 1px solid rgba(227,168,58,.3); }
 
   #notesView { white-space: pre-wrap; }
   #notesEdit { display: none; padding: 8px 12px; }
   #notesEdit textarea {
     width: 100%; min-height: 120px; background: var(--bg); color: var(--text);
-    border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: inherit; resize: vertical;
+    border: 1px solid var(--line2); border-radius: 6px; padding: 8px; font: inherit; resize: vertical;
   }
   #notesEdit .row2 { display: flex; gap: 8px; margin-top: 8px; }
   #notesEdit button { border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; min-height: 38px; }
   #notesSave { background: var(--accent); color: #04101f; border: none; font-weight: 700; }
-  #notesCancel { background: none; color: var(--dim); border: 1px solid var(--line); }
+  #notesCancel { background: none; color: var(--dim); border: 1px solid var(--line2); }
   #notesMsg { color: var(--green); font-size: 12px; align-self: center; }
+
+  /* ── Radar: catches ── */
+  .rc { display: grid; grid-template-columns: 8px minmax(0,1fr) auto; gap: 0 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .rc[data-go] { cursor: pointer; }
+  .rc[data-go]:hover { background: var(--panel2); }
+  .rc:last-child { border-bottom: none; }
+  .rc .pip { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; }
+  .rc.s3 .pip { background: var(--red); box-shadow: 0 0 0 3px var(--red-t); }
+  .rc.s2 .pip { background: var(--amber); }
+  .rc.s1 .pip { border: 1.5px solid var(--faint); }
+  .rc .kx { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); margin-bottom: 1px; }
+  .rc .kx b { color: var(--dim); font-weight: 700; }
+  .rc .tt { font-size: 13px; font-weight: 600; }
+  .rc .dd { color: var(--dim); font-size: 12.5px; margin-top: 1px; }
+  .rc .ss { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 4px; overflow-wrap: anywhere; }
+  .rc .rt { display: flex; gap: 6px; align-items: flex-start; }
+  .rc .due { font-size: 11.5px; color: var(--dim); white-space: nowrap; padding-top: 5px; font-variant-numeric: tabular-nums; }
+  .rc.s3 .due { color: var(--red); }
+  .rc .ack { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line2); background: none; color: var(--faint); cursor: pointer; display: grid; place-items: center; }
+  .rc .ack:hover { color: var(--green); border-color: var(--green); }
+  .rc .ack .ic { vertical-align: 0; }
+  .rc.acked { opacity: .55; }
+  .rc.acked .ack { color: var(--green); border-color: rgba(63,207,124,.4); }
+  .rsec { padding: 7px 12px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 8px; }
+  .rsec.s3 { color: var(--red); } .rsec.s2 { color: var(--amber); }
+  .rsec span { color: var(--faint); font-weight: 600; }
+  details.ackd { border-top: 1px solid var(--line); }
+  details.ackd summary { padding: 9px 12px; font-size: 11.5px; color: var(--dim); cursor: pointer; list-style: none; user-select: none; }
+  details.ackd summary::-webkit-details-marker { display: none; }
+  details.ackd summary::before { content: "▸ "; color: var(--faint); }
+  details.ackd[open] summary::before { content: "▾ "; }
+  details.ackd[open] summary { border-bottom: 1px solid var(--line); }
+  .rfoot { padding: 9px 12px; font-size: 11px; color: var(--faint); border-top: 1px solid var(--line); line-height: 1.5; }
+  .rclear { padding: 22px 12px; text-align: center; color: var(--dim); }
+  .rclear b { display: block; color: var(--green); font-size: 13px; margin-bottom: 2px; }
+  .rwarn { margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--amber-t); color: var(--amber); border: 1px solid rgba(227,168,58,.3); }
+
+  /* ── Radar: preflight chips ── */
+  .pf { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+  .pfc { font-size: 11.5px; border: 1px solid var(--line2); border-radius: 999px; padding: 2px 10px; color: var(--dim); white-space: nowrap; }
+  .pfc b { font-weight: 600; color: var(--text); margin-left: 5px; }
+  .pfc.ok b { color: var(--green); } .pfc.warn b { color: var(--amber); } .pfc.bad b { color: var(--red); }
+
+  /* ── Radar: home ── */
+  .rhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 6px 16px; margin-bottom: 14px; }
+  .rhead h2 { font-size: 22px; font-weight: 700; letter-spacing: -.015em; }
+  .rsum { color: var(--dim); font-size: 13px; margin-top: 2px; }
+  .rsum b { color: var(--text); font-weight: 600; } .rsum b.hot { color: var(--red); } .rsum b.warm { color: var(--amber); }
+  .rstat { color: var(--faint); font-size: 11px; white-space: nowrap; }
+  .rgrid { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); grid-template-areas: "tl tl" "c ag"; gap: 14px; align-items: start; }
+  .rgrid .a-tl { grid-area: tl; } .rgrid .a-c { grid-area: c; } .rgrid .a-ag { grid-area: ag; }
+  @media (max-width: 1100px) { .rgrid { grid-template-columns: minmax(0,1fr); grid-template-areas: "c" "ag" "tl"; } }
+  @media (min-width: 1101px) { .rgrid .a-ag { position: sticky; top: 14px; } }
+  #radarBox .rc .ss { display: none; }
+
+  /* ── Radar: run of show ── */
+  .tlwrap { overflow-x: auto; }
+  .tl { display: grid; grid-template-columns: 148px minmax(0,1fr); gap: 5px 0; align-items: center; min-width: 620px; padding: 10px 14px 12px 12px; }
+  .tl .lab { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; color: var(--dim); }
+  .tl .lab.me { color: var(--text); font-weight: 600; }
+  .tl .lab[data-go] { cursor: pointer; } .tl .lab[data-go]:hover { color: var(--text); }
+  .tl .ax { position: relative; height: 15px; }
+  .tl .ax span { position: absolute; top: 0; font-size: 10.5px; color: var(--faint); white-space: nowrap; font-variant-numeric: tabular-nums; padding-left: 4px; }
+  .tl .trk { position: relative; height: 24px; background-image: linear-gradient(90deg, var(--line) 1px, transparent 1px); }
+  .tl .trk.me { border-bottom: 1px solid var(--line); height: 29px; margin-bottom: 2px; }
+  .bar { position: absolute; top: 3px; height: 18px; border-radius: 4px; overflow: hidden; white-space: nowrap; font-size: 10.5px; line-height: 18px; }
+  .bar[data-go] { cursor: pointer; }
+  .bar .bl { position: relative; z-index: 1; padding: 0 6px; }
+  .bar .core { position: absolute; top: 0; bottom: 0; }
+  .bar.travel { background: var(--accent-t); color: #cfe4ff; box-shadow: inset 0 0 0 1px rgba(106,174,255,.42); }
+  .bar.travel .core { background: rgba(106,174,255,.55); }
+  .bar.remote { color: var(--dim); box-shadow: inset 0 0 0 1px var(--line2); background: var(--dim-t); }
+  .bar.remote .core { background: rgba(139,149,161,.26); }
+  .bar.you { background: var(--text); color: var(--bg); font-weight: 700; }
+  .bar.you.tent { background: none; color: var(--text); box-shadow: inset 0 0 0 1px var(--dim); font-weight: 600; }
+  .bar.away { background: repeating-linear-gradient(135deg, rgba(227,168,58,.3) 0 5px, rgba(227,168,58,.1) 5px 10px); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(227,168,58,.55); font-weight: 700; }
+  .tick { position: absolute; top: 2px; width: 8px; height: 8px; margin-left: -4px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; top: 8px; z-index: 2; box-shadow: 0 0 0 2px var(--panel); }
+  .now { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--red); z-index: 3; border-radius: 1px; }
+  .tlkey { display: flex; gap: 12px; align-items: center; color: var(--faint); }
+  .tlkey i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+  .tlkey .k-t { background: var(--accent-t); box-shadow: inset 0 0 0 1px rgba(106,174,255,.42); } .tlkey .k-r { background: var(--dim-t); box-shadow: inset 0 0 0 1px var(--line2); }
+  .tlkey .k-d { background: rgba(106,174,255,.55); }
+  .tlkey .k-s { width: 7px; height: 7px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; margin-right: 7px; }
+
+  /* ── Radar: agenda ── */
+  .ag { display: grid; grid-template-columns: 78px minmax(0,1fr); }
+  .ag .dy { padding: 9px 0 9px 12px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .ag .dy b { display: block; color: var(--text); font-weight: 600; }
+  .ag .dy.today b { color: var(--red); }
+  .ag .its { padding: 7px 12px 7px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .ag > :nth-last-child(-n+2) { border-bottom: none; }
+  .agi { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; font-size: 12.5px; min-width: 0; padding: 2px 0; }
+  .agi[data-go] { cursor: pointer; } .agi[data-go]:hover .nm { color: var(--accent); }
+  .agi .k { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; flex: none; text-align: right; }
+  .agi .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .agi.ship .k { color: var(--amber); } .agi.in .k { color: var(--accent); } .agi.show .k { color: var(--green); } .agi.out .k { color: var(--dim); } .agi.me .k { color: var(--text); }
+
+  /* ── Tasks ── */
+  .tkcat { display: flex; gap: 10px; align-items: center; padding: 7px 12px 6px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .tkcat .n { color: var(--faint); font-weight: 600; letter-spacing: .04em; text-transform: none; font-size: 11px; }
+  .tkall { margin-left: auto; background: none; border: 1px solid var(--line2); border-radius: 6px; color: var(--dim); font-size: 11px; padding: 4px 9px; cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  .tkall:hover { color: var(--text); border-color: var(--dim); }
+  .tkall.armed { color: var(--amber); border-color: var(--amber); }
+  .tk { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 0 10px; align-items: start; padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .tkb { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line2); background: none; cursor: pointer; display: grid; place-items: center; color: var(--bg); font-weight: 700; font-size: 13px; line-height: 1; margin-top: -1px; }
+  .tkb:hover { border-color: var(--accent); }
+  .tkb .ic { width: 12px; height: 12px; stroke-width: 2.2; vertical-align: 0; }
+  .tk.prog .tkb { border-color: var(--amber); color: var(--amber); }
+  .tk.closed .tkb { background: var(--green); border-color: var(--green); }
+  .tk.closed.nn .tkb { background: var(--faint); border-color: var(--faint); }
+  .tk .nm { min-width: 0; }
+  .tk.closed .nm { color: var(--faint); text-decoration: line-through; }
+  .tk .due { font-size: 11.5px; color: var(--dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tk .due.late { color: var(--red); } .tk .due.soon { color: var(--amber); }
+  .tkmenu { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0 2px; }
+  .tkmenu button { font-size: 12px; padding: 6px 11px; min-height: 32px; border: 1px solid var(--line2); border-radius: 7px; background: var(--panel2); color: var(--text); cursor: pointer; }
+  .tkmenu button:hover { border-color: var(--dim); }
+  .tkmenu button.on { border-color: var(--accent); color: var(--accent); }
+  #tasksBody details.ackd { border-top: none; border-bottom: 1px solid var(--line); }
+  .tkfoot { padding: 8px 12px; font-size: 11.5px; color: var(--faint); min-height: 34px; }
+  .tkfoot.ok { color: var(--green); } .tkfoot.err { color: var(--red); }
 
   #msg { text-align: center; color: var(--dim); padding: 50px 20px; }
   #errBar {
-    display: none; margin: 8px 14px; background: rgba(248,81,73,.1); color: var(--red);
-    border: 1px solid rgba(248,81,73,.4); border-radius: 6px; padding: 8px 12px; font-size: 13px;
+    display: none; margin: 8px 14px; background: var(--red-t); color: var(--red);
+    border: 1px solid rgba(255,98,87,.4); border-radius: 8px; padding: 8px 12px; font-size: 13px;
   }
   #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 5px; padding: 6px 12px; margin-left: 10px; cursor: pointer; }
   .spin { display: inline-block; animation: rot 1s linear infinite; }
   @keyframes rot { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .spin { animation: none; } * { transition: none !important; } }
 
   /* ── Mobile ── */
   @media (max-width: 760px) {
@@ -260,16 +406,29 @@
     #list { width: 100%; border-right: none; }
     #backBtn { display: block; }
     #detail .inner { padding: 10px 12px calc(60px + env(safe-area-inset-bottom)); }
-    #topStats span:nth-child(n+4) { display: none; }
+    #topStats span:nth-child(n+3) { display: none; }
+    #topbar { gap: 10px; padding-left: 12px; padding-right: 10px; }
+    #topbar h1 { letter-spacing: .12em; }
+    #topStats { gap: 10px; }
+    #refreshBtn { min-width: 40px; }
     .datebar .d { min-width: 78px; }
     .lrow { padding: 13px 12px 12px; }
+    .rrow { padding: 14px 12px; }
+    .rhead h2 { font-size: 20px; }
+    .tl { grid-template-columns: 104px minmax(0,1fr); min-width: 560px; }
+    .tlkey { display: none; }
+    .rc .ack { width: 34px; height: 34px; }
+    .rc .ss { display: none; }
+    .tk { padding: 10px 12px; grid-template-columns: 30px minmax(0,1fr) auto; }
+    .tkb { width: 26px; height: 26px; }
+    .tkmenu button { min-height: 38px; padding: 8px 12px; }
   }
 </style>
 </head>
 <body>
 
 <div id="pinGate">
-  <h1>Show Ops</h1>
+  <h1>SHOW OPS</h1>
   <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="8" placeholder="PIN">
   <div id="pinErr"></div>
   <button id="pinBtn">Unlock</button>
@@ -465,7 +624,7 @@ function mtgFlagCount(s) { return (s.meetings || []).reduce((n, m) => n + ((m.da
 let SHOWS = [];
 let RAW = null;            // {events, positions, mails}
 let NOTES = { shows: {}, unmatched: [], generatedAt: null };  // Granola notes, keyed by event id
-let selectedId = null;
+let selectedId = "radar";   // Radar is home; a show id when one is open
 let lastLoad = 0;
 const mailCache = {};
 const filesCache = {};     // eventId -> {t, recs}  (attachment URLs expire, so re-fetch after 15 min)
@@ -509,27 +668,89 @@ function _saveArchiveState() {
 }
 
 // ════════════════════════════════════════════════
+// ICONS (inline SVG — no emoji, no network)
+// ════════════════════════════════════════════════
+const ICONS = {
+  radar: '<circle cx="8" cy="8" r="6.2"/><circle cx="8" cy="8" r="2.4"/><path d="M8 8l4.4-4.4"/>',
+  mail:  '<rect x="1.8" y="3.3" width="12.4" height="9.4" rx="1.6"/><path d="M2.3 4.5L8 8.8l5.7-4.3"/>',
+  crew:  '<circle cx="6" cy="5.6" r="2.3"/><path d="M1.8 13c.3-2.4 2-3.7 4.2-3.7s3.9 1.3 4.2 3.7"/><path d="M10.6 3.6a2.2 2.2 0 010 4.1M12 9.6c1.3.5 2.1 1.6 2.3 3.2"/>',
+  note:  '<path d="M3.5 1.8h6.2l2.8 2.8v9.6h-9z"/><path d="M5.6 7.2h4.8M5.6 9.7h4.8M5.6 12.1h3"/>',
+  box:   '<path d="M2 5l6-3 6 3v6l-6 3-6-3z"/><path d="M2 5l6 3 6-3M8 8v6"/>',
+  flag:  '<path d="M3.5 14.2V2.2M3.5 2.8h8.2l-1.8 2.7 1.8 2.7H3.5"/>',
+  check: '<path d="M3 8.4l3.2 3.2L13 4.8"/>',
+  cal:   '<rect x="2" y="3" width="12" height="11" rx="1.6"/><path d="M2 6.4h12M5.2 1.8v2.4M10.8 1.8v2.4"/>',
+  up:    '<path d="M8 11V2.6M4.6 5.8L8 2.4l3.4 3.4M2.6 13.4h10.8"/>',
+  edit:  '<path d="M10.6 2.6l2.8 2.8-7.6 7.6-3.4.6.6-3.4z"/>',
+  list:  '<path d="M5.6 4h8M5.6 8h8M5.6 12h8"/><path d="M2.2 4h.6M2.2 8h.6M2.2 12h.6"/>',
+  file:  '<path d="M2.2 4.2h4l1.4 1.6h6.2v7H2.2z"/>'
+};
+const ic = n => `<svg class="ic" viewBox="0 0 16 16" aria-hidden="true">${ICONS[n] || ""}</svg>`;
+
+// ════════════════════════════════════════════════
+// NAMING HELPERS
+// ════════════════════════════════════════════════
+// "JM Vertex @ ASN 2026 #713 Prep + Show" → "Vertex @ ASN"
+function shortTitle(t) {
+  const s = String(t || "")
+    .replace(/\s*#.*$/, "")
+    .replace(/\s+20\d\d\b/g, "")
+    .replace(/\s*Prep \+ Show\s*$/i, "")
+    .replace(/^(?:\(AR\)\s+|Calendar:\s+)?(?:SPX|JM|SS|IXM|IMP|MMS|XL P&O|P&O|Prospect)\s+/, "")
+    .trim();
+  return s || String(t || "");
+}
+function boothOf(s) { return s.booth ? "#" + s.booth : ""; }
+// "*Jonathan (Johnny) Jordan" → "Johnny J." · "*Iqral La Rode" → "You"
+function nick(name) {
+  const n = String(name || "").replace(/^\*/, "").trim();
+  if (n.includes(ME)) return "You";
+  const p = n.match(/\(([^)]+)\)/);
+  const parts = n.replace(/\([^)]*\)/g, " ").split(/\s+/).filter(Boolean);
+  const firstName = p ? p[1] : (parts[0] || n);
+  const last = parts.length > 1 ? parts[parts.length - 1] : "";
+  return last ? `${firstName} ${last[0]}.` : firstName;
+}
+function listNames(arr) {
+  const a = arr.map(n => n === "You" ? "you" : n);
+  if (a.length <= 1) return a.join("");
+  return a.slice(0, -1).join(", ") + " and " + a[a.length - 1];
+}
+const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
+const dd = (a, b) => Math.round((a - b) / 86400000);
+const validQuote = q => !!q && /^\d{4,}$/.test(q);
+const fq = s => String(s).replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+function dueTxt(d) {
+  const n = daysFromToday(d);
+  if (n < -1) return (-n) + "d ago";
+  if (n === -1) return "yesterday";
+  if (n === 0) return "today";
+  if (n === 1) return "tomorrow";
+  return "in " + n + "d";
+}
+
+// ════════════════════════════════════════════════
 // DATA LOAD
 // ════════════════════════════════════════════════
 function applyData(events, positions, mails, fromCache) {
   RAW = { events, positions, mails };
   SHOWS = events.map(e => buildModel(e, positions, mails))
     .sort((a, b) => (a.tlStart || 0) - (b.tlStart || 0));
-  const t = today0();
-  if (!selectedId || !SHOWS.find(s => s.id === selectedId)) {
-    const def = SHOWS.find(s => !s.tlEnd || s.tlEnd >= t) || SHOWS[0];
-    selectedId = def ? def.id : null;
-  }
+  if (selectedId !== "radar" && !SHOWS.find(s => s.id === selectedId)) selectedId = "radar";
+  computeRadar();
   renderList();
   renderStats();
   renderDetail();
-  document.getElementById("msg") && (document.getElementById("msg").textContent = SHOWS.length ? "" : "No active shows assigned to you in Airtable.");
   const up = document.getElementById("updated");
   if (fromCache) { up.textContent = "Cached — refreshing…"; up.classList.add("stale"); }
   else {
     up.textContent = "Live " + new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
     up.classList.remove("stale");
   }
+}
+
+function notesEditing() {
+  const e = document.getElementById("notesEdit");
+  return !!e && e.style.display === "block";
 }
 
 async function loadAll() {
@@ -554,22 +775,35 @@ async function loadAll() {
     // Granola notes (personal layer — KV via worker, never touches Airtable)
     fetch(`${WORKER}/notes?key=${encodeURIComponent(pin())}`)
       .then(r => r.ok ? r.json() : null)
-      .then(nd => { if (nd && nd.shows) { NOTES = nd; try { localStorage.setItem("dash_notes", JSON.stringify(nd)); } catch (e) {} renderList(); renderDetail(); } })
+      .then(nd => {
+        if (!nd || !nd.shows) return;
+        NOTES = nd;
+        try { localStorage.setItem("dash_notes", JSON.stringify(nd)); } catch (e) {}
+        SHOWS.forEach(s => { s.meetings = nd.shows[s.id] || []; });
+        computeRadar();
+        renderList(); renderStats();
+        if (!notesEditing()) renderDetail();
+      })
       .catch(() => {});
 
     let positions = [], mails = [];
     const ids = events.map(e => e.id);
-    const quotes = events.map(e => e.fields["QuoteNumber(string)"]).filter(q => q && /^\d{4,}$/.test(q));
 
     const jobs = [];
     if (ids.length) {
       const posFormula = "OR(" + ids.map(id => `FIND('${id}',ARRAYJOIN({id (from Event)}))`).join(",") + ")";
       jobs.push(api(POS_TBL, { filterByFormula: posFormula, "fields[]": POS_FIELDS }).then(r => positions = r));
     }
-    if (quotes.length) {
-      const mailFormula = "OR(" + quotes.map(q => `FIND('${q}',ARRAYJOIN({Related Event})&' '&{Subject})`).join(",") + ")";
+    // Emails: match on quote number; shows without a real quote number match on the event name instead.
+    const mailTerms = events.map(e => {
+      const q = e.fields["QuoteNumber(string)"];
+      if (validQuote(q)) return `FIND('${q}',ARRAYJOIN({Related Event})&' '&{Subject})`;
+      const n = String(e.fields["Name"] || "").trim();
+      return n ? `FIND('${fq(n)}',ARRAYJOIN({Related Event}))` : null;
+    }).filter(Boolean);
+    if (mailTerms.length) {
       jobs.push(api(MAIL_TBL, {
-        filterByFormula: mailFormula,
+        filterByFormula: "OR(" + mailTerms.join(",") + ")",
         "fields[]": MAIL_META_FIELDS,
         "sort[0][field]": "Received Date",
         "sort[0][direction]": "desc",
@@ -583,6 +817,7 @@ async function loadAll() {
     try { localStorage.setItem("dash_cache", JSON.stringify({ t: lastLoad, events, positions, mails })); } catch (e) {}
 
     applyData(events, positions, mails, false);
+    loadRadar(events, positions);   // second pass: cross-source checks; never blocks the page
   } catch (err) {
     if (err.auth) { localStorage.removeItem("dash_pin"); showGate("PIN no longer valid — re-enter."); return; }
     document.getElementById("errTxt").textContent = "Couldn't load data: " + err.message;
@@ -612,15 +847,19 @@ function buildModel(ev, positions, mails) {
       if (!stints.length && (pf["Timeline Start"] || pf["Timeline End"])) {
         stints = [{ a: parseDate(pf["Timeline Start"]), b: parseDate(pf["Timeline End"]) }];
       }
+      const raw = first(pf["Name (from Crew)"]) || "";
+      const role = first(pf["Short Name (from Roles)"]) || "";
       return {
-        name: (first(pf["Name (from Crew)"]) || "").replace(/^\*/, ""),
+        raw,
+        name: raw.replace(/^\*/, "").trim(),
         email: first(pf["Email (from Crew)"]) || "",
         phone: first(pf["Phone Number (from Crew)"]) || "",
-        role: first(pf["Short Name (from Roles)"]) || "",
-        status: pf["Status"] || "",
+        role,
+        staff: role === "Staff",
+        status: String(pf["Status"] || "").trim(),
         stints,
         notes: pf["Position Notes"] || "",
-        travelInfo: [first(pf["Flight/Hotel Info"]), first(pf["Hotel Info"])].filter(Boolean).join(" · ")
+        travelInfo: [first(pf["Flight/Hotel Info"]), first(pf["Hotel Info"])].filter(Boolean).join(" · ").trim()
       };
     })
     .filter(c => c.name);
@@ -628,14 +867,14 @@ function buildModel(ev, positions, mails) {
   const quoteStr = f["QuoteNumber(string)"] || "";
   const myMails = mails.filter(m =>
     (m.fields["Related Event"] || []).includes(ev.id) ||
-    (quoteStr && String(m.fields["Subject"] || "").includes(quoteStr)));
+    (validQuote(quoteStr) && String(m.fields["Subject"] || "").includes(quoteStr)));
 
   return {
     id: ev.id, title,
-    quote: quoteStr,
-    booth: f["Booth Number"] || "",
+    quote: validQuote(quoteStr) ? quoteStr : "",
+    booth: f["Booth Number"] || ((String(f["Name"] || "").match(/#\s*([A-Za-z0-9][A-Za-z0-9-]*)/) || [])[1] || ""),
     status: f["Status"] || "",
-    venue: first(f["Venue"]) || "",
+    venue: String(first(f["Venue"]) || "").trim(),
     address: first(f["Venue Address Combined"]) || "",
     city: f["Venue City"] || "",
     cityState: [f["Venue City"], f["Venue State"]].filter(Boolean).join(", "),
@@ -699,8 +938,9 @@ function countdownTxt(s) {
   if (st === "done") return "wrapped " + agoTxt(s.tlEnd);
   if (st === "live") return "LIVE thru " + fmtD(s.tlEnd);
   const dl = deadlineOf(s);
+  if (!dl.d) return "dates TBD";
   const d = daysFromToday(dl.d);
-  const verb = dl.ship ? "📦 ships" : "load-in";
+  const verb = dl.ship ? "ships" : "load-in";
   return d === 0 ? verb + " TODAY" : verb + " in " + d + "d";
 }
 function crewRisk(s) {
@@ -712,20 +952,16 @@ function crewRisk(s) {
   return null;
 }
 
+function selectShow(id) {
+  selectedId = id;
+  renderList(); renderDetail();
+  document.getElementById("main").classList.add("show-detail");
+  document.getElementById("detail").scrollTop = 0;
+}
+
 // ════════════════════════════════════════════════
 // RENDER — list + stats
 // ════════════════════════════════════════════════
-function allConflicts() {
-  const t = today0();
-  const out = [];
-  SHOWS.forEach(s => {
-    if (s.tlEnd && s.tlEnd < t) return; // skip wrapped shows — their date flags are moot (added 2026-09-14)
-    (s.meetings || []).forEach(m => (m.dateFlags || []).forEach(fl =>
-      out.push({ id: s.id, title: s.title, mtg: m.title, date: m.date, text: fl.text })));
-  });
-  return out;
-}
-
 function renderList() {
   const t = today0();
   const allActive = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
@@ -733,37 +969,40 @@ function renderList() {
   const active = allActive.filter(s => !isArchived(s));
   const wrapped = allWrapped.filter(s => !isArchived(s));
   const archived = SHOWS.filter(s => isArchived(s));
-  const conflicts = allConflicts();
-  const collapsed = localStorage.getItem("conflicts_open") === "0";
-  const conflictBanner = conflicts.length ? `
-    <div id="conflicts" class="${collapsed ? "collapsed" : ""}">
-      <div class="ch" id="conflictsHead" role="button" tabindex="0">⚑ ${conflicts.length} date conflict${conflicts.length === 1 ? "" : "s"} to reconcile<span class="chev">▾</span></div>
-      <div class="clist">${conflicts.map(c =>
-        `<div class="ci" data-cid="${c.id}"><div class="cs">${esc(c.title.split("@")[0].trim())} · <span style="color:var(--dim);font-weight:400">${esc(c.mtg)}</span></div><div class="ct">${esc(c.text)}</div></div>`
-      ).join("")}</div>
-    </div>` : "";
+
+  const open = openCatches();
+  const n3 = open.filter(c => c.sev === 3).length, n2 = open.filter(c => c.sev === 2).length;
+  const radarLine = (RADAR.loading && !RADAR.t) ? "Running checks…"
+    : n3 ? `${n3} need${n3 === 1 ? "s" : ""} action · ${n2} to watch`
+    : n2 ? `${n2} to watch` : "Nothing flagged";
+  const radarRow = `<div class="rrow ${selectedId === "radar" ? "sel" : ""}" data-id="radar" tabindex="0" role="button">
+      <span class="ico">${ic("radar")}</span>
+      <div class="rb"><div class="t">Radar</div><div class="m">${radarLine}</div></div>
+      <span class="cn">${n3 ? `<span class="tag danger">${n3}</span>` : ""}${n2 ? `<span class="tag urgent">${n2}</span>` : ""}${!n3 && !n2 && RADAR.t ? `<span class="tag live">CLEAR</span>` : ""}</span>
+    </div>`;
 
   const row = s => {
     const st = stateOf(s);
     const risk = crewRisk(s);
     const tag = risk && risk.level === "red" ? '<span class="tag danger">NO CREW</span>'
       : st === "live" ? '<span class="tag live">LIVE</span>'
-      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).replace("load-in ", "LOAD-IN ").replace("ships ", "SHIPS "))}</span>`
+      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>`
       : st === "done" ? '<span class="tag done">DONE</span>' : "";
     const dl = deadlineOf(s);
     const shipChip = dl.ship && st !== "done" && st !== "live" && st !== "urgent"
-      ? `<span style="color:var(--amber)">📦 ${fmtD(dl.d)}</span>` : "";
+      ? `<span class="shp" title="Booth ships ${fmtD(dl.d)}">${ic("box")}${fmtD(dl.d)}</span>` : "";
     const nNew = s.id === selectedId ? 0 : newMailCount(s);
     const nNewMtg = s.id === selectedId ? 0 : newMtgCount(s);
     const mtgChip = s.meetings && s.meetings.length
-      ? `<span title="meeting notes"${nNewMtg ? ' style="color:var(--green);font-weight:700"' : ""}>🗒${s.meetings.length}</span>` : "";
-    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
-      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}<button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button></div>
+      ? `<span title="meeting notes"${nNewMtg ? ' style="color:var(--green);font-weight:700"' : ""}>${ic("note")}${s.meetings.length}</span>` : "";
+    const sv = sevOf(s.id);
+    const pip = sv.m ? `<span class="sp s${sv.m}" title="${sv.n} open on Radar"></span>` : "";
+    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)}">
+      <div class="t">${pip}<span class="nm">${esc(shortTitle(s.title))}</span>${s.booth ? `<span class="bn">${esc(boothOf(s))}</span>` : ""}${tag}<span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span><button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button></div>
       <div class="m mono">
-        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>${shipChip}
-        <span>${esc(s.cityState || "")}</span>
-        <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
-        <span class="cnt">${nNew ? `<span class="newdot">● ${nNew} new</span>` : ""}${mtgFlagCount(s) ? `<span class="flagdot" title="date conflict from a call">⚑</span>` : ""}${mtgChip}✉${s.mailTotal} 👥${s.crew.length}</span>
+        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
+        <span class="cty">${esc(s.city || "")}</span>${shipChip}
+        <span class="cnt">${nNew ? `<span class="newdot">● ${nNew} new</span>` : ""}${mtgChip}<span title="emails">${ic("mail")}${s.mailTotal}</span><span title="crew">${ic("crew")}${s.crew.length}</span></span>
       </div>
     </div>`;
   };
@@ -771,12 +1010,11 @@ function renderList() {
   const archRow = s => {
     const st = stateOf(s);
     const tag = st === "done" ? '<span class="tag done">DONE</span>' : "";
-    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button">
-      <div class="t"><span class="nm">${esc(s.title)}</span>${tag}<button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button></div>
+    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)}">
+      <div class="t"><span class="nm">${esc(shortTitle(s.title))}</span>${tag}<span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span><button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button></div>
       <div class="m mono">
         <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
-        <span>${esc(s.cityState || "")}</span>
-        <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
+        <span class="cty">${esc(s.city || "")}</span>
       </div>
     </div>`;
   };
@@ -791,51 +1029,25 @@ function renderList() {
     </div>` : "";
 
   document.getElementById("list").innerHTML =
-    conflictBanner +
+    radarRow +
     `<div class="lsec">Active · ${active.length}</div>` +
     (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
     (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "") +
     archSec;
 
-  document.querySelectorAll(".lrow[data-id]").forEach(el => {
-    const go = () => {
-      selectedId = el.dataset.id;
-      renderList(); renderDetail();
-      document.getElementById("main").classList.add("show-detail");
-    };
+  document.querySelectorAll("#list [data-id]").forEach(el => {
+    const go = () => selectShow(el.dataset.id);
     el.addEventListener("click", go);
     el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
   });
 
-  const ch = document.getElementById("conflictsHead");
-  if (ch) {
-    const toggle = () => {
-      const box = document.getElementById("conflicts");
-      box.classList.toggle("collapsed");
-      localStorage.setItem("conflicts_open", box.classList.contains("collapsed") ? "0" : "1");
-    };
-    ch.addEventListener("click", toggle);
-    ch.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
-  }
-  document.querySelectorAll("#conflicts .ci[data-cid]").forEach(el => {
-    el.addEventListener("click", () => {
-      selectedId = el.dataset.cid;
-      renderList(); renderDetail();
-      document.getElementById("main").classList.add("show-detail");
-    });
-  });
-
-  // Archive buttons
   document.querySelectorAll(".arch-btn[data-arch]").forEach(btn => {
     btn.addEventListener("click", e => { e.stopPropagation(); archiveShow(btn.dataset.arch); });
   });
-
-  // Restore buttons
   document.querySelectorAll(".restore-btn[data-restore]").forEach(btn => {
     btn.addEventListener("click", e => { e.stopPropagation(); unarchiveShow(btn.dataset.restore); });
   });
 
-  // Archived section toggle
   const ah = document.getElementById("archHead");
   if (ah) {
     const toggleArch = () => {
@@ -854,12 +1066,13 @@ function renderStats() {
   const active = SHOWS.filter(s => (!s.tlEnd || s.tlEnd >= t) && !isArchived(s));
   const live = active.filter(s => stateOf(s) === "live").length;
   const travel = active.filter(s => s.travel).length;
-  const risks = active.filter(s => crewRisk(s)).length;
+  const n3 = openCatches().filter(c => c.sev === 3).length;
   const next = active.filter(s => s.tlStart && s.tlStart > t)[0];
   document.getElementById("topStats").innerHTML =
-    `<span><b>${active.length}</b> active</span><span><b>${live}</b> live</span><span><b>${travel}</b> travel</span>` +
-    (risks ? `<span style="color:var(--red)"><b>${risks}</b> at risk</span>` : "") +
-    (next ? `<span>next: <b>${esc(next.title.split("@")[0].trim())}</b> ${countdownTxt(next)}</span>` : "");
+    `<span><b>${active.length}</b> active</span>` +
+    (n3 ? `<span class="hot"><b>${n3}</b> need${n3 === 1 ? "s" : ""} action</span>` : "") +
+    `<span><b>${live}</b> live</span><span><b>${travel}</b> travel</span>` +
+    (next ? `<span>next: <b>${esc(shortTitle(next.title))}</b> ${esc(countdownTxt(next))}</span>` : "");
 }
 
 // ════════════════════════════════════════════════
@@ -867,40 +1080,32 @@ function renderStats() {
 // ════════════════════════════════════════════════
 function renderDetail() {
   const el = document.getElementById("detailInner");
+  if (selectedId === "radar") { renderRadarHome(el); return; }
   const s = SHOWS.find(x => x.id === selectedId);
   if (!s) { el.innerHTML = `<div id="msg">${SHOWS.length ? "Select a show" : "No active shows assigned to you in Airtable."}</div>`; return; }
   const t = today0();
   markSeen(s);
 
-  const risk = crewRisk(s);
-  const riskBar = risk ? `<div class="alert ${risk.level}">${risk.level === "red" ? "⛔" : "⚠"} ${esc(risk.txt)} — ${esc(countdownTxt(s))}</div>` : "";
-
   const dl = deadlineOf(s);
-  const loadInD = s.dates["Load In"];
-  const shipBar = dl.ship && stateOf(s) !== "done" && stateOf(s) !== "live" && dl.d >= t
-    ? `<div class="alert amber">📦 BOOTH SHIPS ${esc(fmtD(dl.d))}${loadInD ? ` — ${Math.round((loadInD - dl.d) / 86400000)}d before load-in` : ""} · this is the real deadline</div>`
-    : "";
-
   const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
     `<div class="d ${sameDay(d, t) ? "today" : (d < t ? "past" : "")}${k === "Booth Ship" && dl.ship ? " ship" : ""}">
-       <div class="k">${k}${k === "Booth Ship" && dl.ship ? " ⚑" : ""}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " ·today" : ""}</div>
+       <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " · today" : ""}</div>
      </div>`).join("");
 
   const fmtStints = c => c.stints.map(x => fmtRange(x.a, x.b)).join(", ") || "—";
 
   const crewRows = s.crew.map(c => {
     const stl = String(c.status).toLowerCase();
-    const cls = stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
+    const cls = stl.includes("not conf") ? "stat-pencil" : stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
     const extra = [c.notes, c.travelInfo].filter(Boolean).join(" · ");
-    return `<tr>
-      <td>${esc(c.name)}${c.name.includes(ME) ? " ←" : ""}${extra ? `<div class="dim" style="font-size:11.5px;white-space:normal;color:var(--dim)">${esc(extra)}</div>` : ""}</td>
-      <td class="dim">${esc(c.role)}</td>
-      <td class="mono" style="white-space:nowrap">${esc(fmtStints(c))}</td>
-      <td class="${cls}">${esc(c.status)}</td>
-      <td class="r">${c.phone ? `<a class="tap" href="${telHref(c.phone)}">${esc(fmtPhone(c.phone))}</a>` : ""}</td>
-      <td class="r">${c.email ? `<a class="tap" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.name)}">✉</a>` : ""}</td>
-    </tr>`;
-  }).join("") || `<tr><td style="color:var(--red);padding:10px 12px">No crew assigned</td></tr>`;
+    return `<div class="cr">
+      <div class="n">${esc(c.name)}${c.role ? `<span class="role">${esc(c.role)}</span>` : ""}${c.name.includes(ME) ? '<span class="tag you">YOU</span>' : ""}</div>
+      <div class="dts">${esc(fmtStints(c))}</div>
+      <div class="st ${cls}">${esc(c.status)}</div>
+      <div class="act">${c.phone ? `<a class="tap" href="${telHref(c.phone)}" aria-label="Call ${esc(c.name)}">${esc(fmtPhone(c.phone))}</a>` : ""}${c.email ? `<a class="tap" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.name)}">${ic("mail")}</a>` : ""}</div>
+      <div class="x">${esc(extra)}</div>
+    </div>`;
+  }).join("") || `<div class="pad" style="color:var(--red)">No crew assigned</div>`;
 
   // ── Granola meeting notes (newest first) ──
   const mtgs = (s.meetings || []).slice().sort((a, b) => (parseDate(b.date) || 0) - (parseDate(a.date) || 0));
@@ -908,14 +1113,14 @@ function renderDetail() {
   const mtgRows = mtgs.map((m, i) => {
     const ai = (m.actionItems || []).length
       ? `<div class="ai"><div class="h">Action items</div><ul>${m.actionItems.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
-    const flags = (m.dateFlags || []).map(fl => `<div class="dflag">⚠ ${esc(fl.text)}</div>`).join("");
+    const flags = (m.dateFlags || []).map(fl => `<div class="dflag">${esc(fl.text)}</div>`).join("");
     const tagCls = m.matchType === "show-specific" ? "spec" : "ment";
     const tagTxt = m.matchType === "show-specific" ? "THIS SHOW" : "MENTIONED";
     return `<div class="mtg" data-mtg="${i}">
       <div class="hd" tabindex="0" role="button">
         <span class="mtag ${tagCls}">${tagTxt}</span>
         <span class="ttl">${esc(m.title)}</span>
-        ${(m.dateFlags || []).length ? '<span class="flagdot" title="date conflict">⚑</span>' : ""}
+        ${(m.dateFlags || []).length ? `<span class="flagdot" title="date conflict">${ic("flag")}</span>` : ""}
         <span class="dt mono">${m.date ? fmtD(parseDate(m.date)) : ""}</span>
       </div>
       <div class="body">
@@ -926,9 +1131,9 @@ function renderDetail() {
     </div>`;
   }).join("");
   const mtgBox = `
-    <div class="box" style="margin-bottom:14px">
-      <h3>🗒 Meeting Notes <span class="r">${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${mtgFlagsTotal ? ` · <span style="color:var(--amber)">⚑ ${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${NOTES.generatedAt ? ` · synced ${esc(fmtD(parseDate(NOTES.generatedAt)))}` : ""}</span></h3>
-      ${mtgs.length ? mtgRows : '<div class="pad" style="color:var(--dim)">No call notes matched to this show yet. The 7 AM sync pulls from Granola.</div>'}
+    <div class="box gap">
+      <h3>${ic("note")} Meeting notes <span class="r">${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${mtgFlagsTotal ? ` · <span style="color:var(--amber)">${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${NOTES.generatedAt ? ` · synced ${esc(fmtD(parseDate(NOTES.generatedAt)))}` : ""}</span></h3>
+      ${mtgs.length ? mtgRows : '<div class="pad dimtxt">No call notes matched to this show yet. The notes sync pulls from Granola.</div>'}
     </div>`;
 
   const gmailQ = encodeURIComponent('"' + (s.quote || s.title) + '"');
@@ -944,15 +1149,15 @@ function renderDetail() {
      </div>`).join("");
 
   const linkBtns = Object.entries(s.links).filter(([, u]) => u)
-    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} ↗</a>`).join("")
-    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable ↗</a>`
-    + `<button id="icsBtn">📅 Add to Calendar</button>`;
+    .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} <span class="arr">↗</span></a>`).join("")
+    + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable <span class="arr">↗</span></a>`
+    + `<button id="icsBtn">${ic("cal")} Add to Calendar</button>`;
 
   const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
 
   const notesBox = `
-    <div class="box" style="margin-bottom:14px">
-      <h3>Notes <span class="r"><button id="notesEditBtn">✎ Edit</button></span></h3>
+    <div class="box gap">
+      <h3>${ic("edit")} PM notes <span class="r"><button id="notesEditBtn">Edit</button></span></h3>
       <div class="pad" id="notesView">${s.pmNotes ? esc(s.pmNotes) : '<span style="color:var(--dim)">No PM notes — tap Edit to add.</span>'}</div>
       <div id="notesEdit">
         <textarea id="notesTa"></textarea>
@@ -965,52 +1170,58 @@ function renderDetail() {
       ${s.clientNotes ? `<div class="pad" style="white-space:pre-wrap;color:var(--dim);border-top:1px dashed var(--line)"><b style="color:var(--text)">Client:</b> ${esc(s.clientNotes)}</div>` : ""}
     </div>`;
 
+  const st = stateOf(s);
   el.innerHTML = `
     <div class="dhead">
       <h2>${esc(s.title)}</h2>
       <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
-      ${stateOf(s) === "live" ? '<span class="tag live">LIVE</span>' : ""}
-      ${stateOf(s) === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
+      ${st === "live" ? '<span class="tag live">LIVE</span>' : ""}
+      ${st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
+      ${st === "upcoming" ? `<span class="tag done">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
     </div>
     <div class="dsub mono">
       ${s.quote ? `<span>Quote #${esc(s.quote)}</span>` : ""}
       ${s.booth ? `<span>Booth ${esc(s.booth)}</span>` : ""}
       ${s.status ? `<span style="color:${s.status === "Confirmed" ? "var(--green)" : "var(--amber)"}">${esc(s.status)}</span>` : ""}
       ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.cityState ? " · " + esc(s.cityState) : ""}</span>` : ""}
-      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a class="tap" href="${telHref(s.am.phone)}">${esc(fmtPhone(s.am.phone))}</a>` : ""}${s.am.email ? ` · <a class="tap" href="mailto:${esc(s.am.email)}">✉</a>` : ""}</span>` : ""}
+      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a class="tap" href="${telHref(s.am.phone)}">${esc(fmtPhone(s.am.phone))}</a>` : ""}${s.am.email ? ` · <a class="tap" href="mailto:${esc(s.am.email)}" aria-label="Email ${esc(s.am.name)}">${ic("mail")}</a>` : ""}</span>` : ""}
     </div>
-
-    ${riskBar}
-    ${shipBar}
 
     <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
     <div id="wx"></div>
 
     <div class="linkbar">${linkBtns}</div>
 
+    <div class="box gap" id="radarBox">${showRadarHtml(s)}</div>
+
     ${notesBox}
 
     <div class="cols">
       <div class="box">
-        <h3>Crew <span class="r">${s.crew.length}</span></h3>
-        <table class="grid">${crewRows}</table>
+        <h3>${ic("crew")} Crew <span class="r">${s.crew.length}</span></h3>
+        ${crewRows}
       </div>
       <div class="box">
-        <h3>Emails <span class="r">${s.mailTotal} total${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + agoTxt(s.mailMeta[0].date) : ""}</span></h3>
-        <div id="mailList">${mailRows || '<div class="pad" style="color:var(--dim)">No emails linked in Airtable</div>'}</div>
+        <h3>${ic("mail")} Emails <span class="r">${s.mailTotal} total${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + agoTxt(s.mailMeta[0].date) : ""}</span></h3>
+        <div id="mailList">${mailRows || '<div class="pad dimtxt">No emails linked in Airtable</div>'}</div>
         <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>
       </div>
     </div>
 
+    <div class="box gap" id="tasksBox">
+      <h3 class="tgl collapsed" id="tasksHead" role="button" tabindex="0" aria-expanded="false">${ic("list")} My tasks <span class="r"><span id="tasksSum">${tasksSummary(s)}</span><span class="chev">▾</span></span></h3>
+      <div id="tasksBody" hidden></div>
+    </div>
+
     ${mtgBox}
 
-    <div class="box" style="margin-bottom:14px">
-      <h3>Files <span class="r">
-        <span id="fileMsg" style="margin-right:10px"></span>
-        <button id="uploadBtn">⬆ Upload</button>
+    <div class="box gap">
+      <h3>${ic("file")} Files <span class="r">
+        <span id="fileMsg"></span>
+        <button id="uploadBtn">${ic("up")} Upload</button>
         <input id="fileInput" type="file" multiple style="display:none">
       </span></h3>
-      <div id="filesList"><div class="pad" style="color:var(--dim)">Loading files…</div></div>
+      <div id="filesList"><div class="pad dimtxt">Loading files…</div></div>
     </div>`;
 
   el.querySelectorAll(".mail .hd").forEach(hd => {
@@ -1019,15 +1230,784 @@ function renderDetail() {
     hd.addEventListener("keydown", e => { if (e.key === "Enter") open(); });
   });
   el.querySelectorAll(".mtg .hd").forEach(hd => {
-    const t = () => hd.parentElement.classList.toggle("open");
-    hd.addEventListener("click", t);
-    hd.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); t(); } });
+    const tg = () => hd.parentElement.classList.toggle("open");
+    hd.addEventListener("click", tg);
+    hd.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tg(); } });
   });
   markMtgSeen(s);
+  wireCatches(document.getElementById("radarBox"));
+  setupTasks(s);
   document.getElementById("icsBtn").addEventListener("click", () => downloadIcs(s));
   setupNotes(s);
   loadWeather(s);
   setupFiles(s);
+}
+
+// ════════════════════════════════════════════════
+// RADAR — cross-source checks, computed live on every load
+//   Reads only. Sources: Events (RentalWorks sync fields), EventPositions
+//   (this show + every other show the same crew is on), Tasks, Zapier Emails,
+//   Granola notes (worker KV), and analyst catches (worker KV /radar).
+// ════════════════════════════════════════════════
+const TASKS_TBL = "tbl5RQ4eWcGKrwNDR";
+const RADAR_EVENT_FIELDS = ["Event Type","LoadIn Check","LoadOut Check","ShipDate Check",
+  "RWSynced LoadInDate","RWSynced LoadOutDate","RWSynced ShipDate","RWSynced Status",
+  "Drawing Needed","Drawing Status","loadCalcsNeeded","Rigging Needed","Infodoc Email Sent"];
+const XPOS_FIELDS = ["Name (from Crew)","Status","Timeline Start","Timeline End","Name (from Event)","Event Type (from Event)","id (from Event)"];
+const TASK_META_FIELDS = ["Name","Due Date","Due Status","Task Status","id (from Events)","Catagory (from Task Templates)"];
+const TASK_FULL_FIELDS = TASK_META_FIELDS.concat(["Display Order (from Task Templates)"]);
+const TASK_CATS = { rechEuafECj32ks0I: "Pre-show", recU899JCkjcTgPbc: "During show", rec0d87nt85oP25AL: "Post-show" };
+const TASK_CAT_ORDER = ["rechEuafECj32ks0I", "recU899JCkjcTgPbc", "rec0d87nt85oP25AL"];
+const TASK_STATUSES = ["Not Started", "In Process", "Done", "Not Needed"];
+
+let RADAR = { t: 0, loading: false, errs: [], extra: {}, tasks: [], xpos: [], analyst: [], catches: [] };
+let _ack = {};
+try { _ack = JSON.parse(localStorage.getItem("radar_ack") || "{}") || {}; } catch (e) { _ack = {}; }
+const taskCache = {};      // eventId -> [task rows] (full list, lazy-loaded when the panel opens)
+const tasksOpen = {};      // eventId -> panel expanded this session
+const foldOpen = {};       // fold-out id -> open (so acknowledging one item doesn't snap the list shut)
+const fold = (id, label, inner, defOpen) => {
+  const open = id in foldOpen ? foldOpen[id] : !!defOpen;
+  return `<details class="ackd" data-fold="${id}"${open ? " open" : ""}><summary>${label}</summary>${inner}</details>`;
+};
+
+const isAcked = c => !!_ack[c.key];
+const openCatches = () => RADAR.catches.filter(c => !isAcked(c));
+const catchesFor = id => RADAR.catches.filter(c => c.showId === id);
+function sevOf(id) {
+  let m = 0, n = 0;
+  RADAR.catches.forEach(c => { if (c.showId === id && !isAcked(c) && c.sev >= 2) { n++; if (c.sev > m) m = c.sev; } });
+  return { m, n };
+}
+function toggleAck(key) {
+  if (_ack[key]) delete _ack[key]; else _ack[key] = Date.now();
+  // forget acknowledgements for catches that no longer exist (keeps the store small)
+  const live = new Set(RADAR.catches.map(c => c.key));
+  if (RADAR.t && !RADAR.loading) Object.keys(_ack).forEach(k => { if (!live.has(k) && Date.now() - _ack[k] > 30 * 86400000) delete _ack[k]; });
+  try { localStorage.setItem("radar_ack", JSON.stringify(_ack)); } catch (e) {}
+}
+function saveRadarCache() {
+  try {
+    localStorage.setItem("dash_radar", JSON.stringify({ t: RADAR.t, extra: RADAR.extra, tasks: RADAR.tasks, xpos: RADAR.xpos, analyst: RADAR.analyst }));
+  } catch (e) {}
+}
+
+function taskRow(r, eid) {
+  const f = r.fields;
+  return {
+    id: r.id,
+    eid: eid || first(f["id (from Events)"]) || "",
+    name: String(first(f["Name"]) || "Untitled").trim(),
+    due: f["Due Date"] || "",
+    ds: f["Due Status"] === "Past Due" ? "P" : (f["Due Status"] ? "W" : ""),
+    status: f["Task Status"] || "Not Started",
+    cat: first(f["Catagory (from Task Templates)"]) || "",
+    order: +first(f["Display Order (from Task Templates)"]) || 0
+  };
+}
+const taskIsOpen = r => r.status !== "Done" && r.status !== "Not Needed";
+
+// ── Load: four independent reads; any one failing leaves the rest working ──
+async function loadRadar(events, positions) {
+  RADAR.loading = true;
+  const errs = [];
+  const t = today0();
+  const ids = events.map(e => e.id);
+  const guard = (label, p) => p.catch(e => { if (!(e && e.auth)) errs.push(label); });
+  const jobs = [];
+
+  if (ids.length) {
+    jobs.push(guard("RentalWorks sync fields", api(EVENTS_TBL, {
+      filterByFormula: "OR(" + ids.map(id => `RECORD_ID()='${id}'`).join(",") + ")",
+      "fields[]": RADAR_EVENT_FIELDS
+    }).then(recs => { const m = {}; recs.forEach(r => { m[r.id] = r.fields; }); RADAR.extra = m; })));
+
+    const evOr = "OR(" + ids.map(id => `FIND('${id}',ARRAYJOIN({id (from Events)}))`).join(",") + ")";
+    jobs.push(guard("tasks", api(TASKS_TBL, {
+      filterByFormula: `AND({Due Status}!='',{Task Status}!='Done',{Task Status}!='Not Needed',FIND('${ME}',{Assignee}&''),${evOr})`,
+      "fields[]": TASK_META_FIELDS, pageSize: 100
+    }).then(recs => { RADAR.tasks = recs.map(r => taskRow(r)); })));
+
+    // Everyone on my still-running shows → every other booking they hold, from today on.
+    const liveIds = new Set(events.filter(e => { const d = parseDate(e.fields["Timeline End"]); return !d || d >= t; }).map(e => e.id));
+    const names = [...new Set(positions
+      .filter(p => [].concat(p.fields["id (from Event)"] || []).some(id => liveIds.has(id)))
+      .filter(p => first(p.fields["Short Name (from Roles)"]) !== "Staff")
+      .map(p => first(p.fields["Name (from Crew)"])).filter(Boolean))];
+    if (names.length) {
+      jobs.push(guard("cross-show bookings", api(POS_TBL, {
+        filterByFormula: `AND(IS_AFTER({Timeline End},DATEADD(TODAY(),-1,'days')),OR(${names.map(n => `{Name (from Crew)}='${fq(n)}'`).join(",")}))`,
+        "fields[]": XPOS_FIELDS, pageSize: 100
+      }).then(recs => {
+        const seen = new Set();
+        RADAR.xpos = recs.map(r => {
+          const f = r.fields;
+          return { name: first(f["Name (from Crew)"]) || "", status: String(f["Status"] || "").trim(),
+            a: f["Timeline Start"] || "", b: f["Timeline End"] || "",
+            ev: String(first(f["Name (from Event)"]) || "").trim(), type: first(f["Event Type (from Event)"]) || "", eid: first(f["id (from Event)"]) || "" };
+        }).filter(x => { const k = [x.name, x.eid, x.a, x.b, x.status].join("|"); if (seen.has(k)) return false; seen.add(k); return x.a && x.b; });
+      })));
+    } else RADAR.xpos = [];
+  }
+
+  // Analyst catches (judgement calls a scheduled Claude run writes to worker KV). Optional layer — silent if absent.
+  jobs.push(fetch(`${WORKER}/radar?key=${encodeURIComponent(pin())}`)
+    .then(r => r.ok ? r.json() : null)
+    .then(d => { if (d && Array.isArray(d.items)) RADAR.analyst = d.items; })
+    .catch(() => {}));
+
+  await Promise.all(jobs);
+  RADAR.loading = false; RADAR.errs = errs; RADAR.t = Date.now();
+  saveRadarCache();
+  computeRadar();
+  refreshRadarViews();
+}
+
+// Radar data arrived or changed: repaint without disturbing whatever the user has open.
+function refreshRadarViews() {
+  renderList(); renderStats();
+  if (selectedId === "radar") { renderDetail(); return; }
+  const s = SHOWS.find(x => x.id === selectedId);
+  if (s) refreshShowRadar(s);
+}
+function refreshShowRadar(s) {
+  const rb = document.getElementById("radarBox");
+  if (rb) { rb.innerHTML = showRadarHtml(s); wireCatches(rb); }
+  const ts = document.getElementById("tasksSum");
+  if (ts) ts.innerHTML = tasksSummary(s);
+}
+
+// Everywhere I'm booked or blocked out, from EventPositions (falls back to this page's shows until that loads).
+function myWhere() {
+  const out = [];
+  const mine = RADAR.xpos.filter(x => x.name.includes(ME) && !/cancel/i.test(x.type) && !/^(empty|not confirmed)$/i.test(x.status));
+  if (mine.length) {
+    mine.forEach(x => {
+      const A = parseDate(x.a), B = parseDate(x.b);
+      if (!A || !B) return;
+      const sh = SHOWS.find(s => s.id === x.eid);
+      const away = /away/i.test(x.status);
+      out.push({ A, B, away, tentative: /pencil/i.test(x.status), eid: x.eid,
+        label: away ? "Away" : (sh ? (sh.city || shortTitle(sh.title)) : shortTitle(x.ev)) });
+    });
+  } else {
+    SHOWS.forEach(s => s.crew.filter(c => c.name.includes(ME)).forEach(c => c.stints.forEach(sn => {
+      if (sn.a && sn.b) out.push({ A: sn.a, B: sn.b, away: false, tentative: false, eid: s.id, label: s.city || shortTitle(s.title) });
+    })));
+  }
+  return out.sort((a, b) => a.A - b.A);
+}
+
+// ── The rule engine ──
+// sev 3 = needs action · 2 = watch · 1 = FYI.  `key` is stable for a given fact, so an
+// acknowledgement sticks until the underlying values change — then the catch comes back.
+function computeRadar() {
+  const out = [];
+  const t = today0();
+  const add = (s, o) => { o.showId = s ? s.id : null; o.show = s ? shortTitle(s.title) : ""; out.push(o); };
+  const xp = RADAR.xpos.map(x => Object.assign({}, x, { A: parseDate(x.a), B: parseDate(x.b) })).filter(x => x.A && x.B);
+  const away = myWhere().filter(w => w.away && w.B >= t);
+
+  SHOWS.forEach(s => {
+    if (isArchived(s)) return;
+    const st = stateOf(s);
+    const hasX = !!RADAR.extra[s.id];
+    const x = RADAR.extra[s.id] || {};
+    const myTasks = RADAR.tasks.filter(k => k.eid === s.id);
+
+    if (st === "done") {
+      if (myTasks.length) add(s, { key: `wrap|${s.id}|${myTasks.length}`, sev: 1, cat: "Tasks",
+        title: `Wrap-up: ${myTasks.length} task${myTasks.length === 1 ? "" : "s"} still open`,
+        detail: `Show wrapped ${agoTxt(s.tlEnd)}. Close them out or mark them Not Needed.`, src: "Airtable · Tasks", when: null });
+      return;
+    }
+
+    const dl = deadlineOf(s);
+    const D = dl.d ? daysFromToday(dl.d) : null;
+    const within = n => st === "live" || (D !== null && D <= n);
+    const confirmed = s.crew.filter(c => /confirm/i.test(c.status) && !/not conf/i.test(c.status));
+
+    // 1 · Booth ship is the real deadline
+    if (dl.ship && st !== "live" && D !== null && D <= URGENT_DAYS) {
+      const li = s.dates["Load In"];
+      add(s, { key: `ship|${s.id}|${+dl.d}`, sev: D <= 2 ? 3 : 2, cat: "Dates",
+        title: `Booth ships ${D === 0 ? "today" : D === 1 ? "tomorrow" : "in " + D + " days"} (${fmtD(dl.d)})`,
+        detail: li ? `${dd(li, dl.d)} day${dd(li, dl.d) === 1 ? "" : "s"} ahead of load-in. Anything not on the truck ships late.` : "",
+        src: "Airtable · Events · Booth Ship Date", when: dl.d });
+    }
+
+    // 2 · Airtable vs RentalWorks dates
+    [["LoadIn Check", "Load In", "RWSynced LoadInDate", "Load-in"],
+     ["LoadOut Check", "Load Out", "RWSynced LoadOutDate", "Load-out"],
+     ["ShipDate Check", "Booth Ship", "RWSynced ShipDate", "Ship"]].forEach(([chk, dk, rwk, label]) => {
+      if (!/mismatch/i.test(String(x[chk] || ""))) return;
+      const at = s.dates[dk], rw = parseDate(x[rwk]);
+      if (!at || !rw || sameDay(at, rw)) return;
+      const early = at < rw ? at : rw, late = at < rw ? rw : at;
+      if (late < t) return;                                   // both in the past — moot
+      const gap = dd(late, early);
+      add(s, { key: `rw|${s.id}|${chk}|${+at}|${+rw}`, sev: daysFromToday(early) <= 7 ? 3 : 2, cat: "Dates",
+        title: `${label}: Airtable says ${fmtD(at)}, RentalWorks says ${fmtD(rw)}`,
+        detail: `${gap} day${gap === 1 ? "" : "s"} apart. Confirm which one the truck and crew are working to.`,
+        src: `Airtable · Events · ${chk}`, when: early });
+    });
+
+    // 3 · Crew not locked
+    if (!s.crew.length) {
+      if (within(30)) add(s, { key: `nocrew|${s.id}`, sev: within(URGENT_DAYS) ? 3 : 2, cat: "Crew",
+        title: "No crew assigned", detail: countdownTxt(s) + ".", src: "Airtable · EventPositions", when: dl.d });
+    } else {
+      const pen = s.crew.filter(c => /pencil/i.test(c.status));
+      const nc = s.crew.filter(c => /not conf/i.test(c.status));
+      const emp = s.crew.filter(c => /^empty$/i.test(c.status));
+      const parts = [];
+      if (pen.length) parts.push(`${pen.length} pencilled`);
+      if (nc.length) parts.push(`${nc.length} not confirmed`);
+      if (emp.length) parts.push(`${emp.length} marked Empty`);
+      if (parts.length) add(s, { key: `crewstat|${s.id}|${pen.length}|${nc.length}|${emp.length}`,
+        sev: within(URGENT_DAYS) ? 3 : within(30) ? 2 : 1, cat: "Crew",
+        title: cap(parts.join(" · ")),
+        detail: listNames(pen.concat(nc, emp).map(c => nick(c.raw))) + ". " + cap(countdownTxt(s)) + ".",
+        src: "Airtable · EventPositions · Status", when: dl.d });
+    }
+
+    // 4 · Crew booked somewhere else at the same time (people sharing the same clash become one catch)
+    const clash = new Map();
+    s.crew.forEach(c => {
+      if (c.staff || /^(empty|away)$/i.test(c.status)) return;
+      const others = xp.filter(o => o.name === c.raw && o.eid !== s.id && !/cancel/i.test(o.type) && !/^empty$/i.test(o.status));
+      c.stints.forEach(sn => {
+        if (!sn.a || !sn.b || sn.b < t) return;
+        others.forEach(o => {
+          const lo = sn.a > o.A ? sn.a : o.A, hi = sn.b < o.B ? sn.b : o.B;
+          const od = dd(hi, lo) + 1;
+          if (od < 1) return;
+          const sib = SHOWS.find(z => z.id === o.eid);
+          if (sib && !isArchived(sib) && stateOf(sib) !== "done") {
+            // both shows are mine: report once, on the later-starting side (where it bites)
+            if (o.A > sn.a || (sameDay(o.A, sn.a) && o.eid < s.id)) return;
+          }
+          const oAway = /away/i.test(o.status);
+          const tentative = !(oAway || /^confirmed$/i.test(o.status)) || !/confirm/i.test(c.status) || /not conf/i.test(c.status);
+          const turnaround = od === 1 && (sameDay(o.B, sn.a) || sameDay(o.A, sn.b));
+          const gk = [turnaround ? "t" : "o", o.eid || "solo:" + c.raw, o.a, o.b, o.status, +lo, +hi, tentative ? 1 : 0].join("|");
+          let g = clash.get(gk);
+          if (!g) { g = { o, lo, hi, od, oAway, tentative, turnaround, before: sameDay(o.B, sn.a), raws: [] }; clash.set(gk, g); }
+          if (!g.raws.includes(c.raw)) g.raws.push(c.raw);
+        });
+      });
+    });
+    clash.forEach(g => {
+      const o = g.o, names = g.raws.map(nick);
+      const who = cap(listNames(names));
+      const isAre = names.length > 1 || names[0] === "You" ? "are" : "is";
+      const oName = g.oAway && !o.ev ? "time off" : g.oAway ? o.ev : shortTitle(o.ev);
+      const dStart = daysFromToday(g.lo);
+      const key = `x|${s.id}|${g.raws.slice().sort().join("+")}|${o.eid || "away"}|${o.a}|${o.b}|${o.status}`;
+      const src = "Airtable · EventPositions across shows";
+      if (g.turnaround) {
+        add(s, { key, sev: dStart <= 14 ? 2 : 1, cat: "Crew",
+          title: `${who}: same-day turnaround on ${fmtD(g.lo)}`,
+          detail: g.oAway
+            ? (g.before ? `Away ${fmtRange(o.A, o.B)} ends the day this stint starts.` : `Away ${fmtRange(o.A, o.B)} starts the day this stint ends.`)
+            : (g.before ? `Off ${oName} (${fmtRange(o.A, o.B)}) the same day this stint starts.` : `On to ${oName} (${fmtRange(o.A, o.B)}) the same day this stint ends.`),
+          src, when: g.lo });
+      } else {
+        add(s, { key, sev: g.tentative ? (dStart <= 30 ? 2 : 1) : (dStart <= 21 ? 3 : 2), cat: "Crew",
+          title: g.oAway ? `${who} ${isAre} away ${fmtRange(g.lo, g.hi)}, during this show`
+                         : `${who} ${isAre} double-booked ${fmtRange(g.lo, g.hi)}`,
+          detail: g.oAway ? `Blocked out ${fmtRange(o.A, o.B)}${o.ev ? " (" + o.ev + ")" : ""}. ${g.od} day${g.od === 1 ? "" : "s"} overlap this stint.`
+                          : `${o.status || "Unconfirmed"} on ${oName}, ${fmtRange(o.A, o.B)}. ${g.od} day${g.od === 1 ? "" : "s"} overlap.`,
+          src, when: g.lo });
+      }
+    });
+
+    // 5 · Milestones that land while I'm away
+    away.forEach(a => {
+      const hits = [];
+      const firstD = [s.dates["Travel In"], s.dates["Load In"]].filter(Boolean).sort((p, q) => p - q)[0];
+      if (s.tlStart && firstD && s.tlStart < firstD && s.tlStart >= a.A && s.tlStart <= a.B && s.tlStart >= t) hits.push(["prep start", s.tlStart]);
+      [["Booth Ship", "ship"], ["Travel In", "crew travel-in"], ["Load In", "load-in"], ["Show Start", "show open"], ["Load Out", "load-out"]].forEach(([k, l]) => {
+        const d = s.dates[k];
+        if (d && d >= a.A && d <= a.B && d >= t) hits.push([l, d]);
+      });
+      if (!hits.length) return;
+      const otherPm = s.crew.find(c => c.role === "PM" && !c.name.includes(ME) && /confirm/i.test(c.status));
+      add(s, { key: `away|${s.id}|${+a.A}|${+a.B}|${hits.map(h => h[0]).join(",")}`, sev: otherPm ? 2 : 3, cat: "Coverage",
+        title: `${cap(listNames(hits.map(h => h[0])))} land${hits.length === 1 ? "s" : ""} while you're away`,
+        detail: `You're out ${fmtRange(a.A, a.B)}. ` + hits.map(h => `${cap(h[0])} ${fmtD(h[1])}`).join(" · ") + ". " +
+          (otherPm ? `${nick(otherPm.raw)} is PM on this one.` : "No other PM is on the crew list."),
+        src: "Airtable · EventPositions (Away) + Events dates", when: hits[0][1] });
+    });
+
+    // 6 · Travel not recorded
+    if (hasX && x["Event Type"] === "Travelling Labor" && st !== "live") {
+      const tin = s.dates["Travel In"] || s.tlStart;
+      const dT = tin ? daysFromToday(tin) : null;
+      if (dT !== null && dT <= 14) {
+        const missing = confirmed.filter(c => !c.staff && !c.travelInfo);
+        if (missing.length) add(s, { key: `travel|${s.id}|${missing.map(c => c.raw).join(",")}`, sev: dT <= URGENT_DAYS ? 3 : 2, cat: "Travel",
+          title: `No flight or hotel note for ${listNames(missing.map(c => nick(c.raw)))}`,
+          detail: `Crew starts ${fmtD(tin)} (${dueTxt(tin)}). ${confirmed.filter(c => !c.staff).length - missing.length} of ${confirmed.filter(c => !c.staff).length} have a booking note.`,
+          src: "Airtable · EventPositions · Flight/Hotel Info", when: tin });
+      }
+      const noPrep = s.crew.filter(c => /no prep booked/i.test(c.travelInfo));
+      if (noPrep.length && dT !== null && dT <= 21) add(s, { key: `noprep|${s.id}|${noPrep.map(c => c.raw).join(",")}`, sev: 2, cat: "Travel",
+        title: `Booking notes read "NO prep booked" for ${listNames(noPrep.map(c => nick(c.raw)))}`,
+        detail: `Their stints start ${fmtD(noPrep[0].stints[0] && noPrep[0].stints[0].a)}. Confirm prep lodging is covered or not needed.`,
+        src: "Airtable · EventPositions · Flight/Hotel Info", when: tin });
+    }
+
+    // 7 · Record hygiene that turns into real problems
+    if (s.status && !/confirm/i.test(s.status) && confirmed.length) add(s, { key: `status|${s.id}|${s.status}|${confirmed.length}`,
+      sev: within(45) ? 2 : 1, cat: "Record",
+      title: `Still ${s.status} with ${confirmed.length} crew confirmed`,
+      detail: "People are committed against a show that isn't confirmed in Airtable.", src: "Airtable · Events · Status", when: dl.d });
+    if (!s.booth && st !== "live") add(s, { key: `booth|${s.id}`, sev: within(14) ? 2 : 1, cat: "Record",
+      title: "No booth number on the record", detail: "Labels, the InfoDoc and the freight paperwork all key off it.", src: "Airtable · Events · Booth Number", when: null });
+    if (s.dates["Show Start"] && s.dates["Load In"] && sameDay(s.dates["Show Start"], s.dates["Load In"])) add(s, {
+      key: `samestart|${s.id}|${+s.dates["Load In"]}`, sev: within(30) ? 2 : 1, cat: "Dates",
+      title: `Show Start and Load-in are both ${fmtD(s.dates["Load In"])}`,
+      detail: "One of them is probably wrong in the Event Schedule.", src: "Airtable · Event Schedule", when: s.dates["Load In"] });
+    if (hasX && x["Drawing Needed"] && !/^done$/i.test(String(x["Drawing Status"] || ""))) add(s, {
+      key: `drawing|${s.id}|${x["Drawing Status"] || ""}`, sev: within(21) ? 2 : 1, cat: "Drawings",
+      title: `Drawing ${String(x["Drawing Status"] || "not started").toLowerCase()}`,
+      detail: cap(countdownTxt(s)) + "." + (x["loadCalcsNeeded"] ? " Load calcs are also required." : ""),
+      src: "Airtable · Events · Drawing Status", when: dl.d });
+    if (hasX && !x["Infodoc Email Sent"] && st !== "live") {
+      const tin = s.dates["Travel In"] || s.tlStart;
+      if (tin && daysFromToday(tin) <= 10) add(s, { key: `infodoc|${s.id}`, sev: daysFromToday(tin) <= URGENT_DAYS ? 3 : 2, cat: "Comms",
+        title: "InfoDoc email not sent", detail: `Crew travels ${fmtD(tin)} (${dueTxt(tin)}).`, src: "Airtable · Events · Infodoc Email Sent", when: tin });
+    }
+    if (st !== "live" && D !== null && D <= 21 && s.mailTotal >= 3) {
+      const last = s.mailMeta[0] && s.mailMeta[0].date;
+      const quiet = last ? -daysFromToday(last) : null;
+      if (quiet !== null && quiet > 10) add(s, { key: `quiet|${s.id}|${+last}`, sev: 1, cat: "Comms",
+        title: `No logged email in ${quiet} days`,
+        detail: "Only threads that include the integrations address reach Airtable, so this can be a capture gap rather than silence.",
+        src: "Airtable · Zapier Emails", when: null });
+    }
+
+    // 8 · Tasks
+    const past = myTasks.filter(k => k.ds === "P"), week = myTasks.filter(k => k.ds === "W");
+    if (past.length || week.length) {
+      const allConf = s.crew.length && s.crew.every(c => c.staff || (/confirm/i.test(c.status) && !/not conf/i.test(c.status)));
+      const allTravel = s.crew.length && s.crew.filter(c => !c.staff).every(c => c.travelInfo);
+      const hints = myTasks.filter(k => (/traveling crew/i.test(k.name) && allConf) || (/travel is booked/i.test(k.name) && allTravel));
+      const bits = [];
+      if (past.length) bits.push(`${past.length} past due`);
+      if (week.length) bits.push(`${week.length} due this week`);
+      const oldest = past.slice().sort((a, b) => (parseDate(a.due) || 0) - (parseDate(b.due) || 0))[0];
+      add(s, { key: `tasks|${s.id}|${past.length}|${week.length}`, sev: past.length && within(14) ? 2 : 1, cat: "Tasks",
+        title: `Tasks: ${bits.join(" · ")}`,
+        detail: (hints.length ? `${hints.length} look${hints.length === 1 ? "s" : ""} done already (${hints.map(h => `"${h.name}"`).join(", ")}): the crew records agree. ` : "") +
+          (oldest ? `Oldest: "${oldest.name}", due ${fmtD(parseDate(oldest.due))}.` : ""),
+        src: "Airtable · Tasks assigned to you", when: null });
+    }
+
+    // 9 · What was said on a call vs what Airtable says (from the Granola sync)
+    (s.meetings || []).forEach(m => (m.dateFlags || []).forEach(fl => {
+      const txt = String(fl.text || "");
+      const mm = txt.match(/^Call \(([^)]+)\):\s*([\s\S]*?\.)\s+([\s\S]*)$/);
+      add(s, { key: `call|${s.id}|${m.id || m.title}|${txt.slice(0, 48)}`, sev: 2, cat: "Calls",
+        title: mm ? `On the ${mm[1]} call: ${mm[2].replace(/\.$/, "")}` : txt.slice(0, 110),
+        detail: mm ? mm[3] : "", src: `Granola · ${m.title}${m.date ? " · " + fmtD(parseDate(m.date)) : ""}`, when: null });
+    }));
+  });
+
+  // 10 · Analyst catches
+  (RADAR.analyst || []).forEach(a => {
+    if (!a || !a.title) return;
+    const exp = a.expires ? parseDate(a.expires) : null;
+    if (exp && exp < t) return;
+    const s = a.showId ? SHOWS.find(z => z.id === a.showId) : null;
+    if (a.showId && (!s || isArchived(s) || stateOf(s) === "done")) return;
+    const o = { key: `an|${a.id || a.title}`, sev: Math.max(1, Math.min(3, +a.sev || 2)), cat: "Analyst",
+      title: String(a.title), detail: String(a.detail || ""), src: String(a.src || "Claude scan"), when: a.when ? parseDate(a.when) : null };
+    o.showId = s ? s.id : null; o.show = s ? shortTitle(s.title) : "";
+    out.push(o);
+  });
+
+  out.sort((a, b) => (b.sev - a.sev) || ((a.when ? +a.when : 9e15) - (b.when ? +b.when : 9e15)));
+  RADAR.catches = out;
+  return out;
+}
+
+// ── Catch rendering ──
+function catchRow(c, withShow) {
+  const go = withShow && c.showId ? ` data-go="${c.showId}" tabindex="0" role="button"` : "";
+  const acked = isAcked(c);
+  return `<div class="rc s${c.sev}${acked ? " acked" : ""}"${go}>
+    <span class="pip"></span>
+    <div class="bd">
+      <div class="kx">${withShow && c.show ? `<b>${esc(c.show)}</b> · ` : ""}${esc(c.cat)}</div>
+      <div class="tt">${esc(c.title)}</div>
+      ${c.detail ? `<div class="dd">${esc(c.detail)}</div>` : ""}
+      ${c.src ? `<div class="ss">${esc(c.src)}</div>` : ""}
+    </div>
+    <div class="rt">${c.when ? `<span class="due">${esc(dueTxt(c.when))}</span>` : ""}<button class="ack" data-ack="${esc(c.key)}" title="${acked ? "Put back on Radar" : "Acknowledge: hide until the facts change"}" aria-label="${acked ? "Put back on Radar" : "Acknowledge"}: ${esc(c.title)}">${ic("check")}</button></div>
+  </div>`;
+}
+function wireCatches(root) {
+  if (!root) return;
+  root.querySelectorAll("details[data-fold]").forEach(d => d.addEventListener("toggle", () => { foldOpen[d.dataset.fold] = d.open; }));
+  root.querySelectorAll(".rc .ack").forEach(b => b.addEventListener("click", e => {
+    e.stopPropagation();
+    toggleAck(b.dataset.ack);
+    refreshRadarViews();
+  }));
+  root.querySelectorAll("[data-go]").forEach(el => {
+    const go = () => selectShow(el.dataset.go);
+    el.addEventListener("click", go);
+    el.addEventListener("keydown", e => { if (e.target === el && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); go(); } });
+  });
+}
+
+function preflightHtml(s) {
+  const x = RADAR.extra[s.id];
+  const chips = [];
+  const chip = (label, val, cls) => chips.push(`<span class="pfc ${cls || ""}">${label}<b>${esc(val)}</b></span>`);
+  const real = s.crew.filter(c => !/^(empty|away)$/i.test(c.status));
+  const conf = real.filter(c => /confirm/i.test(c.status) && !/not conf/i.test(c.status)).length;
+  chip("Crew", s.crew.length ? `${conf}/${s.crew.length} confirmed` : "none", !s.crew.length ? "bad" : conf === s.crew.length ? "ok" : "warn");
+  const trav = s.crew.filter(c => !c.staff && !/^(empty|away)$/i.test(c.status));
+  if (trav.length && (!x || x["Event Type"] === "Travelling Labor")) {
+    const noted = trav.filter(c => c.travelInfo).length;
+    chip("Travel notes", `${noted}/${trav.length}`, noted === trav.length ? "ok" : "warn");
+  }
+  chip("Booth", s.booth ? "#" + s.booth : "missing", s.booth ? "" : "warn");
+  if (x) {
+    const mm = ["LoadIn Check", "LoadOut Check", "ShipDate Check"].filter(k => /mismatch/i.test(String(x[k] || ""))).length;
+    chip("RentalWorks", (x["RWSynced Status"] ? String(x["RWSynced Status"]).toLowerCase() + " · " : "") + (mm ? `${mm} date mismatch${mm === 1 ? "" : "es"}` : "dates match"), mm ? "warn" : "ok");
+    chip("InfoDoc", x["Infodoc Email Sent"] ? "sent" : "not sent", x["Infodoc Email Sent"] ? "ok" : "");
+    if (x["Drawing Needed"]) chip("Drawing", String(x["Drawing Status"] || "not started").toLowerCase(), /^done$/i.test(String(x["Drawing Status"] || "")) ? "ok" : "warn");
+    if (x["loadCalcsNeeded"]) chip("Load calcs", "required", "");
+    if (x["Rigging Needed"]) chip("Rigging", "required", "");
+  }
+  chip("AV binder", s.links["AV Binder"] ? "linked" : "no link", s.links["AV Binder"] ? "ok" : "");
+  return `<div class="pf">${chips.join("")}</div>`;
+}
+
+function showRadarHtml(s) {
+  const cs = catchesFor(s.id);
+  const act = cs.filter(c => !isAcked(c)), acked = cs.filter(isAcked);
+  const n3 = act.filter(c => c.sev === 3).length, n2 = act.filter(c => c.sev === 2).length;
+  const sum = (RADAR.loading && !RADAR.t) ? "running checks…"
+    : n3 ? `<span style="color:var(--red)">${n3} need${n3 === 1 ? "s" : ""} action</span>${n2 ? ` · ${n2} to watch` : ""}`
+    : n2 ? `<span style="color:var(--amber)">${n2} to watch</span>`
+    : act.length ? `${act.length} FYI` : `<span style="color:var(--green)">clear</span>`;
+  const main = act.filter(c => c.sev >= 2), fyi = act.filter(c => c.sev < 2);
+  return `<h3>${ic("radar")} Radar <span class="r">${sum}</span></h3>` + preflightHtml(s) +
+    (main.map(c => catchRow(c, false)).join("") || (fyi.length ? "" : `<div class="pad dimtxt">Nothing flagged on this show.</div>`)) +
+    (fyi.length ? fold("s-fyi-" + s.id, `FYI · ${fyi.length}`, fyi.map(c => catchRow(c, false)).join(""), !main.length) : "") +
+    (acked.length ? fold("s-ack-" + s.id, `Acknowledged · ${acked.length}`, acked.map(c => catchRow(c, false)).join(""), false) : "");
+}
+
+// ── Run of show: to-scale strip of every active show plus where I am ──
+function timelineHtml() {
+  const t = today0();
+  const shows = SHOWS.filter(s => !isArchived(s) && stateOf(s) !== "done" && s.tlStart && s.tlEnd);
+  if (!shows.length) return `<div class="pad dimtxt">No active shows.</div>`;
+  const start = new Date(t); start.setDate(start.getDate() - ((start.getDay() + 6) % 7));   // Monday of this week
+  const maxEnd = shows.reduce((m, s) => s.tlEnd > m ? s.tlEnd : m, t);
+  const weeks = Math.min(14, Math.max(6, Math.ceil((dd(maxEnd, start) + 1) / 7)));
+  const span = weeks * 7;
+  const lim = v => Math.max(0, Math.min(100, v));
+  const seg = (a, b) => {
+    const l = lim(dd(a, start) / span * 100), r = lim((dd(b, start) + 1) / span * 100);
+    return r > l ? `left:${l.toFixed(3)}%;width:${(r - l).toFixed(3)}%` : null;
+  };
+  const mid = d => ((dd(d, start) + 0.5) / span * 100);
+  const grid = `background-size:${(100 / weeks).toFixed(4)}% 100%`;
+  const nowLine = `<div class="now" style="left:${mid(t).toFixed(3)}%" title="Today"></div>`;
+
+  let axis = "";
+  for (let w = 0; w < weeks; w++) {
+    const d = new Date(start); d.setDate(d.getDate() + w * 7);
+    axis += `<span style="left:${(w / weeks * 100).toFixed(4)}%">${fmtD(d)}</span>`;
+  }
+
+  const meBars = myWhere().filter(w => w.B >= start).map(w => {
+    const st = seg(w.A, w.B);
+    if (!st) return "";
+    const cls = w.away ? "away" : ("you" + (w.tentative ? " tent" : ""));
+    const go = !w.away && SHOWS.find(s => s.id === w.eid) ? ` data-go="${w.eid}"` : "";
+    return `<div class="bar ${cls}" style="${st}"${go} title="${esc(w.label)} · ${esc(fmtRange(w.A, w.B))}"><span class="bl">${esc(w.label)}</span></div>`;
+  }).join("");
+
+  const rows = shows.map(s => {
+    const st = seg(s.tlStart, s.tlEnd);
+    let core = "";
+    const a = s.dates["Show Start"], b = s.dates["Show End"];
+    if (st && a && b && b >= a) {
+      const total = dd(s.tlEnd, s.tlStart) + 1;
+      const l = lim(dd(a, s.tlStart) / total * 100), r = lim((dd(b, s.tlStart) + 1) / total * 100);
+      if (r > l) core = `<span class="core" style="left:${l.toFixed(2)}%;width:${(r - l).toFixed(2)}%"></span>`;
+    }
+    const ship = s.dates["Booth Ship"];
+    const tick = ship && ship >= start && dd(ship, start) < span ? `<div class="tick" style="left:${mid(ship).toFixed(3)}%" title="Ships ${esc(fmtD(ship))}"></div>` : "";
+    const bar = st ? `<div class="bar ${s.travel ? "travel" : "remote"}" style="${st}" data-go="${s.id}" title="${esc(s.title)} · ${esc(fmtRange(s.tlStart, s.tlEnd))}">${core}</div>` : "";
+    return `<div class="lab" data-go="${s.id}" title="${esc(s.title)}">${esc(shortTitle(s.title))}</div><div class="trk" style="${grid}">${bar}${tick}${nowLine}</div>`;
+  }).join("");
+
+  return `<div class="tl">
+    <div class="lab"></div><div class="ax">${axis}</div>
+    <div class="lab me">You</div><div class="trk me" style="${grid}">${meBars}${nowLine}</div>
+    ${rows}
+  </div>`;
+}
+
+// ── Agenda: every milestone across every show, next N days ──
+function agendaItems(days) {
+  const t = today0();
+  const end = new Date(t); end.setDate(end.getDate() + days - 1);
+  const items = [];
+  const push = (d, kind, label, s, extra) => {
+    if (d && d >= t && d <= end) items.push({ d, kind, label, id: s ? s.id : null, show: s ? shortTitle(s.title) : "", extra: extra || "" });
+  };
+  SHOWS.forEach(s => {
+    if (isArchived(s) || stateOf(s) === "done") return;
+    const D = s.dates;
+    const firstD = [D["Travel In"], D["Load In"]].filter(Boolean).sort((a, b) => a - b)[0];
+    if (s.tlStart && firstD && s.tlStart < firstD) push(s.tlStart, "in", "Prep starts", s);
+    push(D["Booth Ship"], "ship", "Ships", s);
+    push(D["Travel In"], "in", "Travel in", s);
+    push(D["Load In"], "in", "Load-in", s);
+    push(D["Show Start"], "show", "Show opens", s);
+    push(D["Show End"], "show", "Show closes", s);
+    push(D["Load Out"], "out", "Load-out", s);
+    push(D["Travel Out"], "out", "Travel out", s);
+  });
+  myWhere().forEach(w => {
+    if (w.away) { push(w.A, "me", "You", null, "Away through " + fmtD(w.B)); if (!sameDay(w.A, w.B)) push(w.B, "me", "You", null, "Last day away"); }
+    else { const s = SHOWS.find(z => z.id === w.eid); push(w.A, "me", "You join", s || null, s ? "" : w.label); }
+  });
+  const order = { me: 0, ship: 1, in: 2, show: 3, out: 4 };
+  items.sort((a, b) => (a.d - b.d) || (order[a.kind] - order[b.kind]));
+  return items;
+}
+function agendaHtml(days) {
+  const items = agendaItems(days);
+  if (!items.length) return `<div class="pad dimtxt">Nothing scheduled in the next ${days} days.</div>`;
+  const t = today0();
+  const byDay = [];
+  items.forEach(it => {
+    let g = byDay[byDay.length - 1];
+    if (!g || !sameDay(g.d, it.d)) { g = { d: it.d, rows: [] }; byDay.push(g); }
+    // same show, same day → one line ("Show closes · Load-out")
+    const prev = it.id && g.rows.find(r => r.id === it.id && r.kind !== "me" && it.kind !== "me");
+    if (prev) prev.label += " · " + it.label; else g.rows.push(Object.assign({}, it));
+  });
+  return `<div class="ag">` + byDay.map(g => {
+    const n = daysFromToday(g.d);
+    const wd = n === 0 ? "Today" : n === 1 ? "Tomorrow" : g.d.toLocaleDateString("en-US", { weekday: "short" });
+    return `<div class="dy${n === 0 ? " today" : ""}"><b>${wd}</b>${fmtD(g.d)}</div><div class="its">` +
+      g.rows.map(r => `<div class="agi ${r.kind}"${r.id ? ` data-go="${r.id}" tabindex="0" role="button"` : ""}><span class="nm">${esc(r.show || r.extra)}</span><span class="k">${esc(r.label)}</span></div>`).join("") +
+      `</div>`;
+  }).join("") + `</div>`;
+}
+
+// ── Radar home ──
+function renderRadarHome(el) {
+  const t = today0();
+  const open = openCatches(), acked = RADAR.catches.filter(isAcked);
+  const g3 = open.filter(c => c.sev === 3), g2 = open.filter(c => c.sev === 2), g1 = open.filter(c => c.sev === 1);
+  const nActive = SHOWS.filter(s => !isArchived(s) && (!s.tlEnd || s.tlEnd >= t)).length;
+  const sect = (label, cls, arr) => arr.length ? `<div class="rsec ${cls}">${label}<span>${arr.length}</span></div>` + arr.map(c => catchRow(c, true)).join("") : "";
+  const firstRun = RADAR.loading && !RADAR.t;
+  const summary = !SHOWS.length ? "No active shows assigned to you in Airtable."
+    : firstRun ? "Running the cross-checks…"
+    : (g3.length || g2.length)
+      ? `${g3.length ? `<b class="hot">${g3.length} need${g3.length === 1 ? "s" : ""} action</b>` : ""}${g3.length && g2.length ? ", " : ""}${g2.length ? `<b class="warm">${g2.length} to watch</b>` : ""} across <b>${nActive}</b> active show${nActive === 1 ? "" : "s"}.`
+      : `Nothing needs you across <b>${nActive}</b> active show${nActive === 1 ? "" : "s"}.`;
+  const status = RADAR.loading ? "checking…" : RADAR.t ? "checked " + new Date(RADAR.t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
+  const warn = RADAR.errs.length ? `<div class="rwarn">Some checks couldn't load this time: ${esc(RADAR.errs.join(", "))}. Everything else is current. Refresh to retry.</div>` : "";
+
+  el.innerHTML = `
+    <div class="rhead">
+      <div><h2>Radar</h2><div class="rsum">${summary}</div></div>
+      <div class="rstat mono">${status}</div>
+    </div>
+    ${warn}
+    <div class="rgrid">
+      <div class="box a-tl">
+        <h3>${ic("cal")} Run of show <span class="r tlkey"><span><i class="k-t"></i>you travel</span><span><i class="k-r"></i>remote</span><span><i class="k-d"></i>show days</span><span><i class="k-s"></i>booth ships</span></span></h3>
+        <div class="tlwrap">${timelineHtml()}</div>
+      </div>
+      <div class="box a-c">
+        <h3>${ic("radar")} Catches <span class="r">${open.length} open</span></h3>
+        ${sect("Needs action", "s3", g3)}${sect("Watch", "s2", g2)}
+        ${!g3.length && !g2.length ? (firstRun ? `<div class="rclear">Running checks…</div>` : `<div class="rclear"><b>All clear</b>Nothing needs action or watching on any active show.</div>`) : ""}
+        ${g1.length ? fold("h-fyi", `FYI · ${g1.length}`, g1.map(c => catchRow(c, true)).join(""), false) : ""}
+        ${acked.length ? fold("h-ack", `Acknowledged · ${acked.length}`, acked.map(c => catchRow(c, true)).join(""), false) : ""}
+        <div class="rfoot">Checked on every load: RentalWorks vs Airtable dates · crew status · the same crew's bookings on other shows · milestones while you're away · travel notes · InfoDoc · drawings · your tasks · call notes vs Airtable · email gaps. The tick acknowledges a catch until its facts change.</div>
+      </div>
+      <div class="box a-ag">
+        <h3>${ic("list")} Next 14 days</h3>
+        ${agendaHtml(14)}
+      </div>
+    </div>`;
+  wireCatches(el);
+}
+
+// ════════════════════════════════════════════════
+// TASKS — my tasks per show; status changes are Iq's own taps (PATCH via worker)
+// ════════════════════════════════════════════════
+function tasksSummary(s) {
+  const rows = taskCache[s.id];
+  const due = RADAR.tasks.filter(k => k.eid === s.id);
+  const past = due.filter(k => k.ds === "P").length, week = due.filter(k => k.ds === "W").length;
+  const bits = [];
+  if (past) bits.push(`<span style="color:var(--red)">${past} past due</span>`);
+  if (week) bits.push(`<span style="color:var(--amber)">${week} this week</span>`);
+  if (rows) bits.push(rows.length ? `${rows.filter(taskIsOpen).length} open of ${rows.length}` : "none assigned");
+  return bits.join(" · ") || (RADAR.t ? "nothing due" : "");
+}
+
+async function loadTasks(s, force) {
+  if (!force && taskCache[s.id]) return taskCache[s.id];
+  const recs = await api(TASKS_TBL, {
+    filterByFormula: `AND(FIND('${s.id}',ARRAYJOIN({id (from Events)})),FIND('${ME}',{Assignee}&''))`,
+    "fields[]": TASK_FULL_FIELDS, pageSize: 100
+  });
+  taskCache[s.id] = recs.map(r => taskRow(r, s.id));
+  return taskCache[s.id];
+}
+
+function taskHtml(r) {
+  const open = taskIsOpen(r);
+  const d = parseDate(r.due);
+  const dueCls = !open || !d ? "" : (d < today0() ? "late" : (daysFromToday(d) <= 7 ? "soon" : ""));
+  const glyph = r.status === "Done" ? ic("check") : r.status === "Not Needed" ? "–" : r.status === "In Process" ? "•" : "";
+  return `<div class="tk${open ? "" : " closed"}${r.status === "Not Needed" ? " nn" : ""}${r.status === "In Process" ? " prog" : ""}" data-tid="${r.id}">
+    <button class="tkb" aria-label="Change status (${esc(r.status)}): ${esc(r.name)}" aria-expanded="false">${glyph}</button>
+    <div class="nm">${esc(r.name)}</div>
+    <div class="due ${dueCls}">${d ? fmtD(d) : ""}</div>
+  </div>`;
+}
+
+function renderTasks(s) {
+  const body = document.getElementById("tasksBody");
+  if (!body) return;
+  const rows = taskCache[s.id];
+  if (!rows) { body.innerHTML = '<div class="pad dimtxt">Loading tasks…</div>'; return; }
+  if (!rows.length) { body.innerHTML = '<div class="pad dimtxt">No tasks assigned to you on this show.</div>'; return; }
+  const rank = c => { const i = TASK_CAT_ORDER.indexOf(c); return i < 0 ? 9 : i; };
+  const cats = [...new Set(rows.map(r => r.cat))].sort((a, b) => rank(a) - rank(b));
+  body.innerHTML = cats.map(cat => {
+    const rs = rows.filter(r => r.cat === cat).sort((a, b) =>
+      (taskIsOpen(b) - taskIsOpen(a)) || ((+parseDate(a.due) || 9e15) - (+parseDate(b.due) || 9e15)) || (a.order - b.order) || a.name.localeCompare(b.name));
+    const op = rs.filter(taskIsOpen), cl = rs.filter(r => !taskIsOpen(r));
+    return `<div class="tkcat"><span>${esc(TASK_CATS[cat] || "Other")}</span><span class="n">${op.length} open</span>${op.length ? `<button class="tkall" data-cat="${esc(cat)}" data-n="${op.length}">Mark all done</button>` : ""}</div>` +
+      op.map(taskHtml).join("") +
+      (cl.length ? fold("tk-" + s.id + "-" + cat, `${cl.length} closed`, cl.map(taskHtml).join(""), false) : "");
+  }).join("") + `<div class="tkfoot" id="tkMsg">Tap a circle to set a status. Changes save straight to Airtable.</div>`;
+  body.querySelectorAll("details[data-fold]").forEach(d => d.addEventListener("toggle", () => { foldOpen[d.dataset.fold] = d.open; }));
+}
+function taskMsg(txt, ok) {
+  const m = document.getElementById("tkMsg");
+  if (m) { m.textContent = txt; m.className = "tkfoot " + (ok ? "ok" : "err"); }
+}
+
+// keep the Radar's due-task list in step with a change made here
+function syncRadarTask(r) {
+  RADAR.tasks = RADAR.tasks.filter(k => k.id !== r.id);
+  if (r.ds && taskIsOpen(r)) RADAR.tasks.push({ id: r.id, eid: r.eid, name: r.name, due: r.due, ds: r.ds, status: r.status, cat: r.cat, order: r.order });
+}
+function afterTaskChange(s) {
+  computeRadar(); saveRadarCache();
+  renderList(); renderStats(); refreshShowRadar(s);
+}
+
+async function setTaskStatus(s, id, status) {
+  const r = (taskCache[s.id] || []).find(x => x.id === id);
+  if (!r || r.status === status) { renderTasks(s); return; }
+  const prev = r.status;
+  r.status = status; syncRadarTask(r); renderTasks(s); afterTaskChange(s);
+  taskMsg("Saving…", true);
+  try {
+    await api(TASKS_TBL, {}, "PATCH", id, { fields: { "Task Status": status } });
+    taskMsg(`Saved to Airtable: "${r.name}" is ${status}.`, true);
+  } catch (e) {
+    r.status = prev; syncRadarTask(r); renderTasks(s); afterTaskChange(s);
+    taskMsg("Couldn't save, nothing changed: " + e.message, false);
+  }
+}
+
+async function markAllDone(s, cat) {
+  const rows = (taskCache[s.id] || []).filter(r => r.cat === cat && taskIsOpen(r));
+  if (!rows.length) return;
+  rows.forEach(r => { r.status = "Done"; syncRadarTask(r); });
+  renderTasks(s); afterTaskChange(s);
+  taskMsg(`Saving ${rows.length}…`, true);
+  try {
+    for (let i = 0; i < rows.length; i += 10) {   // Airtable takes 10 records per write
+      await api(TASKS_TBL, {}, "PATCH", null, { records: rows.slice(i, i + 10).map(r => ({ id: r.id, fields: { "Task Status": "Done" } })) });
+    }
+    taskMsg(`Saved to Airtable: ${rows.length} task${rows.length === 1 ? "" : "s"} marked Done.`, true);
+  } catch (e) {
+    // some batches may have landed — reload the truth rather than guess
+    delete taskCache[s.id];
+    try { await loadTasks(s, true); (taskCache[s.id] || []).forEach(syncRadarTask); } catch (e2) {}
+    renderTasks(s); afterTaskChange(s);
+    taskMsg("Couldn't save everything, list reloaded from Airtable: " + e.message, false);
+  }
+}
+
+function setupTasks(s) {
+  const head = document.getElementById("tasksHead"), body = document.getElementById("tasksBody");
+  if (!head || !body) return;
+  const show = async () => {
+    head.classList.remove("collapsed"); head.setAttribute("aria-expanded", "true"); body.hidden = false;
+    renderTasks(s);
+    if (!taskCache[s.id]) {
+      try { await loadTasks(s, false); }
+      catch (e) { if (selectedId === s.id) body.innerHTML = `<div class="pad" style="color:var(--red)">Couldn't load tasks: ${esc(e.message)}</div>`; return; }
+      if (selectedId !== s.id) return;
+      renderTasks(s);
+      const ts = document.getElementById("tasksSum"); if (ts) ts.innerHTML = tasksSummary(s);
+    }
+  };
+  const toggle = () => {
+    if (body.hidden) { tasksOpen[s.id] = true; show(); }
+    else { tasksOpen[s.id] = false; body.hidden = true; head.classList.add("collapsed"); head.setAttribute("aria-expanded", "false"); }
+  };
+  head.addEventListener("click", toggle);
+  head.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+
+  body.addEventListener("click", ev => {
+    const all = ev.target.closest(".tkall");
+    if (all) {
+      if (all.dataset.armed !== "1") {     // two taps: arm, then confirm
+        all.dataset.armed = "1"; all.classList.add("armed");
+        all.textContent = `Tap again: mark ${all.dataset.n} done`;
+        clearTimeout(all._t);
+        all._t = setTimeout(() => { all.dataset.armed = ""; all.classList.remove("armed"); all.textContent = "Mark all done"; }, 4000);
+        return;
+      }
+      clearTimeout(all._t);
+      markAllDone(s, all.dataset.cat);
+      return;
+    }
+    const pick = ev.target.closest(".tkmenu button");
+    if (pick) { setTaskStatus(s, pick.closest(".tk").dataset.tid, pick.dataset.st); return; }
+    const dot = ev.target.closest(".tkb");
+    if (dot) {
+      const rowEl = dot.closest(".tk");
+      const had = rowEl.querySelector(".tkmenu");
+      body.querySelectorAll(".tkmenu").forEach(m => m.remove());
+      body.querySelectorAll(".tkb").forEach(b => b.setAttribute("aria-expanded", "false"));
+      if (had) return;
+      const r = (taskCache[s.id] || []).find(x => x.id === rowEl.dataset.tid);
+      const menu = document.createElement("div");
+      menu.className = "tkmenu";
+      menu.innerHTML = TASK_STATUSES.map(v => `<button data-st="${v}" class="${r && r.status === v ? "on" : ""}">${v}</button>`).join("");
+      rowEl.appendChild(menu);
+      dot.setAttribute("aria-expanded", "true");
+    }
+  });
+
+  if (tasksOpen[s.id]) show();
 }
 
 // ════════════════════════════════════════════════
@@ -1050,7 +2030,7 @@ async function loadFiles(s, force) {
       };
     }
     const recs = filesCache[s.id].recs;
-    if (!recs.length) { el.innerHTML = '<div class="pad" style="color:var(--dim)">No files yet — upload drawings, photos, or docs.</div>'; return; }
+    if (!recs.length) { el.innerHTML = '<div class="pad" style="color:var(--dim)">No files yet. Upload drawings, photos, or docs.</div>'; return; }
     el.innerHTML = recs.map(r => {
       const f = r.fields;
       const atts = f["File"] || [];
@@ -1059,7 +2039,7 @@ async function loadFiles(s, force) {
       const links = atts.map(a => {
         const img = a.thumbnails && a.thumbnails.large && String(a.type || "").startsWith("image/");
         return `<a href="${esc(a.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:12.5px;margin:0 8px 6px 0">
-          ${img ? `<img src="${esc(a.thumbnails.small.url)}" alt="" style="height:24px;border-radius:3px">` : "📄"}
+          ${img ? `<img src="${esc(a.thumbnails.small.url)}" alt="" style="height:24px;border-radius:3px">` : ic("file")}
           ${esc(a.filename || "file")} <span style="color:var(--dim)">${a.size ? Math.round(a.size / 1024) + " KB" : ""}</span>
         </a>`;
       }).join("") || '<span style="color:var(--dim)">(no attachment)</span>';
@@ -1322,7 +2302,7 @@ async function toggleMail(s, mailEl) {
       (f["Attachments"] || []).forEach(a => {
         const link = document.createElement("a");
         link.href = a.url; link.target = "_blank"; link.rel = "noopener";
-        link.textContent = "📎 " + (a.filename || "attachment") + (a.size ? " (" + Math.round(a.size / 1024) + " KB)" : "");
+        link.textContent = (a.filename || "attachment") + (a.size ? " (" + Math.round(a.size / 1024) + " KB)" : "");
         link.style.cssText = "border:1px solid var(--line);border-radius:6px;padding:8px 14px;font-size:12px";
         bar.appendChild(link);
       });
@@ -1391,6 +2371,10 @@ document.addEventListener("visibilitychange", () => {
   try {
     const nc = JSON.parse(localStorage.getItem("dash_notes") || "null");
     if (nc && nc.shows) NOTES = nc;
+  } catch (e) {}
+  try {
+    const rc = JSON.parse(localStorage.getItem("dash_radar") || "null");
+    if (rc && rc.t) Object.assign(RADAR, { t: rc.t, extra: rc.extra || {}, tasks: rc.tasks || [], xpos: rc.xpos || [], analyst: rc.analyst || [] });
   } catch (e) {}
   try {
     const c = JSON.parse(localStorage.getItem("dash_cache") || "null");
