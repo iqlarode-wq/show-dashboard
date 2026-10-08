@@ -1,4 +1,4 @@
-# Show Ops Dashboard — SETUP (updated 2026-10-08, build r10)
+# Show Ops Dashboard — SETUP (updated 2026-10-08, build r10.1)
 
 **Live:** https://fuse-dashboard-proxy.iqlarodework.workers.dev/ — served by Cloudflare, PIN-gated (enforced; enter once per device).
 Data is fetched live from Airtable on every open. No daily regeneration. No push needed for data changes.
@@ -37,6 +37,10 @@ Data is fetched live from Airtable on every open. No daily regeneration. No push
 ## Layout: the Brief (r10, 2026-10-08)
 
 The home view (`selectedId === "radar"`) is the Brief: a headline ("N things need you."), one line of context, and only the red (sev 3) items. Everything else is a closed row with a one-line summary, built with `acc(id, label, summary, body)`; open state is remembered per device in `localStorage ui_open`. Show pages follow the same pattern (status sentence, red items, dates, links, then rows). On a phone the sidebar is hidden and the show list sits inside the Brief. Rule for changes: new information gets a row and a summary, not a spot on the first screen. Details: `ARCHITECTURE.md` in the docs folder.
+
+## Remote oversight override (r10.1, 2026-10-08)
+
+Travel vs Remote comes from the crew list (Iq in EventPositions = Travel). `REMOTE_OVERRIDE` in `index.html` lists event IDs where Iq is remote even though Airtable still lists him. Currently: `recaVfmNbH94gsnYE` (JM Vertex @ ASN 2026). Dashboard only; Airtable is not changed. Remove the ID once his position is deleted in Airtable.
 
 ## Radar (added 2026-10-08, r9)
 

@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-08 r10 (Brief: one-sentence landing, detail on demand) -->
+<!-- build: 2026-10-08 r10.1 (Brief layout; remote-oversight override) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -628,6 +628,17 @@ const ICONS = {
 const ic = n => `<svg class="ic" viewBox="0 0 16 16" aria-hidden="true">${ICONS[n] || ""}</svg>`;
 
 // ════════════════════════════════════════════════
+// REMOTE OVERSIGHT — shows Iq runs remotely even though Airtable still lists him on the crew.
+//   Normal rule: on the crew list = Travel. An event ID here overrides that on this dashboard
+//   only (Airtable is not changed). Once his position is removed in Airtable the entry does
+//   nothing and can be deleted.
+// ════════════════════════════════════════════════
+const REMOTE_OVERRIDE = [
+  "recaVfmNbH94gsnYE"   // JM Vertex @ ASN 2026 — remote oversight per Iq, 2026-10-08
+];
+const isRemoteMe = (eid, name) => REMOTE_OVERRIDE.includes(eid) && String(name || "").includes(ME);
+
+// ════════════════════════════════════════════════
 // NAMING HELPERS
 // ════════════════════════════════════════════════
 // "JM Vertex @ ASN 2026 #713 Prep + Show" → "Vertex @ ASN"
@@ -797,6 +808,7 @@ function buildModel(ev, positions, mails) {
         phone: first(pf["Phone Number (from Crew)"]) || "",
         role,
         staff: role === "Staff",
+        remoteMe: isRemoteMe(ev.id, raw),
         status: String(pf["Status"] || "").trim(),
         stints,
         notes: pf["Position Notes"] || "",
@@ -843,7 +855,8 @@ function buildModel(ev, positions, mails) {
     clientNotes: f["Client Notes"] || "",
     meetings: (NOTES.shows && NOTES.shows[ev.id]) || [],
     crew,
-    travel: crew.some(c => c.name.includes(ME)),
+    travel: crew.some(c => c.name.includes(ME) && !c.remoteMe),
+    remoteOverride: crew.some(c => c.remoteMe),
     mailTotal: Math.max((f["Zapier Emails"] || []).length, myMails.length),
     mailMeta: myMails.map(m => ({
       id: m.id,
@@ -1081,9 +1094,9 @@ function renderDetail() {
   const crewRows = s.crew.map(c => {
     const stl = String(c.status).toLowerCase();
     const cls = stl.includes("not conf") ? "stat-pencil" : stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
-    const extra = [c.notes, c.travelInfo].filter(Boolean).join(" · ");
+    const extra = [c.remoteMe ? "Remote oversight, not travelling. Airtable still lists this position." : "", c.notes, c.travelInfo].filter(Boolean).join(" · ");
     return `<div class="cr">
-      <div class="n">${esc(c.name)}${c.role ? `<span class="role">${esc(c.role)}</span>` : ""}${c.name.includes(ME) ? '<span class="tag you">YOU</span>' : ""}</div>
+      <div class="n">${esc(c.name)}${c.role ? `<span class="role">${esc(c.role)}</span>` : ""}${c.name.includes(ME) ? `<span class="tag you">${c.remoteMe ? "YOU · REMOTE" : "YOU"}</span>` : ""}</div>
       <div class="dts">${esc(fmtStints(c))}</div>
       <div class="st ${cls}">${esc(c.status)}</div>
       <div class="act">${c.phone ? `<a class="tap" href="${telHref(c.phone)}" aria-label="Call ${esc(c.name)}">${esc(fmtPhone(c.phone))}</a>` : ""}${c.email ? `<a class="tap" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.name)}">${ic("mail")}</a>` : ""}</div>
@@ -1162,7 +1175,7 @@ function renderDetail() {
   const pf = preflight(s);
 
   el.innerHTML = `
-    <div class="sh-k"><span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>${kick}</div>
+    <div class="sh-k"><span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : s.remoteOverride ? "REMOTE OVERSIGHT" : "REMOTE"}</span>${kick}</div>
     <h2 class="sh-h">${esc(shortTitle(s.title))}</h2>
     <div class="sh-meta">
       <span>${esc(s.title)}</span>
@@ -1362,7 +1375,7 @@ function refreshShowRadar(s) {
 // Everywhere I'm booked or blocked out, from EventPositions (falls back to this page's shows until that loads).
 function myWhere() {
   const out = [];
-  const mine = RADAR.xpos.filter(x => x.name.includes(ME) && !/cancel/i.test(x.type) && !/^(empty|not confirmed)$/i.test(x.status));
+  const mine = RADAR.xpos.filter(x => x.name.includes(ME) && !isRemoteMe(x.eid, x.name) && !/cancel/i.test(x.type) && !/^(empty|not confirmed)$/i.test(x.status));
   if (mine.length) {
     mine.forEach(x => {
       const A = parseDate(x.a), B = parseDate(x.b);
@@ -1373,7 +1386,7 @@ function myWhere() {
         label: away ? "Away" : (sh ? (sh.city || shortTitle(sh.title)) : shortTitle(x.ev)) });
     });
   } else {
-    SHOWS.forEach(s => s.crew.filter(c => c.name.includes(ME)).forEach(c => c.stints.forEach(sn => {
+    SHOWS.forEach(s => s.crew.filter(c => c.name.includes(ME) && !c.remoteMe).forEach(c => c.stints.forEach(sn => {
       if (sn.a && sn.b) out.push({ A: sn.a, B: sn.b, away: false, tentative: false, eid: s.id, label: s.city || shortTitle(s.title) });
     })));
   }
@@ -1387,7 +1400,7 @@ function computeRadar() {
   const out = [];
   const t = today0();
   const add = (s, o) => { o.showId = s ? s.id : null; o.show = s ? shortTitle(s.title) : ""; out.push(o); };
-  const xp = RADAR.xpos.map(x => Object.assign({}, x, { A: parseDate(x.a), B: parseDate(x.b) })).filter(x => x.A && x.B);
+  const xp = RADAR.xpos.filter(x => !isRemoteMe(x.eid, x.name)).map(x => Object.assign({}, x, { A: parseDate(x.a), B: parseDate(x.b) })).filter(x => x.A && x.B);
   const away = myWhere().filter(w => w.away && w.B >= t);
 
   SHOWS.forEach(s => {
@@ -1456,7 +1469,7 @@ function computeRadar() {
     // 4 · Crew booked somewhere else at the same time (people sharing the same clash become one catch)
     const clash = new Map();
     s.crew.forEach(c => {
-      if (c.staff || /^(empty|away)$/i.test(c.status)) return;
+      if (c.staff || c.remoteMe || /^(empty|away)$/i.test(c.status)) return;
       const others = xp.filter(o => o.name === c.raw && o.eid !== s.id && !/cancel/i.test(o.type) && !/^empty$/i.test(o.status));
       c.stints.forEach(sn => {
         if (!sn.a || !sn.b || sn.b < t) return;
@@ -1527,10 +1540,11 @@ function computeRadar() {
       const tin = s.dates["Travel In"] || s.tlStart;
       const dT = tin ? daysFromToday(tin) : null;
       if (dT !== null && dT <= 14) {
-        const missing = confirmed.filter(c => !c.staff && !c.travelInfo);
+        const travellers = confirmed.filter(c => !c.staff && !c.remoteMe);
+        const missing = travellers.filter(c => !c.travelInfo);
         if (missing.length) add(s, { key: `travel|${s.id}|${missing.map(c => c.raw).join(",")}`, sev: dT <= URGENT_DAYS ? 3 : 2, cat: "Travel",
           title: `No flight or hotel note for ${listNames(missing.map(c => nick(c.raw)))}`,
-          detail: `Crew starts ${fmtD(tin)} (${dueTxt(tin)}). ${confirmed.filter(c => !c.staff).length - missing.length} of ${confirmed.filter(c => !c.staff).length} have a booking note.`,
+          detail: `Crew starts ${fmtD(tin)} (${dueTxt(tin)}). ${travellers.length - missing.length} of ${travellers.length} have a booking note.`,
           src: "Airtable · EventPositions · Flight/Hotel Info", when: tin });
       }
       const noPrep = s.crew.filter(c => /no prep booked/i.test(c.travelInfo));
@@ -1539,6 +1553,13 @@ function computeRadar() {
         detail: `Their stints start ${fmtD(noPrep[0].stints[0] && noPrep[0].stints[0].a)}. Confirm prep lodging is covered or not needed.`,
         src: "Airtable · EventPositions · Flight/Hotel Info", when: tin });
     }
+
+    // 6b · Remote oversight: the dashboard treats me as remote, Airtable still has me on the crew
+    const rm = s.crew.find(c => c.remoteMe);
+    if (rm) add(s, { key: `remoteme|${s.id}|${rm.status}`, sev: 1, cat: "Record",
+      title: "Airtable still lists you on the crew",
+      detail: `You're overseeing this one remotely, but your ${rm.role || "crew"} position (${rm.stints.map(x => fmtRange(x.a, x.b)).join(", ") || "no dates"}, ${rm.status || "no status"}) is still in EventPositions. Ask whoever manages crew to remove it.`,
+      src: "Dashboard remote-oversight list vs Airtable · EventPositions", when: null });
 
     // 7 · Record hygiene that turns into real problems
     if (s.status && !/confirm/i.test(s.status) && confirmed.length) add(s, { key: `status|${s.id}|${s.status}|${confirmed.length}`,
@@ -1701,7 +1722,7 @@ function preflight(s) {
   const real = s.crew.filter(c => !/^(empty|away)$/i.test(c.status));
   const conf = real.filter(c => /confirm/i.test(c.status) && !/not conf/i.test(c.status)).length;
   chip("Crew", s.crew.length ? `${conf}/${s.crew.length} confirmed` : "none", !s.crew.length ? "bad" : conf === s.crew.length ? "ok" : "warn");
-  const trav = s.crew.filter(c => !c.staff && !/^(empty|away)$/i.test(c.status));
+  const trav = s.crew.filter(c => !c.staff && !c.remoteMe && !/^(empty|away)$/i.test(c.status));
   if (trav.length && (!x || x["Event Type"] === "Travelling Labor")) {
     const noted = trav.filter(c => c.travelInfo).length;
     chip("Travel notes", `${noted}/${trav.length}`, noted === trav.length ? "ok" : "warn");
