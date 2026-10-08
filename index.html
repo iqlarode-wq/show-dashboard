@@ -12,323 +12,272 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-08 r9 (Radar: cross-source checks, run of show, agenda, tasks) -->
+<!-- build: 2026-10-08 r10 (Brief: one-sentence landing, detail on demand) -->
 <style>
+  /* Layout idea: the first screen is a sentence and the few things that need a decision.
+     Everything else is a closed row with a one-line summary; opening it is the reader's choice,
+     and the page remembers which rows that reader keeps open. */
   :root {
     --bg: #0b0d0f;
-    --panel: #111417;
-    --panel2: #171b1f;
-    --line: #22272d;
-    --line2: #2e343b;
-    --text: #e7ebf0;
-    --dim: #8b95a1;
-    --faint: #5f6873;
+    --panel: #101316;
+    --panel2: #161a1e;
+    --line: #1f2429;
+    --line2: #2c3239;
+    --text: #e9edf1;
+    --dim: #8d97a3;
+    --faint: #5d6672;
     --accent: #6aaeff;
     --green: #3fcf7c;
     --amber: #e3a83a;
     --red: #ff6257;
-    --sel: #16202d;
-    --accent-t: rgba(106,174,255,.14);
-    --green-t: rgba(63,207,124,.14);
-    --amber-t: rgba(227,168,58,.14);
-    --red-t: rgba(255,98,87,.14);
-    --dim-t: rgba(139,149,161,.13);
+    --sel: #151c26;
+    --accent-t: rgba(106,174,255,.13);
+    --green-t: rgba(63,207,124,.13);
+    --amber-t: rgba(227,168,58,.13);
+    --red-t: rgba(255,98,87,.13);
+    --dim-t: rgba(141,151,163,.12);
     --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
     --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   html { -webkit-text-size-adjust: 100%; color-scheme: dark; }
   body {
-    background: var(--bg); color: var(--text);
-    font-family: var(--sans);
-    font-size: 13px; line-height: 1.42; height: 100dvh; overflow: hidden;
-    -webkit-font-smoothing: antialiased;
+    background: var(--bg); color: var(--text); font-family: var(--sans);
+    font-size: 14px; line-height: 1.45; height: 100dvh; overflow: hidden; -webkit-font-smoothing: antialiased;
   }
   a { color: var(--accent); text-decoration: none; }
   [hidden] { display: none !important; }
   .mono { font-variant-numeric: tabular-nums; }
   .dimtxt { color: var(--dim); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 4px; }
+  .hot { color: var(--red); } .warm { color: var(--amber); } .good { color: var(--green); }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
   .tap { padding: 12px; margin: -12px; display: inline-block; }
-  button { font-family: inherit; color: inherit; }
+  button { font-family: inherit; color: inherit; font-size: inherit; }
   .ic { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; vertical-align: -2.5px; flex: none; }
+  .only-m { display: none; }
+  .new { color: var(--accent); }
+  .pad { padding: 6px 0; }
 
   /* ── PIN gate ── */
-  #pinGate {
-    position: fixed; inset: 0; background: var(--bg); z-index: 100;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px;
-  }
+  #pinGate { position: fixed; inset: 0; background: var(--bg); z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; }
   #pinGate h1 { font-size: 13px; font-weight: 700; letter-spacing: .18em; }
-  #pinInput {
-    background: var(--panel); border: 1px solid var(--line2); border-radius: 8px;
-    color: var(--text); font-size: 22px; letter-spacing: 10px; text-align: center;
-    padding: 10px 8px; width: 200px; outline: none;
-  }
+  #pinInput { background: var(--panel); border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-size: 22px; letter-spacing: 10px; text-align: center; padding: 10px 8px; width: 200px; outline: none; }
   #pinInput:focus { border-color: var(--accent); }
-  #pinBtn {
-    background: var(--accent); color: #04101f; border: none; border-radius: 8px;
-    font-size: 14px; font-weight: 600; padding: 12px 36px; cursor: pointer; min-height: 44px;
-  }
+  #pinBtn { background: var(--accent); color: #04101f; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; padding: 12px 36px; cursor: pointer; min-height: 44px; }
   #pinErr { color: var(--red); font-size: 13px; min-height: 18px; }
 
-  /* ── App frame ── */
+  /* ── Frame ── */
   #app { display: none; height: 100dvh; flex-direction: column; }
   #topbar {
-    display: flex; align-items: center; gap: 14px;
-    padding: env(safe-area-inset-top) 14px 0; min-height: calc(44px + env(safe-area-inset-top)); flex: none;
-    background: var(--panel); border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; gap: 14px; flex: none;
+    padding: env(safe-area-inset-top) 16px 0; min-height: calc(44px + env(safe-area-inset-top));
+    border-bottom: 1px solid var(--line);
   }
-  #topbar h1 { font-size: 12px; font-weight: 700; letter-spacing: .18em; white-space: nowrap; }
-  #topStats { display: flex; gap: 16px; color: var(--dim); font-size: 12px; flex: 1; overflow: hidden; white-space: nowrap; }
-  #topStats b { color: var(--text); font-weight: 600; }
-  #topStats .hot, #topStats .hot b { color: var(--red); }
-  #updated { color: var(--faint); font-size: 11px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #topbar h1 { font-size: 11.5px; font-weight: 700; letter-spacing: .2em; white-space: nowrap; color: var(--dim); }
+  #topStats { flex: 1; }
+  #updated { color: var(--faint); font-size: 11.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
   #updated.stale { color: var(--amber); }
-  #refreshBtn {
-    background: none; border: 1px solid var(--line2); color: var(--dim); border-radius: 8px;
-    min-width: 44px; min-height: 32px; font-size: 15px; cursor: pointer;
-  }
-  #refreshBtn:hover { color: var(--text); border-color: var(--dim); }
-
+  #refreshBtn { background: none; border: none; color: var(--dim); border-radius: 8px; min-width: 40px; min-height: 36px; font-size: 16px; cursor: pointer; }
+  #refreshBtn:hover { color: var(--text); background: var(--panel2); }
   #main { display: flex; flex: 1; min-height: 0; }
 
-  /* ── List (left) ── */
-  #list {
-    width: 340px; flex: none; overflow-y: auto;
-    border-right: 1px solid var(--line); background: var(--panel);
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  .rrow { display: flex; gap: 11px; align-items: center; padding: 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
-  .rrow:hover { background: var(--panel2); }
-  .rrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
-  .rrow .ico { width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center; background: var(--accent-t); color: var(--accent); flex: none; }
-  .rrow .ico .ic { width: 17px; height: 17px; vertical-align: 0; }
-  .rrow .rb { min-width: 0; flex: 1; }
-  .rrow .t { font-size: 13px; font-weight: 700; }
-  .rrow .m { color: var(--dim); font-size: 11.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .rrow .cn { display: flex; gap: 5px; flex: none; }
-  .rrow .cn .tag { font-size: 11px; padding: 2px 7px; min-width: 22px; text-align: center; }
-
-  .lrow { padding: 10px 12px 9px; border-bottom: 1px solid var(--line); cursor: pointer; }
-  .lrow:hover { background: var(--panel2); }
-  .lrow.sel { background: var(--sel); box-shadow: inset 3px 0 0 var(--accent); }
-  .lrow .t { font-size: 13px; font-weight: 600; display: flex; gap: 7px; align-items: center; }
-  .lrow .t .nm { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .lrow .t .bn { color: var(--faint); font-weight: 400; font-size: 11.5px; flex: none; font-variant-numeric: tabular-nums; }
-  .lrow .m { display: flex; gap: 8px; color: var(--dim); font-size: 11.5px; margin-top: 3px; align-items: center; white-space: nowrap; }
-  .lrow .m .cty { overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-  .lrow .m .shp { color: var(--amber); display: inline-flex; gap: 3px; align-items: center; flex: none; }
-  .lrow .m .shp .ic { width: 12px; height: 12px; vertical-align: 0; }
-  .sp { width: 7px; height: 7px; border-radius: 50%; flex: none; }
+  /* ── Sidebar: one calm line per show ── */
+  #list { width: 296px; flex: none; overflow-y: auto; border-right: 1px solid var(--line); padding: 10px 0 env(safe-area-inset-bottom); }
+  .nav { display: flex; align-items: center; gap: 10px; margin: 0 8px 6px; padding: 9px 10px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+  .nav:hover, .srow:hover { background: var(--panel2); }
+  .nav.sel, .srow.sel { background: var(--sel); }
+  .nav .cnt { margin-left: auto; font-size: 11.5px; font-weight: 700; color: var(--red); background: var(--red-t); border-radius: 999px; min-width: 20px; padding: 1px 7px; text-align: center; }
+  .lsec { padding: 14px 18px 6px; color: var(--faint); font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .lsec.tgl { cursor: pointer; user-select: none; }
+  .srow { margin: 0 8px; padding: 9px 10px; border-radius: 8px; cursor: pointer; }
+  .srow .s1 { display: flex; align-items: center; gap: 8px; }
+  .srow .nm { flex: 1; min-width: 0; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .srow .wn { flex: none; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .srow .wn.live { color: var(--green); font-weight: 600; }
+  .srow div.s2 { margin: 1px 0 0 15px; font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .srow .new { color: var(--accent); }
+  .sp { width: 7px; height: 7px; border-radius: 50%; flex: none; background: var(--line2); }
   .sp.s3 { background: var(--red); box-shadow: 0 0 0 3px var(--red-t); }
   .sp.s2 { background: var(--amber); }
-  .tag { font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; letter-spacing: .05em; flex: none; white-space: nowrap; }
+  .sp.s0 { background: var(--green); opacity: .7; }
+  .arch-btn { background: none; border: none; color: var(--faint); cursor: pointer; font-size: 11px; padding: 2px 4px; border-radius: 4px; display: none; flex: none; }
+  .srow:hover .arch-btn, .srow:focus-within .arch-btn { display: inline-block; }
+  .srow:hover .arch-btn + .wn, .srow:focus-within .arch-btn + .wn { display: none; }
+  .arch-btn:hover { color: var(--red); }
+  .restore-btn { background: none; border: 1px solid var(--line2); color: var(--dim); cursor: pointer; font-size: 10.5px; padding: 2px 8px; border-radius: 4px; flex: none; }
+  .restore-btn:hover { color: var(--green); border-color: var(--green); }
+  .quiet .srow { opacity: .6; } .quiet .srow:hover { opacity: 1; }
+  .chev { font-size: 9px; margin-left: 5px; display: inline-block; transition: transform .15s; }
+  .collapsed .chev { transform: rotate(-90deg); }
+
+  /* ── Main pane ── */
+  #detail { flex: 1; overflow-y: auto; min-width: 0; }
+  #detail .inner { max-width: 860px; padding: 34px 40px calc(80px + env(safe-area-inset-bottom)); }
+  #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 15px; padding: 14px 16px 0; cursor: pointer; }
+
+  /* Brief */
+  .bdate { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--faint); display: flex; justify-content: space-between; gap: 12px; }
+  .bdate span:last-child { font-weight: 400; letter-spacing: 0; text-transform: none; }
+  .bhead { font-size: 34px; line-height: 1.12; font-weight: 700; letter-spacing: -.022em; margin: 10px 0 8px; text-wrap: balance; }
+  .bsub { color: var(--dim); font-size: 15px; max-width: 60ch; }
+  .bsub b { color: var(--text); font-weight: 600; }
+  .heroes { margin-top: 26px; border-top: 1px solid var(--line); }
+  .hero { padding: 20px 0 20px 20px; border-bottom: 1px solid var(--line); position: relative; }
+  .hero::before { content: ""; position: absolute; left: 0; top: 27px; width: 8px; height: 8px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 4px var(--red-t); }
+  .hero-k { font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .hero-k i { font-style: normal; color: var(--red); }
+  .hero h3 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; margin: 4px 0 4px; text-wrap: pretty; }
+  .hero p { color: var(--dim); max-width: 64ch; }
+  .hero-a { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
+  .src { font-size: 11.5px; color: var(--faint); }
+  .hero-a .src { margin-left: 4px; }
+  .btn { background: none; border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-size: 12.5px; font-weight: 600; padding: 6px 12px; min-height: 32px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
+  .btn:hover { border-color: var(--dim); }
+  .btn.pri { background: var(--text); color: var(--bg); border-color: var(--text); }
+  .btn.pri:hover { background: #fff; }
+  .btn.ghost { border-color: transparent; color: var(--dim); }
+  .btn.ghost:hover { color: var(--text); border-color: var(--line2); }
+  .secl { margin: 34px 0 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); }
+  .mshows .srow { margin: 0 -10px; }
+  .rwarn { margin: 18px 0 0; padding: 9px 12px; border-radius: 8px; font-size: 12.5px; background: var(--amber-t); color: var(--amber); }
+
+  /* Rows that open: label, one-line summary, chevron */
+  .accs { margin-top: 30px; border-top: 1px solid var(--line); }
+  .acc { border-bottom: 1px solid var(--line); }
+  .acc-h { width: 100%; background: none; border: none; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 14px; padding: 15px 2px; min-height: 52px; }
+  .acc-h:hover .acc-l { color: #fff; }
+  .acc-l { font-size: 15px; font-weight: 600; flex: none; }
+  .acc-s { flex: 1; min-width: 0; text-align: right; color: var(--dim); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .acc-c { color: var(--faint); flex: none; transition: transform .15s; display: grid; }
+  .acc.open .acc-c { transform: rotate(90deg); }
+  .acc.open .acc-s { opacity: .55; }
+  .acc-b { padding: 0 2px 20px; }
+
+  /* A catch as one line; opens to the why and the actions */
+  .grp-h { display: flex; align-items: center; gap: 8px; width: 100%; background: none; border: none; cursor: pointer; text-align: left; padding: 12px 0 4px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .grp-h:hover { color: var(--text); }
+  .grp-h span { color: var(--faint); font-weight: 600; }
+  .cl { border-radius: 8px; }
+  .cl.open { background: var(--panel); }
+  .cl-h { width: 100%; background: none; border: none; cursor: pointer; text-align: left; display: flex; align-items: baseline; gap: 10px; padding: 8px 8px; margin: 0 -8px; width: calc(100% + 16px); border-radius: 8px; }
+  .cl.open .cl-h { margin: 0; width: 100%; }
+  .cl-h:hover { background: var(--panel2); }
+  .pip { width: 7px; height: 7px; border-radius: 50%; flex: none; transform: translateY(-1px); }
+  .s3 > .cl-h .pip { background: var(--red); } .s2 > .cl-h .pip { background: var(--amber); } .s1 > .cl-h .pip { border: 1.5px solid var(--faint); }
+  .cl-t { flex: 1; min-width: 0; }
+  .cl-t b { font-weight: 600; color: var(--dim); margin-right: 6px; }
+  .cl-d { flex: none; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  .cl-b { padding: 0 8px 12px 25px; }
+  .cl-b p { color: var(--dim); max-width: 64ch; margin-bottom: 6px; }
+  .cl-a { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .cl.acked .cl-t { color: var(--dim); }
+  details.sub { margin-top: 10px; }
+  details.sub summary { padding: 8px 0; font-size: 12.5px; color: var(--dim); cursor: pointer; list-style: none; user-select: none; }
+  details.sub summary::-webkit-details-marker { display: none; }
+  details.sub summary::before { content: "▸  "; color: var(--faint); }
+  details.sub[open] summary::before { content: "▾  "; }
+  .none { color: var(--dim); padding: 6px 0; }
+  .about { color: var(--dim); font-size: 13px; max-width: 66ch; }
+
+  /* ── Show page ── */
+  .sh-k { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 4px; letter-spacing: .06em; flex: none; white-space: nowrap; }
   .tag.travel { color: #a9d0ff; background: var(--accent-t); }
   .tag.remote { color: var(--dim); background: var(--dim-t); }
   .tag.live   { color: var(--green); background: var(--green-t); }
   .tag.urgent { color: var(--amber); background: var(--amber-t); }
-  .tag.danger { color: var(--red); background: var(--red-t); }
-  .tag.done   { color: var(--dim); background: var(--dim-t); }
   .tag.you    { color: var(--text); background: var(--dim-t); margin-left: 6px; }
-  .lrow .cnt { margin-left: auto; display: flex; gap: 9px; align-items: center; flex: none; }
-  .lrow .cnt span { display: inline-flex; gap: 3px; align-items: center; }
-  .lrow .cnt .ic { width: 12px; height: 12px; vertical-align: 0; }
-  .newdot { color: var(--amber); font-weight: 700; }
-  .lsec { padding: 7px 12px 5px; color: var(--faint); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 2; }
-
-  /* ── Archive ── */
-  .arch-btn {
-    background: none; border: none; color: var(--dim); cursor: pointer;
-    font-size: 11px; padding: 4px 6px; margin: -4px -6px -4px 0; border-radius: 4px;
-    opacity: 0; transition: opacity .15s, color .15s; flex: none;
-  }
-  .lrow:hover .arch-btn, .lrow:focus-within .arch-btn { opacity: 1; }
-  .arch-btn:hover { color: var(--red); }
-  .restore-btn {
-    background: none; border: 1px solid var(--line2); color: var(--dim); cursor: pointer;
-    font-size: 10px; padding: 2px 8px; border-radius: 4px; flex: none;
-    transition: color .15s, border-color .15s;
-  }
-  .restore-btn:hover { color: var(--green); border-color: var(--green); }
-  .arch-sec .lrow { opacity: 0.55; }
-  .arch-sec .lrow:hover { opacity: 0.85; }
-  .arch-toggle { cursor: pointer; user-select: none; }
-  .chev { font-size: 9px; margin-left: 4px; display: inline-block; transition: transform .15s; }
-  .collapsed .chev { transform: rotate(-90deg); }
-
-  /* ── Detail (right) ── */
-  #detail { flex: 1; overflow-y: auto; min-width: 0; }
-  #detail .inner { padding: 16px 20px calc(60px + env(safe-area-inset-bottom)); max-width: 1400px; }
-  #backBtn { display: none; background: none; border: none; color: var(--accent); font-size: 15px; padding: 12px 14px 2px; cursor: pointer; }
-
-  .dhead { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 5px; }
-  .dhead h2 { font-size: 18px; font-weight: 700; letter-spacing: -.01em; }
-  .dsub { display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; color: var(--dim); font-size: 12.5px; margin-bottom: 14px; }
-
-  .datebar { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; margin-bottom: 12px; background: var(--panel); }
-  .datebar .d { flex: 1; min-width: 86px; padding: 8px 11px; border-right: 1px solid var(--line); }
+  .sh-h { font-size: 30px; line-height: 1.12; font-weight: 700; letter-spacing: -.02em; margin: 10px 0 6px; }
+  .sh-meta { color: var(--dim); font-size: 13.5px; display: flex; flex-wrap: wrap; gap: 2px 14px; }
+  .sh-status { margin: 14px 0 0; font-size: 15px; }
+  .sh-status b { font-weight: 600; }
+  .datebar { display: flex; border: 1px solid var(--line); border-radius: 10px; overflow-x: auto; margin: 22px 0 0; }
+  .datebar .d { flex: 1; min-width: 84px; padding: 10px 12px; border-right: 1px solid var(--line); }
   .datebar .d:last-child { border-right: none; }
-  .datebar .k { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
-  .datebar .v { font-size: 13.5px; font-weight: 600; margin-top: 2px; white-space: nowrap; }
-  .datebar .d.today { background: var(--amber-t); }
-  .datebar .d.today .v { color: var(--amber); }
-  .datebar .d.ship:not(.past) { background: rgba(227,168,58,.08); }
+  .datebar .k { font-size: 10px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; white-space: nowrap; }
+  .datebar .v { font-size: 14px; font-weight: 600; margin-top: 2px; white-space: nowrap; }
+  .datebar .d.today { background: var(--amber-t); } .datebar .d.today .v { color: var(--amber); }
   .datebar .d.ship:not(.past) .v, .datebar .d.ship:not(.past) .k { color: var(--amber); }
   .datebar .d.past .v { color: var(--faint); font-weight: 400; }
-
-  #wx { display: flex; gap: 6px; overflow-x: auto; margin: -4px 0 12px; }
-  #wx .w { background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 5px 9px; font-size: 12px; white-space: nowrap; color: var(--dim); }
+  #wx { display: flex; gap: 14px; overflow-x: auto; margin: 10px 0 0; font-size: 12px; color: var(--dim); white-space: nowrap; }
+  #wx:empty { display: none; }
   #wx .w b { color: var(--text); font-weight: 600; }
+  .links { display: flex; flex-wrap: wrap; gap: 6px 18px; margin: 18px 0 0; font-size: 13px; font-weight: 600; }
+  .links a, .links button { background: none; border: none; color: var(--text); cursor: pointer; padding: 4px 0; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
+  .links a:hover, .links button:hover { color: var(--accent); }
+  .links .arr { color: var(--faint); font-weight: 400; }
+  #shHero .heroes { margin-top: 22px; }
 
-  .cols { display: grid; grid-template-columns: 1fr 1.15fr; gap: 14px; margin-bottom: 14px; }
-  @media (max-width: 1100px) { .cols { grid-template-columns: 1fr; } }
-  .box { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); min-width: 0; overflow: hidden; }
-  .box.gap { margin-bottom: 14px; }
-  .box h3 {
-    font-size: 10.5px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .1em;
-    padding: 9px 12px; border-bottom: 1px solid var(--line); display: flex; align-items: center; gap: 8px; min-height: 36px;
-  }
-  .box h3 .r { margin-left: auto; font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11.5px; display: flex; gap: 10px; align-items: center; }
-  .box h3.tgl { cursor: pointer; user-select: none; }
-  .box h3.last, .box h3.collapsed { border-bottom: none; }
-  .box .pad { padding: 10px 12px; }
-  .box h3 button { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 6px; margin: -6px; display: inline-flex; gap: 5px; align-items: center; }
+  .pf { display: flex; flex-wrap: wrap; gap: 7px; }
+  .pfc { font-size: 12.5px; border: 1px solid var(--line2); border-radius: 999px; padding: 3px 11px; color: var(--dim); white-space: nowrap; }
+  .pfc b { font-weight: 600; color: var(--text); margin-left: 6px; }
+  .pfc.ok b { color: var(--green); } .pfc.warn b { color: var(--amber); } .pfc.bad b { color: var(--red); }
 
-  .linkbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
-  .linkbar a, .linkbar button {
-    border: 1px solid var(--line2); background: var(--panel); color: var(--text);
-    border-radius: 8px; padding: 8px 13px; font-size: 12.5px; font-weight: 600; cursor: pointer; min-height: 36px;
-    display: inline-flex; gap: 6px; align-items: center;
-  }
-  .linkbar a:hover, .linkbar button:hover { border-color: var(--accent); color: var(--accent); }
-  .linkbar .arr { color: var(--faint); font-weight: 400; }
-
-  /* ── Crew ── */
-  .cr { display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "n s" "d a" "x x"; gap: 3px 14px; padding: 9px 12px; border-bottom: 1px solid var(--line); align-items: baseline; }
+  .cr { display: grid; grid-template-columns: minmax(0,1fr) auto; grid-template-areas: "n s" "d a" "x x"; gap: 3px 14px; padding: 10px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
   .cr:last-child { border-bottom: none; }
+  .cr.am { grid-template-areas: "n a"; }
   .cr .n { grid-area: n; font-weight: 600; min-width: 0; }
-  .cr .role { color: var(--dim); font-weight: 400; font-size: 11.5px; margin-left: 7px; }
-  .cr .dts { grid-area: d; color: var(--dim); font-size: 12px; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .cr .st { grid-area: s; font-size: 12px; white-space: nowrap; text-align: right; }
-  .cr .act { grid-area: a; display: flex; gap: 14px; justify-content: flex-end; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  .cr .x { grid-area: x; color: var(--dim); font-size: 11.5px; }
+  .cr .role { color: var(--dim); font-weight: 400; font-size: 12px; margin-left: 7px; }
+  .cr .dts { grid-area: d; color: var(--dim); font-size: 12.5px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .cr .st { grid-area: s; font-size: 12.5px; white-space: nowrap; text-align: right; }
+  .cr .act { grid-area: a; display: flex; gap: 14px; justify-content: flex-end; white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 13px; }
+  .cr .x { grid-area: x; color: var(--dim); font-size: 12px; }
   .cr .x:empty { display: none; }
   .stat-ok { color: var(--green); } .stat-pencil { color: var(--amber); } .stat-other { color: var(--dim); }
 
-  /* ── Emails ── */
   .mail { border-bottom: 1px solid var(--line); }
   .mail:last-child { border-bottom: none; }
-  .mail > .hd { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; align-items: baseline; }
-  .mail > .hd:hover { background: var(--panel2); }
+  .mail > .hd { display: flex; gap: 10px; padding: 10px 0; cursor: pointer; align-items: baseline; }
+  .mail > .hd:hover .sub { color: var(--text); }
   .mail .from { font-weight: 600; white-space: nowrap; flex: none; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
   .mail .sub { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--dim); }
   .mail.open .sub { white-space: normal; color: var(--text); }
-  .mail .dt { color: var(--faint); font-size: 11.5px; white-space: nowrap; flex: none; }
-  .mail .body {
-    display: none; padding: 4px 12px 12px; color: #c6cdd5; font-size: 12.5px;
-    white-space: pre-wrap; word-break: break-word; border-top: 1px dashed var(--line);
-    max-height: 420px; overflow-y: auto;
-  }
+  .mail .dt { color: var(--faint); font-size: 12px; white-space: nowrap; flex: none; }
+  .mail .body { display: none; padding: 4px 0 12px; color: #c6cdd5; font-size: 13px; white-space: pre-wrap; word-break: break-word; max-height: 420px; overflow-y: auto; }
   .mail.open .body { display: block; }
-  .mail .to { color: var(--dim); font-size: 11px; padding: 4px 12px 0; display: none; }
+  .mail .to { color: var(--dim); font-size: 11.5px; display: none; }
   .mail.open .to { display: block; }
-  .mailfoot { padding: 10px 12px; font-size: 12px; display: flex; gap: 16px; border-top: 1px solid var(--line); }
+  .mailfoot { padding: 12px 0 0; font-size: 12.5px; }
 
-  /* ── Meeting notes ── */
   .mtg { border-bottom: 1px solid var(--line); }
   .mtg:last-child { border-bottom: none; }
-  .mtg > .hd { display: flex; gap: 10px; padding: 10px 12px; cursor: pointer; align-items: baseline; }
-  .mtg > .hd:hover { background: var(--panel2); }
+  .mtg > .hd { display: flex; gap: 10px; padding: 10px 0; cursor: pointer; align-items: baseline; }
   .mtg .ttl { font-weight: 600; flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .mtg.open .ttl { white-space: normal; }
-  .mtg .dt { color: var(--faint); font-size: 11.5px; white-space: nowrap; flex: none; }
+  .mtg .dt { color: var(--faint); font-size: 12px; white-space: nowrap; flex: none; }
   .mtg .mtag { font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 3px; letter-spacing: .05em; flex: none; }
   .mtag.spec { color: var(--green); background: var(--green-t); }
   .mtag.ment { color: var(--dim); background: var(--dim-t); }
   .flagdot { color: var(--amber); flex: none; }
-  .mtg .body { display: none; padding: 2px 12px 12px; }
+  .mtg .body { display: none; padding: 2px 0 12px; }
   .mtg.open .body { display: block; }
   .mtg .rel { color: var(--faint); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin-bottom: 5px; }
-  .mtg .sum { color: #c6cdd5; font-size: 12.5px; white-space: pre-wrap; word-break: break-word; }
+  .mtg .sum { color: #c6cdd5; font-size: 13px; white-space: pre-wrap; word-break: break-word; }
   .mtg .ai { margin: 9px 0 0; padding: 8px 10px; background: var(--panel2); border-radius: 6px; }
   .mtg .ai .h { font-size: 10.5px; font-weight: 700; color: var(--dim); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
   .mtg .ai ul { margin: 0; padding-left: 16px; }
-  .mtg .ai li { font-size: 12.5px; margin: 2px 0; }
-  .mtg .dflag { margin-top: 9px; padding: 7px 10px; border-radius: 6px; font-size: 12px; background: var(--amber-t); color: var(--amber); border: 1px solid rgba(227,168,58,.3); }
+  .mtg .ai li { font-size: 13px; margin: 2px 0; }
+  .mtg .dflag { margin-top: 9px; padding: 7px 10px; border-radius: 6px; font-size: 12.5px; background: var(--amber-t); color: var(--amber); }
 
   #notesView { white-space: pre-wrap; }
-  #notesEdit { display: none; padding: 8px 12px; }
-  #notesEdit textarea {
-    width: 100%; min-height: 120px; background: var(--bg); color: var(--text);
-    border: 1px solid var(--line2); border-radius: 6px; padding: 8px; font: inherit; resize: vertical;
-  }
+  #notesEdit { display: none; padding-top: 4px; }
+  #notesEdit textarea { width: 100%; min-height: 120px; background: var(--panel); color: var(--text); border: 1px solid var(--line2); border-radius: 8px; padding: 10px; font: inherit; resize: vertical; }
   #notesEdit .row2 { display: flex; gap: 8px; margin-top: 8px; }
-  #notesEdit button { border-radius: 6px; padding: 8px 16px; font-size: 13px; cursor: pointer; min-height: 38px; }
-  #notesSave { background: var(--accent); color: #04101f; border: none; font-weight: 700; }
+  #notesEdit button { border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer; min-height: 38px; }
+  #notesSave { background: var(--text); color: var(--bg); border: none; font-weight: 700; }
   #notesCancel { background: none; color: var(--dim); border: 1px solid var(--line2); }
-  #notesMsg { color: var(--green); font-size: 12px; align-self: center; }
+  #notesMsg { color: var(--green); font-size: 12.5px; align-self: center; }
+  .barrow { display: flex; gap: 10px; align-items: center; margin-bottom: 8px; }
+  .clientn { white-space: pre-wrap; color: var(--dim); margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--line2); }
+  .clientn b { color: var(--text); }
 
-  /* ── Radar: catches ── */
-  .rc { display: grid; grid-template-columns: 8px minmax(0,1fr) auto; gap: 0 12px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-  .rc[data-go] { cursor: pointer; }
-  .rc[data-go]:hover { background: var(--panel2); }
-  .rc:last-child { border-bottom: none; }
-  .rc .pip { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; }
-  .rc.s3 .pip { background: var(--red); box-shadow: 0 0 0 3px var(--red-t); }
-  .rc.s2 .pip { background: var(--amber); }
-  .rc.s1 .pip { border: 1.5px solid var(--faint); }
-  .rc .kx { font-size: 10px; font-weight: 700; letter-spacing: .09em; text-transform: uppercase; color: var(--faint); margin-bottom: 1px; }
-  .rc .kx b { color: var(--dim); font-weight: 700; }
-  .rc .tt { font-size: 13px; font-weight: 600; }
-  .rc .dd { color: var(--dim); font-size: 12.5px; margin-top: 1px; }
-  .rc .ss { font-family: var(--mono); font-size: 10.5px; color: var(--faint); margin-top: 4px; overflow-wrap: anywhere; }
-  .rc .rt { display: flex; gap: 6px; align-items: flex-start; }
-  .rc .due { font-size: 11.5px; color: var(--dim); white-space: nowrap; padding-top: 5px; font-variant-numeric: tabular-nums; }
-  .rc.s3 .due { color: var(--red); }
-  .rc .ack { width: 28px; height: 28px; border-radius: 7px; border: 1px solid var(--line2); background: none; color: var(--faint); cursor: pointer; display: grid; place-items: center; }
-  .rc .ack:hover { color: var(--green); border-color: var(--green); }
-  .rc .ack .ic { vertical-align: 0; }
-  .rc.acked { opacity: .55; }
-  .rc.acked .ack { color: var(--green); border-color: rgba(63,207,124,.4); }
-  .rsec { padding: 7px 12px 6px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); background: var(--bg); border-bottom: 1px solid var(--line); display: flex; gap: 8px; }
-  .rsec.s3 { color: var(--red); } .rsec.s2 { color: var(--amber); }
-  .rsec span { color: var(--faint); font-weight: 600; }
-  details.ackd { border-top: 1px solid var(--line); }
-  details.ackd summary { padding: 9px 12px; font-size: 11.5px; color: var(--dim); cursor: pointer; list-style: none; user-select: none; }
-  details.ackd summary::-webkit-details-marker { display: none; }
-  details.ackd summary::before { content: "▸ "; color: var(--faint); }
-  details.ackd[open] summary::before { content: "▾ "; }
-  details.ackd[open] summary { border-bottom: 1px solid var(--line); }
-  .rfoot { padding: 9px 12px; font-size: 11px; color: var(--faint); border-top: 1px solid var(--line); line-height: 1.5; }
-  .rclear { padding: 22px 12px; text-align: center; color: var(--dim); }
-  .rclear b { display: block; color: var(--green); font-size: 13px; margin-bottom: 2px; }
-  .rwarn { margin-bottom: 12px; padding: 8px 12px; border-radius: 8px; font-size: 12px; background: var(--amber-t); color: var(--amber); border: 1px solid rgba(227,168,58,.3); }
-
-  /* ── Radar: preflight chips ── */
-  .pf { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); }
-  .pfc { font-size: 11.5px; border: 1px solid var(--line2); border-radius: 999px; padding: 2px 10px; color: var(--dim); white-space: nowrap; }
-  .pfc b { font-weight: 600; color: var(--text); margin-left: 5px; }
-  .pfc.ok b { color: var(--green); } .pfc.warn b { color: var(--amber); } .pfc.bad b { color: var(--red); }
-
-  /* ── Radar: home ── */
-  .rhead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 6px 16px; margin-bottom: 14px; }
-  .rhead h2 { font-size: 22px; font-weight: 700; letter-spacing: -.015em; }
-  .rsum { color: var(--dim); font-size: 13px; margin-top: 2px; }
-  .rsum b { color: var(--text); font-weight: 600; } .rsum b.hot { color: var(--red); } .rsum b.warm { color: var(--amber); }
-  .rstat { color: var(--faint); font-size: 11px; white-space: nowrap; }
-  .rgrid { display: grid; grid-template-columns: minmax(0,1.45fr) minmax(0,1fr); grid-template-areas: "tl tl" "c ag"; gap: 14px; align-items: start; }
-  .rgrid .a-tl { grid-area: tl; } .rgrid .a-c { grid-area: c; } .rgrid .a-ag { grid-area: ag; }
-  @media (max-width: 1100px) { .rgrid { grid-template-columns: minmax(0,1fr); grid-template-areas: "c" "ag" "tl"; } }
-  @media (min-width: 1101px) { .rgrid .a-ag { position: sticky; top: 14px; } }
-  #radarBox .rc .ss { display: none; }
-
-  /* ── Radar: run of show ── */
+  /* Run of show */
   .tlwrap { overflow-x: auto; }
-  .tl { display: grid; grid-template-columns: 148px minmax(0,1fr); gap: 5px 0; align-items: center; min-width: 620px; padding: 10px 14px 12px 12px; }
-  .tl .lab { font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; color: var(--dim); }
+  .tl { display: grid; grid-template-columns: 148px minmax(0,1fr); gap: 5px 0; align-items: center; min-width: 600px; padding: 4px 2px 2px 0; }
+  .tl .lab { font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-right: 12px; color: var(--dim); }
   .tl .lab.me { color: var(--text); font-weight: 600; }
   .tl .lab[data-go] { cursor: pointer; } .tl .lab[data-go]:hover { color: var(--text); }
-  .tl .ax { position: relative; height: 15px; }
+  .tl .ax { position: relative; height: 16px; }
   .tl .ax span { position: absolute; top: 0; font-size: 10.5px; color: var(--faint); white-space: nowrap; font-variant-numeric: tabular-nums; padding-left: 4px; }
   .tl .trk { position: relative; height: 24px; background-image: linear-gradient(90deg, var(--line) 1px, transparent 1px); }
   .tl .trk.me { border-bottom: 1px solid var(--line); height: 29px; margin-bottom: 2px; }
@@ -336,42 +285,42 @@
   .bar[data-go] { cursor: pointer; }
   .bar .bl { position: relative; z-index: 1; padding: 0 6px; }
   .bar .core { position: absolute; top: 0; bottom: 0; }
-  .bar.travel { background: var(--accent-t); color: #cfe4ff; box-shadow: inset 0 0 0 1px rgba(106,174,255,.42); }
+  .bar.travel { background: var(--accent-t); box-shadow: inset 0 0 0 1px rgba(106,174,255,.42); }
   .bar.travel .core { background: rgba(106,174,255,.55); }
-  .bar.remote { color: var(--dim); box-shadow: inset 0 0 0 1px var(--line2); background: var(--dim-t); }
-  .bar.remote .core { background: rgba(139,149,161,.26); }
+  .bar.remote { box-shadow: inset 0 0 0 1px var(--line2); background: var(--dim-t); }
+  .bar.remote .core { background: rgba(141,151,163,.26); }
   .bar.you { background: var(--text); color: var(--bg); font-weight: 700; }
   .bar.you.tent { background: none; color: var(--text); box-shadow: inset 0 0 0 1px var(--dim); font-weight: 600; }
   .bar.away { background: repeating-linear-gradient(135deg, rgba(227,168,58,.3) 0 5px, rgba(227,168,58,.1) 5px 10px); color: var(--amber); box-shadow: inset 0 0 0 1px rgba(227,168,58,.55); font-weight: 700; }
-  .tick { position: absolute; top: 2px; width: 8px; height: 8px; margin-left: -4px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; top: 8px; z-index: 2; box-shadow: 0 0 0 2px var(--panel); }
+  .tick { position: absolute; top: 8px; width: 8px; height: 8px; margin-left: -4px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; z-index: 2; box-shadow: 0 0 0 2px var(--bg); }
   .now { position: absolute; top: -4px; bottom: -4px; width: 2px; margin-left: -1px; background: var(--red); z-index: 3; border-radius: 1px; }
-  .tlkey { display: flex; gap: 12px; align-items: center; color: var(--faint); }
-  .tlkey i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; margin-right: 5px; vertical-align: 0; }
+  .tlkey { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--faint); font-size: 12px; margin-top: 12px; }
+  .tlkey i { display: inline-block; width: 12px; height: 8px; border-radius: 2px; margin-right: 6px; }
   .tlkey .k-t { background: var(--accent-t); box-shadow: inset 0 0 0 1px rgba(106,174,255,.42); } .tlkey .k-r { background: var(--dim-t); box-shadow: inset 0 0 0 1px var(--line2); }
   .tlkey .k-d { background: rgba(106,174,255,.55); }
-  .tlkey .k-s { width: 7px; height: 7px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; margin-right: 7px; }
+  .tlkey .k-s { width: 7px; height: 7px; background: var(--amber); transform: rotate(45deg); border-radius: 1px; margin-right: 8px; }
 
-  /* ── Radar: agenda ── */
-  .ag { display: grid; grid-template-columns: 78px minmax(0,1fr); }
-  .ag .dy { padding: 9px 0 9px 12px; border-bottom: 1px solid var(--line); font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+  /* Agenda */
+  .ag { display: grid; grid-template-columns: 92px minmax(0,1fr); }
+  .ag .dy { padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 12.5px; color: var(--dim); font-variant-numeric: tabular-nums; }
   .ag .dy b { display: block; color: var(--text); font-weight: 600; }
   .ag .dy.today b { color: var(--red); }
-  .ag .its { padding: 7px 12px 7px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+  .ag .its { padding: 7px 0; border-bottom: 1px solid var(--line); display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .ag > :nth-last-child(-n+2) { border-bottom: none; }
-  .agi { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; font-size: 12.5px; min-width: 0; padding: 2px 0; }
+  .agi { display: flex; gap: 10px; align-items: baseline; justify-content: space-between; min-width: 0; padding: 2px 0; }
   .agi[data-go] { cursor: pointer; } .agi[data-go]:hover .nm { color: var(--accent); }
-  .agi .k { font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; flex: none; text-align: right; }
+  .agi .k { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; flex: none; text-align: right; }
   .agi .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .agi.ship .k { color: var(--amber); } .agi.in .k { color: var(--accent); } .agi.show .k { color: var(--green); } .agi.out .k { color: var(--dim); } .agi.me .k { color: var(--text); }
 
-  /* ── Tasks ── */
-  .tkcat { display: flex; gap: 10px; align-items: center; padding: 7px 12px 6px; background: var(--bg); border-bottom: 1px solid var(--line); font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
-  .tkcat .n { color: var(--faint); font-weight: 600; letter-spacing: .04em; text-transform: none; font-size: 11px; }
-  .tkall { margin-left: auto; background: none; border: 1px solid var(--line2); border-radius: 6px; color: var(--dim); font-size: 11px; padding: 4px 9px; cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 600; }
+  /* Tasks */
+  .tkcat { display: flex; gap: 10px; align-items: center; padding: 14px 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); }
+  .tkcat .n { color: var(--faint); font-weight: 600; letter-spacing: .02em; text-transform: none; font-size: 12px; }
+  .tkall { margin-left: auto; background: none; border: 1px solid var(--line2); border-radius: 6px; color: var(--dim); font-size: 11.5px; padding: 4px 9px; cursor: pointer; text-transform: none; letter-spacing: 0; font-weight: 600; }
   .tkall:hover { color: var(--text); border-color: var(--dim); }
   .tkall.armed { color: var(--amber); border-color: var(--amber); }
-  .tk { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 0 10px; align-items: start; padding: 8px 12px; border-bottom: 1px solid var(--line); }
-  .tkb { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line2); background: none; cursor: pointer; display: grid; place-items: center; color: var(--bg); font-weight: 700; font-size: 13px; line-height: 1; margin-top: -1px; }
+  .tk { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 0 10px; align-items: start; padding: 8px 0; border-top: 1px solid var(--line); }
+  .tkb { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line2); background: none; cursor: pointer; display: grid; place-items: center; color: var(--bg); font-weight: 700; font-size: 13px; line-height: 1; }
   .tkb:hover { border-color: var(--accent); }
   .tkb .ic { width: 12px; height: 12px; stroke-width: 2.2; vertical-align: 0; }
   .tk.prog .tkb { border-color: var(--amber); color: var(--amber); }
@@ -379,53 +328,44 @@
   .tk.closed.nn .tkb { background: var(--faint); border-color: var(--faint); }
   .tk .nm { min-width: 0; }
   .tk.closed .nm { color: var(--faint); text-decoration: line-through; }
-  .tk .due { font-size: 11.5px; color: var(--dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .tk .due { font-size: 12px; color: var(--dim); white-space: nowrap; font-variant-numeric: tabular-nums; }
   .tk .due.late { color: var(--red); } .tk .due.soon { color: var(--amber); }
   .tkmenu { grid-column: 2 / -1; display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 0 2px; }
-  .tkmenu button { font-size: 12px; padding: 6px 11px; min-height: 32px; border: 1px solid var(--line2); border-radius: 7px; background: var(--panel2); color: var(--text); cursor: pointer; }
-  .tkmenu button:hover { border-color: var(--dim); }
+  .tkmenu button { font-size: 12.5px; padding: 6px 11px; min-height: 32px; border: 1px solid var(--line2); border-radius: 7px; background: var(--panel2); color: var(--text); cursor: pointer; }
   .tkmenu button.on { border-color: var(--accent); color: var(--accent); }
-  #tasksBody details.ackd { border-top: none; border-bottom: 1px solid var(--line); }
-  .tkfoot { padding: 8px 12px; font-size: 11.5px; color: var(--faint); min-height: 34px; }
+  .tkfoot { padding: 10px 0 0; font-size: 12px; color: var(--faint); min-height: 30px; }
   .tkfoot.ok { color: var(--green); } .tkfoot.err { color: var(--red); }
 
-  #msg { text-align: center; color: var(--dim); padding: 50px 20px; }
-  #errBar {
-    display: none; margin: 8px 14px; background: var(--red-t); color: var(--red);
-    border: 1px solid rgba(255,98,87,.4); border-radius: 8px; padding: 8px 12px; font-size: 13px;
-  }
+  #msg { color: var(--dim); padding: 50px 0; }
+  #errBar { display: none; margin: 8px 16px; background: var(--red-t); color: var(--red); border-radius: 8px; padding: 8px 12px; font-size: 13px; }
   #errBar button { background: none; border: 1px solid var(--red); color: var(--red); border-radius: 5px; padding: 6px 12px; margin-left: 10px; cursor: pointer; }
   .spin { display: inline-block; animation: rot 1s linear infinite; }
   @keyframes rot { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) { .spin { animation: none; } * { transition: none !important; } }
 
-  /* ── Mobile ── */
+  /* ── Phone: one column. The brief is the first screen; shows are listed inside it. ── */
   @media (max-width: 760px) {
-    #main.show-detail #list { display: none; }
-    #main:not(.show-detail) #detail { display: none; }
-    #list { width: 100%; border-right: none; }
-    #backBtn { display: block; }
-    #detail .inner { padding: 10px 12px calc(60px + env(safe-area-inset-bottom)); }
-    #topStats span:nth-child(n+3) { display: none; }
-    #topbar { gap: 10px; padding-left: 12px; padding-right: 10px; }
-    #topbar h1 { letter-spacing: .12em; }
-    #topStats { gap: 10px; }
-    #refreshBtn { min-width: 40px; }
-    .datebar .d { min-width: 78px; }
-    .lrow { padding: 13px 12px 12px; }
-    .rrow { padding: 14px 12px; }
-    .rhead h2 { font-size: 20px; }
-    .tl { grid-template-columns: 104px minmax(0,1fr); min-width: 560px; }
-    .tlkey { display: none; }
-    .rc .ack { width: 34px; height: 34px; }
-    .rc .ss { display: none; }
-    .tk { padding: 10px 12px; grid-template-columns: 30px minmax(0,1fr) auto; }
+    #list { display: none; }
+    .only-m { display: block; }
+    body:not(.home) #backBtn { display: block; }
+    #detail .inner { padding: 22px 18px calc(70px + env(safe-area-inset-bottom)); }
+    body:not(.home) #detail .inner { padding-top: 12px; }
+    .bhead { font-size: 28px; }
+    .sh-h { font-size: 25px; }
+    .hero h3 { font-size: 17px; }
+    .hero-a .src { flex-basis: 100%; margin: 2px 0 0; }
+    .acc-h { padding: 16px 0; }
+    .srow { padding: 12px 10px; }
+    .arch-btn { display: none !important; }
+    .tl { grid-template-columns: 104px minmax(0,1fr); min-width: 540px; }
+    .tk { padding: 10px 0; grid-template-columns: 30px minmax(0,1fr) auto; }
     .tkb { width: 26px; height: 26px; }
     .tkmenu button { min-height: 38px; padding: 8px 12px; }
+    .ag { grid-template-columns: 80px minmax(0,1fr); }
   }
 </style>
 </head>
-<body>
+<body class="home">
 
 <div id="pinGate">
   <h1>SHOW OPS</h1>
@@ -445,7 +385,7 @@
   <div id="main">
     <div id="list"></div>
     <div id="detail">
-      <button id="backBtn">‹ All shows</button>
+      <button id="backBtn">‹ Brief</button>
       <div class="inner" id="detailInner"><div id="msg">Loading shows…</div></div>
     </div>
   </div>
@@ -682,7 +622,8 @@ const ICONS = {
   up:    '<path d="M8 11V2.6M4.6 5.8L8 2.4l3.4 3.4M2.6 13.4h10.8"/>',
   edit:  '<path d="M10.6 2.6l2.8 2.8-7.6 7.6-3.4.6.6-3.4z"/>',
   list:  '<path d="M5.6 4h8M5.6 8h8M5.6 12h8"/><path d="M2.2 4h.6M2.2 8h.6M2.2 12h.6"/>',
-  file:  '<path d="M2.2 4.2h4l1.4 1.6h6.2v7H2.2z"/>'
+  file:  '<path d="M2.2 4.2h4l1.4 1.6h6.2v7H2.2z"/>',
+  chev:  '<path d="M6 3.5l4.5 4.5L6 12.5"/>'
 };
 const ic = n => `<svg class="ic" viewBox="0 0 16 16" aria-hidden="true">${ICONS[n] || ""}</svg>`;
 
@@ -952,139 +893,178 @@ function crewRisk(s) {
   return null;
 }
 
+// ════════════════════════════════════════════════
+// OPEN/CLOSED STATE — every section starts closed; the page remembers what this reader opens
+// ════════════════════════════════════════════════
+let _ui = {};
+try { _ui = JSON.parse(localStorage.getItem("ui_open") || "{}") || {}; } catch (e) { _ui = {}; }
+const isOpen = (id, def) => id in _ui ? !!_ui[id] : !!def;
+function setOpen(id, v) {
+  _ui[id] = v ? 1 : 0;
+  try { localStorage.setItem("ui_open", JSON.stringify(_ui)); } catch (e) {}
+}
+// A row that opens: label on the left, a one-line summary on the right, the detail underneath.
+function acc(id, label, summary, body) {
+  const o = isOpen(id, false);
+  return `<section class="acc${o ? " open" : ""}" data-acc="${id}">
+    <button class="acc-h" aria-expanded="${o}"><span class="acc-l">${label}</span><span class="acc-s" data-accs="${id}">${summary || ""}</span><span class="acc-c">${ic("chev")}</span></button>
+    <div class="acc-b" data-accb="${id}"${o ? "" : " hidden"}>${body}</div>
+  </section>`;
+}
+function wireAcc(root, onOpen) {
+  root.querySelectorAll(".acc-h").forEach(h => h.addEventListener("click", () => {
+    const sec = h.parentElement, id = sec.dataset.acc, o = !sec.classList.contains("open");
+    sec.classList.toggle("open", o);
+    h.setAttribute("aria-expanded", String(o));
+    sec.querySelector(".acc-b").hidden = !o;
+    setOpen(id, o);
+    if (o && onOpen) onOpen(id);
+  }));
+}
+const accBody = id => document.querySelector(`[data-accb="${id}"]`);
+const accSum = (id, html) => { const e = document.querySelector(`[data-accs="${id}"]`); if (e) e.innerHTML = html; };
+
+let _homeScroll = 0;
 function selectShow(id) {
+  const pane = document.getElementById("detail");
+  if (selectedId === "radar" && id !== "radar") _homeScroll = pane.scrollTop;
   selectedId = id;
   renderList(); renderDetail();
-  document.getElementById("main").classList.add("show-detail");
-  document.getElementById("detail").scrollTop = 0;
+  pane.scrollTop = id === "radar" ? _homeScroll : 0;
 }
 
 // ════════════════════════════════════════════════
-// RENDER — list + stats
+// RENDER — show rows (sidebar on a laptop, inside the brief on a phone)
 // ════════════════════════════════════════════════
-function renderList() {
+function whenTxt(s) {
+  const st = stateOf(s);
+  if (st === "done") return "Wrapped";
+  if (st === "live") return "Live";
+  const dl = deadlineOf(s);
+  if (!dl.d) return "Dates TBD";
+  const d = daysFromToday(dl.d);
+  const verb = dl.ship ? "Ships" : "Loads in";
+  if (d === 0) return verb + " today";
+  if (d === 1) return verb + " tomorrow";
+  return dl.ship ? `Ships in ${d}d` : `Load-in ${d}d`;
+}
+function showCounts(id) {
+  const o = { n3: 0, n2: 0, n1: 0, ack: 0 };
+  RADAR.catches.forEach(c => {
+    if (c.showId !== id) return;
+    if (isAcked(c)) o.ack++; else o["n" + c.sev]++;
+  });
+  return o;
+}
+function showRow(s, opts) {
+  const o = opts || {};
+  const st = stateOf(s);
+  const k = showCounts(s.id);
+  const checked = !!RADAR.t;
+  const dot = st === "done" ? "" : k.n3 ? " s3" : k.n2 ? " s2" : checked ? " s0" : "";
+  const bits = [s.travel ? "Travel" : "Remote"];
+  if (st === "done") bits.push(esc(agoTxt(s.tlEnd)) + (k.n1 ? " · tasks still open" : ""));
+  else if (k.n3) bits.push(`<span class="hot">${k.n3} need${k.n3 === 1 ? "s" : ""} you</span>`);
+  else if (k.n2) bits.push(`${k.n2} to watch`);
+  else if (checked) bits.push("On track");
+  const nNew = newMailCount(s);
+  if (nNew) bits.push(`<span class="new">${nNew} new email${nNew === 1 ? "" : "s"}</span>`);
+  if (newMtgCount(s)) bits.push(`<span class="new">new call notes</span>`);
+  const btn = o.restore ? `<button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button>`
+    : `<button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button><span class="wn${st === "live" ? " live" : ""}">${esc(whenTxt(s))}</span>`;
+  return `<div class="srow${s.id === selectedId ? " sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)} · ${esc(fmtRange(s.tlStart, s.tlEnd))}">
+    <div class="s1"><span class="sp${dot}"></span><span class="nm">${esc(shortTitle(s.title))}</span>${btn}</div>
+    <div class="s2">${bits.join(" · ")}</div>
+  </div>`;
+}
+function showGroups() {
   const t = today0();
-  const allActive = SHOWS.filter(s => !s.tlEnd || s.tlEnd >= t);
-  const allWrapped = SHOWS.filter(s => s.tlEnd && s.tlEnd < t).reverse();
-  const active = allActive.filter(s => !isArchived(s));
-  const wrapped = allWrapped.filter(s => !isArchived(s));
-  const archived = SHOWS.filter(s => isArchived(s));
-
-  const open = openCatches();
-  const n3 = open.filter(c => c.sev === 3).length, n2 = open.filter(c => c.sev === 2).length;
-  const radarLine = (RADAR.loading && !RADAR.t) ? "Running checks…"
-    : n3 ? `${n3} need${n3 === 1 ? "s" : ""} action · ${n2} to watch`
-    : n2 ? `${n2} to watch` : "Nothing flagged";
-  const radarRow = `<div class="rrow ${selectedId === "radar" ? "sel" : ""}" data-id="radar" tabindex="0" role="button">
-      <span class="ico">${ic("radar")}</span>
-      <div class="rb"><div class="t">Radar</div><div class="m">${radarLine}</div></div>
-      <span class="cn">${n3 ? `<span class="tag danger">${n3}</span>` : ""}${n2 ? `<span class="tag urgent">${n2}</span>` : ""}${!n3 && !n2 && RADAR.t ? `<span class="tag live">CLEAR</span>` : ""}</span>
-    </div>`;
-
-  const row = s => {
-    const st = stateOf(s);
-    const risk = crewRisk(s);
-    const tag = risk && risk.level === "red" ? '<span class="tag danger">NO CREW</span>'
-      : st === "live" ? '<span class="tag live">LIVE</span>'
-      : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>`
-      : st === "done" ? '<span class="tag done">DONE</span>' : "";
-    const dl = deadlineOf(s);
-    const shipChip = dl.ship && st !== "done" && st !== "live" && st !== "urgent"
-      ? `<span class="shp" title="Booth ships ${fmtD(dl.d)}">${ic("box")}${fmtD(dl.d)}</span>` : "";
-    const nNew = s.id === selectedId ? 0 : newMailCount(s);
-    const nNewMtg = s.id === selectedId ? 0 : newMtgCount(s);
-    const mtgChip = s.meetings && s.meetings.length
-      ? `<span title="meeting notes"${nNewMtg ? ' style="color:var(--green);font-weight:700"' : ""}>${ic("note")}${s.meetings.length}</span>` : "";
-    const sv = sevOf(s.id);
-    const pip = sv.m ? `<span class="sp s${sv.m}" title="${sv.n} open on Radar"></span>` : "";
-    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)}">
-      <div class="t">${pip}<span class="nm">${esc(shortTitle(s.title))}</span>${s.booth ? `<span class="bn">${esc(boothOf(s))}</span>` : ""}${tag}<span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span><button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button></div>
-      <div class="m mono">
-        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
-        <span class="cty">${esc(s.city || "")}</span>${shipChip}
-        <span class="cnt">${nNew ? `<span class="newdot">● ${nNew} new</span>` : ""}${mtgChip}<span title="emails">${ic("mail")}${s.mailTotal}</span><span title="crew">${ic("crew")}${s.crew.length}</span></span>
-      </div>
-    </div>`;
+  return {
+    active: SHOWS.filter(s => (!s.tlEnd || s.tlEnd >= t) && !isArchived(s)),
+    wrapped: SHOWS.filter(s => s.tlEnd && s.tlEnd < t && !isArchived(s)).reverse(),
+    archived: SHOWS.filter(s => isArchived(s))
   };
-
-  const archRow = s => {
-    const st = stateOf(s);
-    const tag = st === "done" ? '<span class="tag done">DONE</span>' : "";
-    return `<div class="lrow ${s.id === selectedId ? "sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)}">
-      <div class="t"><span class="nm">${esc(shortTitle(s.title))}</span>${tag}<span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span><button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button></div>
-      <div class="m mono">
-        <span>${fmtRange(s.tlStart, s.tlEnd)}</span>
-        <span class="cty">${esc(s.city || "")}</span>
-      </div>
-    </div>`;
+}
+// Active shows, then two quiet folds. `where` keeps the sidebar's and the phone list's fold state apart.
+function showListHtml(where) {
+  const g = showGroups();
+  const sec = (id, label, rows) => {
+    if (!rows) return "";
+    const o = isOpen(where + "." + id, false);
+    return `<div class="lsec tgl${o ? "" : " collapsed"}" data-tgl="${where}.${id}" role="button" tabindex="0" aria-expanded="${o}">${label}<span class="chev">▾</span></div>
+      <div class="quiet"${o ? "" : " hidden"}>${rows}</div>`;
   };
-
-  const archCollapsed = localStorage.getItem("arch_collapsed") !== "0";
-  const archSec = archived.length ? `
-    <div class="arch-sec">
-      <div class="lsec arch-toggle${archCollapsed ? " collapsed" : ""}" id="archHead" role="button" tabindex="0">
-        Archived · ${archived.length}<span class="chev">▾</span>
-      </div>
-      <div id="archList"${archCollapsed ? ' style="display:none"' : ''}>${archived.map(archRow).join("")}</div>
-    </div>` : "";
-
-  document.getElementById("list").innerHTML =
-    radarRow +
-    `<div class="lsec">Active · ${active.length}</div>` +
-    (active.map(row).join("") || `<div class="lrow" style="color:var(--dim)">No active shows</div>`) +
-    (wrapped.length ? `<div class="lsec">Recently wrapped</div>` + wrapped.map(row).join("") : "") +
-    archSec;
-
-  document.querySelectorAll("#list [data-id]").forEach(el => {
+  return (g.active.map(s => showRow(s)).join("") || `<div class="srow dimtxt">No active shows</div>`) +
+    sec("wrapped", `Recently wrapped · ${g.wrapped.length}`, g.wrapped.map(s => showRow(s)).join("")) +
+    sec("arch", `Archived · ${g.archived.length}`, g.archived.map(s => showRow(s, { restore: true })).join(""));
+}
+function wireShowList(root) {
+  const key = (el, fn) => el.addEventListener("keydown", e => { if (e.target === el && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); fn(); } });
+  root.querySelectorAll("[data-id]").forEach(el => {
     const go = () => selectShow(el.dataset.id);
-    el.addEventListener("click", go);
-    el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+    el.addEventListener("click", go); key(el, go);
   });
-
-  document.querySelectorAll(".arch-btn[data-arch]").forEach(btn => {
-    btn.addEventListener("click", e => { e.stopPropagation(); archiveShow(btn.dataset.arch); });
-  });
-  document.querySelectorAll(".restore-btn[data-restore]").forEach(btn => {
-    btn.addEventListener("click", e => { e.stopPropagation(); unarchiveShow(btn.dataset.restore); });
-  });
-
-  const ah = document.getElementById("archHead");
-  if (ah) {
-    const toggleArch = () => {
-      ah.classList.toggle("collapsed");
-      const list = document.getElementById("archList");
-      list.style.display = ah.classList.contains("collapsed") ? "none" : "";
-      localStorage.setItem("arch_collapsed", ah.classList.contains("collapsed") ? "1" : "0");
+  root.querySelectorAll(".arch-btn[data-arch]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); archiveShow(b.dataset.arch); }));
+  root.querySelectorAll(".restore-btn[data-restore]").forEach(b => b.addEventListener("click", e => { e.stopPropagation(); unarchiveShow(b.dataset.restore); }));
+  root.querySelectorAll("[data-tgl]").forEach(h => {
+    const tg = () => {
+      const o = h.classList.contains("collapsed");
+      h.classList.toggle("collapsed", !o); h.setAttribute("aria-expanded", String(o));
+      h.nextElementSibling.hidden = !o; setOpen(h.dataset.tgl, o);
     };
-    ah.addEventListener("click", toggleArch);
-    ah.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleArch(); } });
-  }
+    h.addEventListener("click", tg); key(h, tg);
+  });
 }
 
-function renderStats() {
-  const t = today0();
-  const active = SHOWS.filter(s => (!s.tlEnd || s.tlEnd >= t) && !isArchived(s));
-  const live = active.filter(s => stateOf(s) === "live").length;
-  const travel = active.filter(s => s.travel).length;
+function renderList() {
   const n3 = openCatches().filter(c => c.sev === 3).length;
-  const next = active.filter(s => s.tlStart && s.tlStart > t)[0];
-  document.getElementById("topStats").innerHTML =
-    `<span><b>${active.length}</b> active</span>` +
-    (n3 ? `<span class="hot"><b>${n3}</b> need${n3 === 1 ? "s" : ""} action</span>` : "") +
-    `<span><b>${live}</b> live</span><span><b>${travel}</b> travel</span>` +
-    (next ? `<span>next: <b>${esc(shortTitle(next.title))}</b> ${esc(countdownTxt(next))}</span>` : "");
+  const list = document.getElementById("list");
+  list.innerHTML =
+    `<div class="nav${selectedId === "radar" ? " sel" : ""}" data-id="radar" tabindex="0" role="button">${ic("radar")}<span>Brief</span>${n3 ? `<span class="cnt" title="${n3} need${n3 === 1 ? "s" : ""} you">${n3}</span>` : ""}</div>
+     <div class="lsec">Shows</div>` + showListHtml("side");
+  wireShowList(list);
+  // the phone keeps its show list inside the brief
+  const m = document.getElementById("mShows");
+  if (m) { m.innerHTML = showListHtml("m"); wireShowList(m); }
 }
 
+// The top bar stays quiet: the brief's headline carries the numbers.
+function renderStats() {}
+
 // ════════════════════════════════════════════════
-// RENDER — detail
+// RENDER — show page
 // ════════════════════════════════════════════════
+function showStatusHtml(s) {
+  if (stateOf(s) === "done") {
+    const k = showCounts(s.id);
+    return `Wrapped ${esc(agoTxt(s.tlEnd))}.${k.n1 ? " Tasks still open." : ""}`;
+  }
+  if (RADAR.loading && !RADAR.t) return `<span class="dimtxt">Checking…</span>`;
+  const k = showCounts(s.id);
+  if (k.n3) return `<b class="hot">${k.n3} thing${k.n3 === 1 ? "" : "s"} need${k.n3 === 1 ? "s" : ""} you.</b>${k.n2 ? ` <span class="dimtxt">${k.n2} more to watch.</span>` : ""}`;
+  if (k.n2) return `<b>Nothing needs you.</b> <span class="dimtxt">${k.n2} to watch.</span>`;
+  return `<b class="good">On track.</b> <span class="dimtxt">Nothing flagged.</span>`;
+}
+function crewSummary(s) {
+  if (!s.crew.length) return `<span class="hot">none assigned</span>`;
+  const pen = s.crew.filter(c => /pencil/i.test(c.status)).length;
+  const nc = s.crew.filter(c => /not conf/i.test(c.status)).length;
+  const emp = s.crew.filter(c => /^empty$/i.test(c.status)).length;
+  const bits = [];
+  if (pen) bits.push(`${pen} pencilled`);
+  if (nc) bits.push(`${nc} not confirmed`);
+  if (emp) bits.push(`${emp} empty`);
+  return `${s.crew.length} · ` + (bits.length ? `<span class="warm">${bits.join(", ")}</span>` : "all confirmed");
+}
+
 function renderDetail() {
   const el = document.getElementById("detailInner");
+  document.body.classList.toggle("home", selectedId === "radar");
   if (selectedId === "radar") { renderRadarHome(el); return; }
   const s = SHOWS.find(x => x.id === selectedId);
   if (!s) { el.innerHTML = `<div id="msg">${SHOWS.length ? "Select a show" : "No active shows assigned to you in Airtable."}</div>`; return; }
   const t = today0();
-  markSeen(s);
+  const st = stateOf(s);
 
   const dl = deadlineOf(s);
   const dateCells = Object.entries(s.dates).filter(([, d]) => d).map(([k, d]) =>
@@ -1092,8 +1072,12 @@ function renderDetail() {
        <div class="k">${k}</div><div class="v mono">${fmtD(d)}${sameDay(d, t) ? " · today" : ""}</div>
      </div>`).join("");
 
+  // ── Crew ──
   const fmtStints = c => c.stints.map(x => fmtRange(x.a, x.b)).join(", ") || "—";
-
+  const amRow = s.am.name ? `<div class="cr am">
+      <div class="n">${esc(s.am.name)}<span class="role">AM</span></div>
+      <div class="act">${s.am.phone ? `<a class="tap" href="${telHref(s.am.phone)}" aria-label="Call ${esc(s.am.name)}">${esc(fmtPhone(s.am.phone))}</a>` : ""}${s.am.email ? `<a class="tap" href="mailto:${esc(s.am.email)}" aria-label="Email ${esc(s.am.name)}">${ic("mail")}</a>` : ""}</div>
+    </div>` : "";
   const crewRows = s.crew.map(c => {
     const stl = String(c.status).toLowerCase();
     const cls = stl.includes("not conf") ? "stat-pencil" : stl.includes("confirm") ? "stat-ok" : stl.includes("pencil") ? "stat-pencil" : "stat-other";
@@ -1105,7 +1089,7 @@ function renderDetail() {
       <div class="act">${c.phone ? `<a class="tap" href="${telHref(c.phone)}" aria-label="Call ${esc(c.name)}">${esc(fmtPhone(c.phone))}</a>` : ""}${c.email ? `<a class="tap" href="mailto:${esc(c.email)}" aria-label="Email ${esc(c.name)}">${ic("mail")}</a>` : ""}</div>
       <div class="x">${esc(extra)}</div>
     </div>`;
-  }).join("") || `<div class="pad" style="color:var(--red)">No crew assigned</div>`;
+  }).join("") || `<div class="none hot">No crew assigned</div>`;
 
   // ── Granola meeting notes (newest first) ──
   const mtgs = (s.meetings || []).slice().sort((a, b) => (parseDate(b.date) || 0) - (parseDate(a.date) || 0));
@@ -1130,12 +1114,11 @@ function renderDetail() {
       </div>
     </div>`;
   }).join("");
-  const mtgBox = `
-    <div class="box gap">
-      <h3>${ic("note")} Meeting notes <span class="r">${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${mtgFlagsTotal ? ` · <span style="color:var(--amber)">${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${NOTES.generatedAt ? ` · synced ${esc(fmtD(parseDate(NOTES.generatedAt)))}` : ""}</span></h3>
-      ${mtgs.length ? mtgRows : '<div class="pad dimtxt">No call notes matched to this show yet. The notes sync pulls from Granola.</div>'}
-    </div>`;
+  const mtgSum = mtgs.length
+    ? `${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${mtgFlagsTotal ? ` · <span class="warm">${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${newMtgCount(s) ? ` · <span class="new">new</span>` : ""} · latest ${esc(fmtD(parseDate(mtgs[0].date)) || "")}`
+    : "none yet";
 
+  // ── Emails ──
   const gmailQ = encodeURIComponent('"' + (s.quote || s.title) + '"');
   const mailRows = s.mailMeta.map(m =>
     `<div class="mail" data-mail="${m.id}">
@@ -1147,81 +1130,65 @@ function renderDetail() {
        <div class="to"></div>
        <div class="body"></div>
      </div>`).join("");
+  const nNew = newMailCount(s);
+  const mailSum = s.mailTotal
+    ? `${s.mailTotal}${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + esc(agoTxt(s.mailMeta[0].date)) : ""}${nNew ? ` · <span class="new">${nNew} new</span>` : ""}`
+    : "none logged";
 
   const linkBtns = Object.entries(s.links).filter(([, u]) => u)
     .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} <span class="arr">↗</span></a>`).join("")
     + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable <span class="arr">↗</span></a>`
-    + `<button id="icsBtn">${ic("cal")} Add to Calendar</button>`;
+    + `<button id="icsBtn">${ic("cal")} Add to calendar</button>`;
 
   const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
+  const pmFirst = String(s.pmNotes || "").trim().split(/\n/)[0];
 
-  const notesBox = `
-    <div class="box gap">
-      <h3>${ic("edit")} PM notes <span class="r"><button id="notesEditBtn">Edit</button></span></h3>
-      <div class="pad" id="notesView">${s.pmNotes ? esc(s.pmNotes) : '<span style="color:var(--dim)">No PM notes — tap Edit to add.</span>'}</div>
-      <div id="notesEdit">
-        <textarea id="notesTa"></textarea>
-        <div class="row2">
-          <button id="notesSave">Save to Airtable</button>
-          <button id="notesCancel">Cancel</button>
-          <span id="notesMsg"></span>
-        </div>
+  const notesBody = `
+    <div class="barrow"><button class="btn" id="notesEditBtn">${ic("edit")} Edit</button></div>
+    <div id="notesView">${s.pmNotes ? esc(s.pmNotes) : '<span style="color:var(--dim)">No PM notes — tap Edit to add.</span>'}</div>
+    <div id="notesEdit">
+      <textarea id="notesTa"></textarea>
+      <div class="row2">
+        <button id="notesSave">Save to Airtable</button>
+        <button id="notesCancel">Cancel</button>
+        <span id="notesMsg"></span>
       </div>
-      ${s.clientNotes ? `<div class="pad" style="white-space:pre-wrap;color:var(--dim);border-top:1px dashed var(--line)"><b style="color:var(--text)">Client:</b> ${esc(s.clientNotes)}</div>` : ""}
-    </div>`;
+    </div>
+    ${s.clientNotes ? `<div class="clientn"><b>Client:</b> ${esc(s.clientNotes)}</div>` : ""}`;
 
-  const st = stateOf(s);
+  const kick = st === "live" ? `<span class="tag live">LIVE</span><span>through ${esc(fmtD(s.tlEnd))}</span>`
+    : st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>`
+    : `<span>${esc(countdownTxt(s))}</span>`;
+  const pf = preflight(s);
+
   el.innerHTML = `
-    <div class="dhead">
-      <h2>${esc(s.title)}</h2>
-      <span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>
-      ${st === "live" ? '<span class="tag live">LIVE</span>' : ""}
-      ${st === "urgent" ? `<span class="tag urgent">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
-      ${st === "upcoming" ? `<span class="tag done">${esc(countdownTxt(s).toUpperCase())}</span>` : ""}
+    <div class="sh-k"><span class="tag ${s.travel ? "travel" : "remote"}">${s.travel ? "TRAVEL" : "REMOTE"}</span>${kick}</div>
+    <h2 class="sh-h">${esc(shortTitle(s.title))}</h2>
+    <div class="sh-meta">
+      <span>${esc(s.title)}</span>
+      ${s.quote ? `<span>Quote ${esc(s.quote)}</span>` : ""}
+      ${s.booth && !s.title.includes("#" + s.booth) ? `<span>Booth ${esc(s.booth)}</span>` : ""}
+      ${s.status && s.status !== "Confirmed" ? `<span class="warm">${esc(s.status)}</span>` : ""}
+      ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.cityState ? ", " + esc(s.cityState) : ""}</span>` : ""}
     </div>
-    <div class="dsub mono">
-      ${s.quote ? `<span>Quote #${esc(s.quote)}</span>` : ""}
-      ${s.booth ? `<span>Booth ${esc(s.booth)}</span>` : ""}
-      ${s.status ? `<span style="color:${s.status === "Confirmed" ? "var(--green)" : "var(--amber)"}">${esc(s.status)}</span>` : ""}
-      ${s.venue ? `<span><a href="https://maps.google.com/?q=${mapsQ}" target="_blank" rel="noopener">${esc(s.venue)}</a>${s.cityState ? " · " + esc(s.cityState) : ""}</span>` : ""}
-      ${s.am.name ? `<span>AM: ${esc(s.am.name)}${s.am.phone ? ` · <a class="tap" href="${telHref(s.am.phone)}">${esc(fmtPhone(s.am.phone))}</a>` : ""}${s.am.email ? ` · <a class="tap" href="mailto:${esc(s.am.email)}" aria-label="Email ${esc(s.am.name)}">${ic("mail")}</a>` : ""}</span>` : ""}
-    </div>
+    <p class="sh-status" id="shStatus">${showStatusHtml(s)}</p>
+    <div id="shHero">${showHeroesHtml(s)}</div>
 
     <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
     <div id="wx"></div>
+    <div class="links">${linkBtns}</div>
 
-    <div class="linkbar">${linkBtns}</div>
-
-    <div class="box gap" id="radarBox">${showRadarHtml(s)}</div>
-
-    ${notesBox}
-
-    <div class="cols">
-      <div class="box">
-        <h3>${ic("crew")} Crew <span class="r">${s.crew.length}</span></h3>
-        ${crewRows}
-      </div>
-      <div class="box">
-        <h3>${ic("mail")} Emails <span class="r">${s.mailTotal} total${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + agoTxt(s.mailMeta[0].date) : ""}</span></h3>
-        <div id="mailList">${mailRows || '<div class="pad dimtxt">No emails linked in Airtable</div>'}</div>
-        <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>
-      </div>
-    </div>
-
-    <div class="box gap" id="tasksBox">
-      <h3 class="tgl collapsed" id="tasksHead" role="button" tabindex="0" aria-expanded="false">${ic("list")} My tasks <span class="r"><span id="tasksSum">${tasksSummary(s)}</span><span class="chev">▾</span></span></h3>
-      <div id="tasksBody" hidden></div>
-    </div>
-
-    ${mtgBox}
-
-    <div class="box gap">
-      <h3>${ic("file")} Files <span class="r">
-        <span id="fileMsg"></span>
-        <button id="uploadBtn">${ic("up")} Upload</button>
-        <input id="fileInput" type="file" multiple style="display:none">
-      </span></h3>
-      <div id="filesList"><div class="pad dimtxt">Loading files…</div></div>
+    <div class="accs">
+      ${acc("show.watch", "On watch", showWatchSum(s), showWatchHtml(s))}
+      ${acc("show.ready", "Readiness", pf.sum, pf.html)}
+      ${acc("show.crew", "Crew", crewSummary(s), amRow + crewRows)}
+      ${acc("show.tasks", "My tasks", `<span id="tasksSum">${tasksSummary(s)}</span>`, `<div id="tasksBody"></div>`)}
+      ${acc("show.mail", "Emails", mailSum, `<div id="mailList">${mailRows || '<div class="none">No emails linked in Airtable.</div>'}</div>
+        <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>`)}
+      ${acc("show.mtg", "Call notes", mtgSum, mtgs.length ? mtgRows : '<div class="none">No call notes matched to this show yet. The notes sync pulls from Granola.</div>')}
+      ${acc("show.files", "Files", `<span id="filesSum"></span>`, `<div class="barrow"><button class="btn" id="uploadBtn">${ic("up")} Upload</button><span id="fileMsg" class="src"></span><input id="fileInput" type="file" multiple style="display:none"></div>
+        <div id="filesList"><div class="none">Loading files…</div></div>`)}
+      ${acc("show.pm", "PM notes", pmFirst ? esc(pmFirst.length > 70 ? pmFirst.slice(0, 68) + "…" : pmFirst) : s.clientNotes ? "client notes only" : "none", notesBody)}
     </div>`;
 
   el.querySelectorAll(".mail .hd").forEach(hd => {
@@ -1234,8 +1201,18 @@ function renderDetail() {
     hd.addEventListener("click", tg);
     hd.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tg(); } });
   });
-  markMtgSeen(s);
-  wireCatches(document.getElementById("radarBox"));
+
+  // "new" badges clear when the section is actually looked at, not when the page is opened
+  const seen = id => {
+    if (id === "show.mail" && newMailCount(s)) { markSeen(s); renderList(); }
+    if (id === "show.mtg" && newMtgCount(s)) { markMtgSeen(s); renderList(); }
+    if (id === "show.tasks") openTasks(s);
+  };
+  wireAcc(el, seen);
+  ["show.mail", "show.mtg", "show.tasks"].forEach(id => { if (isOpen(id)) seen(id); });
+
+  wireCatches(document.getElementById("shHero"));
+  wireCatches(accBody("show.watch"));
   setupTasks(s);
   document.getElementById("icsBtn").addEventListener("click", () => downloadIcs(s));
   setupNotes(s);
@@ -1264,11 +1241,10 @@ let RADAR = { t: 0, loading: false, errs: [], extra: {}, tasks: [], xpos: [], an
 let _ack = {};
 try { _ack = JSON.parse(localStorage.getItem("radar_ack") || "{}") || {}; } catch (e) { _ack = {}; }
 const taskCache = {};      // eventId -> [task rows] (full list, lazy-loaded when the panel opens)
-const tasksOpen = {};      // eventId -> panel expanded this session
 const foldOpen = {};       // fold-out id -> open (so acknowledging one item doesn't snap the list shut)
 const fold = (id, label, inner, defOpen) => {
   const open = id in foldOpen ? foldOpen[id] : !!defOpen;
-  return `<details class="ackd" data-fold="${id}"${open ? " open" : ""}><summary>${label}</summary>${inner}</details>`;
+  return `<details class="sub" data-fold="${id}"${open ? " open" : ""}><summary>${label}</summary>${inner}</details>`;
 };
 
 const isAcked = c => !!_ack[c.key];
@@ -1371,8 +1347,14 @@ function refreshRadarViews() {
   if (s) refreshShowRadar(s);
 }
 function refreshShowRadar(s) {
-  const rb = document.getElementById("radarBox");
-  if (rb) { rb.innerHTML = showRadarHtml(s); wireCatches(rb); }
+  const st = document.getElementById("shStatus");
+  if (st) st.innerHTML = showStatusHtml(s);
+  const hero = document.getElementById("shHero");
+  if (hero) { hero.innerHTML = showHeroesHtml(s); wireCatches(hero); }
+  const wb = accBody("show.watch");
+  if (wb) { wb.innerHTML = showWatchHtml(s); wireCatches(wb); accSum("show.watch", showWatchSum(s)); }
+  const rb = accBody("show.ready");
+  if (rb) { const pf = preflight(s); rb.innerHTML = pf.html; accSum("show.ready", pf.sum); }
   const ts = document.getElementById("tasksSum");
   if (ts) ts.innerHTML = tasksSummary(s);
 }
@@ -1634,39 +1616,88 @@ function computeRadar() {
 }
 
 // ── Catch rendering ──
-function catchRow(c, withShow) {
-  const go = withShow && c.showId ? ` data-go="${c.showId}" tabindex="0" role="button"` : "";
-  const acked = isAcked(c);
-  return `<div class="rc s${c.sev}${acked ? " acked" : ""}"${go}>
-    <span class="pip"></span>
-    <div class="bd">
-      <div class="kx">${withShow && c.show ? `<b>${esc(c.show)}</b> · ` : ""}${esc(c.cat)}</div>
-      <div class="tt">${esc(c.title)}</div>
-      ${c.detail ? `<div class="dd">${esc(c.detail)}</div>` : ""}
-      ${c.src ? `<div class="ss">${esc(c.src)}</div>` : ""}
+// Two shapes: a "hero" for the few things that need a decision, and a one-line row for
+// everything else that opens to the why, the source and the actions.
+const clOpen = {};         // catch key -> expanded this session
+const HERO_MAX = 5;
+function heroHtml(c, withShow) {
+  const kick = [withShow && c.show ? esc(c.show) : "", esc(c.cat)].filter(Boolean).join(" · ");
+  return `<article class="hero">
+    <div class="hero-k">${kick}${c.when ? ` <i>· ${esc(dueTxt(c.when))}</i>` : ""}</div>
+    <h3>${esc(c.title)}</h3>
+    ${c.detail ? `<p>${esc(c.detail)}</p>` : ""}
+    <div class="hero-a">
+      ${withShow && c.showId ? `<button class="btn pri" data-go="${c.showId}">Open show</button>` : ""}
+      <button class="btn" data-ack="${esc(c.key)}" title="Hide until the facts change">Acknowledge</button>
+      ${c.src ? `<span class="src">${esc(c.src)}</span>` : ""}
     </div>
-    <div class="rt">${c.when ? `<span class="due">${esc(dueTxt(c.when))}</span>` : ""}<button class="ack" data-ack="${esc(c.key)}" title="${acked ? "Put back on Radar" : "Acknowledge: hide until the facts change"}" aria-label="${acked ? "Put back on Radar" : "Acknowledge"}: ${esc(c.title)}">${ic("check")}</button></div>
+  </article>`;
+}
+function heroesHtml(arr, withShow, foldId) {
+  if (!arr.length) return "";
+  const head = arr.slice(0, HERO_MAX), rest = arr.slice(HERO_MAX);
+  return `<div class="heroes">${head.map(c => heroHtml(c, withShow)).join("")}</div>` +
+    (rest.length ? fold(foldId, `${rest.length} more that need${rest.length === 1 ? "s" : ""} you`, `<div class="heroes" style="margin-top:0">${rest.map(c => heroHtml(c, withShow)).join("")}</div>`, false) : "");
+}
+function catchLine(c, withShow) {
+  const acked = isAcked(c), o = !!clOpen[c.key];
+  return `<div class="cl s${c.sev}${acked ? " acked" : ""}${o ? " open" : ""}" data-cl="${esc(c.key)}">
+    <button class="cl-h" aria-expanded="${o}"><span class="pip"></span><span class="cl-t">${esc(c.title)}</span>${c.when ? `<span class="cl-d">${esc(dueTxt(c.when))}</span>` : ""}</button>
+    <div class="cl-b"${o ? "" : " hidden"}>
+      ${c.detail ? `<p>${esc(c.detail)}</p>` : ""}
+      ${c.src ? `<div class="src">${esc(c.cat)} · ${esc(c.src)}</div>` : ""}
+      <div class="cl-a">
+        <button class="btn" data-ack="${esc(c.key)}">${acked ? "Put back" : "Acknowledge"}</button>
+        ${withShow && c.showId ? `<button class="btn ghost" data-go="${c.showId}">Open show</button>` : ""}
+      </div>
+    </div>
   </div>`;
+}
+// Catches grouped under their show (shows in date order; anything without a show last).
+function groupedLines(arr) {
+  if (!arr.length) return "";
+  const order = SHOWS.map(s => s.id);
+  const groups = new Map();
+  arr.forEach(c => { const k = c.showId || ""; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(c); });
+  const rank = k => { const i = order.indexOf(k); return i < 0 ? 1e6 : i; };
+  return [...groups.keys()].sort((a, b) => rank(a) - rank(b)).map(k => {
+    const cs = groups.get(k);
+    const head = k ? `<button class="grp-h" data-go="${k}" title="Open show">${esc(cs[0].show)} <span>${cs.length}</span></button>`
+                   : `<div class="grp-h" style="cursor:default">General <span>${cs.length}</span></div>`;
+    return head + cs.map(c => catchLine(c, false)).join("");
+  }).join("");
 }
 function wireCatches(root) {
   if (!root) return;
   root.querySelectorAll("details[data-fold]").forEach(d => d.addEventListener("toggle", () => { foldOpen[d.dataset.fold] = d.open; }));
-  root.querySelectorAll(".rc .ack").forEach(b => b.addEventListener("click", e => {
+  root.querySelectorAll(".cl-h").forEach(h => h.addEventListener("click", () => {
+    const row = h.parentElement, o = !row.classList.contains("open");
+    row.classList.toggle("open", o); h.setAttribute("aria-expanded", String(o));
+    row.querySelector(".cl-b").hidden = !o;
+    if (o) clOpen[row.dataset.cl] = 1; else delete clOpen[row.dataset.cl];
+  }));
+  root.querySelectorAll("[data-ack]").forEach(b => b.addEventListener("click", e => {
     e.stopPropagation();
+    delete clOpen[b.dataset.ack];
     toggleAck(b.dataset.ack);
     refreshRadarViews();
   }));
   root.querySelectorAll("[data-go]").forEach(el => {
     const go = () => selectShow(el.dataset.go);
-    el.addEventListener("click", go);
-    el.addEventListener("keydown", e => { if (e.target === el && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); go(); } });
+    el.addEventListener("click", e => { e.stopPropagation(); go(); });
+    if (el.tagName !== "BUTTON") el.addEventListener("keydown", e => { if (e.target === el && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); go(); } });
   });
 }
 
-function preflightHtml(s) {
+// Readiness: the standing facts about a show, as chips. Returns the chips and a one-line count.
+function preflight(s) {
   const x = RADAR.extra[s.id];
   const chips = [];
-  const chip = (label, val, cls) => chips.push(`<span class="pfc ${cls || ""}">${label}<b>${esc(val)}</b></span>`);
+  let ok = 0, open = 0;
+  const chip = (label, val, cls) => {
+    if (cls === "ok") ok++; else if (cls === "warn" || cls === "bad") open++;
+    chips.push(`<span class="pfc ${cls || ""}">${label}<b>${esc(val)}</b></span>`);
+  };
   const real = s.crew.filter(c => !/^(empty|away)$/i.test(c.status));
   const conf = real.filter(c => /confirm/i.test(c.status) && !/not conf/i.test(c.status)).length;
   chip("Crew", s.crew.length ? `${conf}/${s.crew.length} confirmed` : "none", !s.crew.length ? "bad" : conf === s.crew.length ? "ok" : "warn");
@@ -1675,7 +1706,7 @@ function preflightHtml(s) {
     const noted = trav.filter(c => c.travelInfo).length;
     chip("Travel notes", `${noted}/${trav.length}`, noted === trav.length ? "ok" : "warn");
   }
-  chip("Booth", s.booth ? "#" + s.booth : "missing", s.booth ? "" : "warn");
+  chip("Booth", s.booth ? "#" + s.booth : "missing", s.booth ? "ok" : "warn");
   if (x) {
     const mm = ["LoadIn Check", "LoadOut Check", "ShipDate Check"].filter(k => /mismatch/i.test(String(x[k] || ""))).length;
     chip("RentalWorks", (x["RWSynced Status"] ? String(x["RWSynced Status"]).toLowerCase() + " · " : "") + (mm ? `${mm} date mismatch${mm === 1 ? "" : "es"}` : "dates match"), mm ? "warn" : "ok");
@@ -1685,29 +1716,39 @@ function preflightHtml(s) {
     if (x["Rigging Needed"]) chip("Rigging", "required", "");
   }
   chip("AV binder", s.links["AV Binder"] ? "linked" : "no link", s.links["AV Binder"] ? "ok" : "");
-  return `<div class="pf">${chips.join("")}</div>`;
+  return {
+    html: `<div class="pf">${chips.join("")}</div>`,
+    sum: open ? `<span class="warm">${open} open</span> · ${ok} ready` : `${ok} ready`
+  };
 }
 
-function showRadarHtml(s) {
+// ── Show page: the Radar pieces ──
+function showHeroesHtml(s) {
+  return heroesHtml(catchesFor(s.id).filter(c => c.sev === 3 && !isAcked(c)), false, "s-more-" + s.id);
+}
+function showWatchSum(s) {
+  if (RADAR.loading && !RADAR.t) return "checking…";
+  const k = showCounts(s.id);
+  const bits = [];
+  if (k.n2) bits.push(`${k.n2} to watch`);
+  if (k.n1) bits.push(`${k.n1} FYI`);
+  if (k.ack) bits.push(`${k.ack} acknowledged`);
+  return bits.join(" · ") || "nothing flagged";
+}
+function showWatchHtml(s) {
   const cs = catchesFor(s.id);
   const act = cs.filter(c => !isAcked(c)), acked = cs.filter(isAcked);
-  const n3 = act.filter(c => c.sev === 3).length, n2 = act.filter(c => c.sev === 2).length;
-  const sum = (RADAR.loading && !RADAR.t) ? "running checks…"
-    : n3 ? `<span style="color:var(--red)">${n3} need${n3 === 1 ? "s" : ""} action</span>${n2 ? ` · ${n2} to watch` : ""}`
-    : n2 ? `<span style="color:var(--amber)">${n2} to watch</span>`
-    : act.length ? `${act.length} FYI` : `<span style="color:var(--green)">clear</span>`;
-  const main = act.filter(c => c.sev >= 2), fyi = act.filter(c => c.sev < 2);
-  return `<h3>${ic("radar")} Radar <span class="r">${sum}</span></h3>` + preflightHtml(s) +
-    (main.map(c => catchRow(c, false)).join("") || (fyi.length ? "" : `<div class="pad dimtxt">Nothing flagged on this show.</div>`)) +
-    (fyi.length ? fold("s-fyi-" + s.id, `FYI · ${fyi.length}`, fyi.map(c => catchRow(c, false)).join(""), !main.length) : "") +
-    (acked.length ? fold("s-ack-" + s.id, `Acknowledged · ${acked.length}`, acked.map(c => catchRow(c, false)).join(""), false) : "");
+  const main = act.filter(c => c.sev === 2), fyi = act.filter(c => c.sev === 1);
+  return (main.map(c => catchLine(c, false)).join("") || `<div class="none">Nothing to watch on this show.</div>`) +
+    (fyi.length ? fold("s-fyi", `FYI · ${fyi.length}`, fyi.map(c => catchLine(c, false)).join(""), false) : "") +
+    (acked.length ? fold("s-ack", `Acknowledged · ${acked.length}`, acked.map(c => catchLine(c, false)).join(""), false) : "");
 }
 
 // ── Run of show: to-scale strip of every active show plus where I am ──
 function timelineHtml() {
   const t = today0();
   const shows = SHOWS.filter(s => !isArchived(s) && stateOf(s) !== "done" && s.tlStart && s.tlEnd);
-  if (!shows.length) return `<div class="pad dimtxt">No active shows.</div>`;
+  if (!shows.length) return `<div class="none">No active shows.</div>`;
   const start = new Date(t); start.setDate(start.getDate() - ((start.getDay() + 6) % 7));   // Monday of this week
   const maxEnd = shows.reduce((m, s) => s.tlEnd > m ? s.tlEnd : m, t);
   const weeks = Math.min(14, Math.max(6, Math.ceil((dd(maxEnd, start) + 1) / 7)));
@@ -1788,7 +1829,7 @@ function agendaItems(days) {
 }
 function agendaHtml(days) {
   const items = agendaItems(days);
-  if (!items.length) return `<div class="pad dimtxt">Nothing scheduled in the next ${days} days.</div>`;
+  if (!items.length) return `<div class="none">Nothing scheduled in the next ${days} days.</div>`;
   const t = today0();
   const byDay = [];
   items.forEach(it => {
@@ -1807,46 +1848,70 @@ function agendaHtml(days) {
   }).join("") + `</div>`;
 }
 
-// ── Radar home ──
+// ── The brief (home) ──
+// What's next on the calendar, as a clause: "Vertex @ ASN ships in 4d".
+function nextUp() {
+  const it = agendaItems(45)[0];
+  if (!it) return "";
+  const when = dueTxt(it.d);
+  if (it.kind === "me") {
+    if (it.show) return `you join ${it.show} ${when}`;
+    if (/^Away/.test(it.extra)) return `you're a${it.extra.slice(1)}, starting ${when}`;
+    if (/^Last day/.test(it.extra)) return `your last day away is ${when}`;
+    return `${it.extra} ${when}`;
+  }
+  const verb = { "Travel in": "crew travel in", "Travel out": "crew travel out" }[it.label] || it.label.toLowerCase();
+  return `${it.show} ${verb} ${when}`;
+}
 function renderRadarHome(el) {
-  const t = today0();
+  const g = showGroups();
   const open = openCatches(), acked = RADAR.catches.filter(isAcked);
   const g3 = open.filter(c => c.sev === 3), g2 = open.filter(c => c.sev === 2), g1 = open.filter(c => c.sev === 1);
-  const nActive = SHOWS.filter(s => !isArchived(s) && (!s.tlEnd || s.tlEnd >= t)).length;
-  const sect = (label, cls, arr) => arr.length ? `<div class="rsec ${cls}">${label}<span>${arr.length}</span></div>` + arr.map(c => catchRow(c, true)).join("") : "";
+  const nAct = g.active.length;
   const firstRun = RADAR.loading && !RADAR.t;
-  const summary = !SHOWS.length ? "No active shows assigned to you in Airtable."
-    : firstRun ? "Running the cross-checks…"
-    : (g3.length || g2.length)
-      ? `${g3.length ? `<b class="hot">${g3.length} need${g3.length === 1 ? "s" : ""} action</b>` : ""}${g3.length && g2.length ? ", " : ""}${g2.length ? `<b class="warm">${g2.length} to watch</b>` : ""} across <b>${nActive}</b> active show${nActive === 1 ? "" : "s"}.`
-      : `Nothing needs you across <b>${nActive}</b> active show${nActive === 1 ? "" : "s"}.`;
-  const status = RADAR.loading ? "checking…" : RADAR.t ? "checked " + new Date(RADAR.t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
+  const nShows2 = new Set(g2.map(c => c.showId || "")).size;
+  const next = nextUp();
+
+  const head = !SHOWS.length ? "No active shows."
+    : firstRun ? "Checking your shows…"
+    : g3.length ? `${g3.length} thing${g3.length === 1 ? "" : "s"} need${g3.length === 1 ? "s" : ""} you.`
+    : "Nothing needs you right now.";
+  const sub = !SHOWS.length ? "Nothing is assigned to you in Airtable."
+    : firstRun ? "Running the cross-checks."
+    : [g2.length ? `<b>${g2.length}</b> ${g3.length ? "more " : ""}to watch across ${nShows2} show${nShows2 === 1 ? "" : "s"}.`
+                 : `${nAct} active show${nAct === 1 ? "" : "s"}, nothing else flagged.`,
+       next ? `Next: ${esc(next)}.` : ""].join(" ");
+  const checked = RADAR.loading ? "checking…" : RADAR.t ? "checked " + new Date(RADAR.t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
   const warn = RADAR.errs.length ? `<div class="rwarn">Some checks couldn't load this time: ${esc(RADAR.errs.join(", "))}. Everything else is current. Refresh to retry.</div>` : "";
 
+  const ag = agendaItems(14);
+  const travelN = g.active.filter(s => s.travel).length;
+  const last = g.active.reduce((m, s) => s.tlEnd && (!m || s.tlEnd > m) ? s.tlEnd : m, null);
+  const rows = [];
+  if (SHOWS.length) {
+    rows.push(acc("home.watch", "On watch", g2.length ? `${g2.length} across ${nShows2} show${nShows2 === 1 ? "" : "s"}` : "nothing",
+      groupedLines(g2) || `<div class="none">Nothing to watch.</div>`));
+    rows.push(acc("home.agenda", "Next 14 days", ag.length ? `${ag.length} date${ag.length === 1 ? "" : "s"}${next ? " · next: " + esc(next) : ""}` : "nothing scheduled", agendaHtml(14)));
+    rows.push(acc("home.timeline", "Run of show", `${nAct} active${travelN ? ` · you travel on ${travelN}` : ""}${last ? " · through " + esc(fmtD(last)) : ""}`,
+      `<div class="tlwrap">${timelineHtml()}</div><div class="tlkey"><span><i class="k-t"></i>you travel</span><span><i class="k-r"></i>remote</span><span><i class="k-d"></i>show days</span><span><i class="k-s"></i>booth ships</span></div>`));
+    if (g1.length) rows.push(acc("home.fyi", "FYI", `${g1.length} low-priority`, groupedLines(g1)));
+    if (acked.length) rows.push(acc("home.ack", "Acknowledged", `${acked.length} hidden until the facts change`, groupedLines(acked)));
+    rows.push(acc("home.about", "What gets checked", "on every load",
+      `<p class="about">RentalWorks dates against Airtable. Crew status. The same crew's bookings on other shows. Milestones that land while you're away. Flight and hotel notes. InfoDoc. Drawings. Your tasks. What was said on calls against what Airtable says. Gaps in logged email.</p>
+       <p class="about" style="margin-top:8px">Red needs a decision from you. Amber is worth a look. Acknowledge hides an item until the facts behind it change, then it comes back.</p>`));
+  }
+
   el.innerHTML = `
-    <div class="rhead">
-      <div><h2>Radar</h2><div class="rsum">${summary}</div></div>
-      <div class="rstat mono">${status}</div>
-    </div>
+    <div class="bdate"><span>${new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}</span><span>${checked}</span></div>
+    <h2 class="bhead">${head}</h2>
+    <p class="bsub">${sub}</p>
     ${warn}
-    <div class="rgrid">
-      <div class="box a-tl">
-        <h3>${ic("cal")} Run of show <span class="r tlkey"><span><i class="k-t"></i>you travel</span><span><i class="k-r"></i>remote</span><span><i class="k-d"></i>show days</span><span><i class="k-s"></i>booth ships</span></span></h3>
-        <div class="tlwrap">${timelineHtml()}</div>
-      </div>
-      <div class="box a-c">
-        <h3>${ic("radar")} Catches <span class="r">${open.length} open</span></h3>
-        ${sect("Needs action", "s3", g3)}${sect("Watch", "s2", g2)}
-        ${!g3.length && !g2.length ? (firstRun ? `<div class="rclear">Running checks…</div>` : `<div class="rclear"><b>All clear</b>Nothing needs action or watching on any active show.</div>`) : ""}
-        ${g1.length ? fold("h-fyi", `FYI · ${g1.length}`, g1.map(c => catchRow(c, true)).join(""), false) : ""}
-        ${acked.length ? fold("h-ack", `Acknowledged · ${acked.length}`, acked.map(c => catchRow(c, true)).join(""), false) : ""}
-        <div class="rfoot">Checked on every load: RentalWorks vs Airtable dates · crew status · the same crew's bookings on other shows · milestones while you're away · travel notes · InfoDoc · drawings · your tasks · call notes vs Airtable · email gaps. The tick acknowledges a catch until its facts change.</div>
-      </div>
-      <div class="box a-ag">
-        <h3>${ic("list")} Next 14 days</h3>
-        ${agendaHtml(14)}
-      </div>
-    </div>`;
+    ${heroesHtml(g3, true, "h-more")}
+    <div class="only-m"><div class="secl">Shows</div><div class="mshows" id="mShows"></div></div>
+    ${rows.length ? `<div class="accs">${rows.join("")}</div>` : ""}`;
+  const m = document.getElementById("mShows");
+  m.innerHTML = showListHtml("m"); wireShowList(m);
+  wireAcc(el);
   wireCatches(el);
 }
 
@@ -1858,8 +1923,8 @@ function tasksSummary(s) {
   const due = RADAR.tasks.filter(k => k.eid === s.id);
   const past = due.filter(k => k.ds === "P").length, week = due.filter(k => k.ds === "W").length;
   const bits = [];
-  if (past) bits.push(`<span style="color:var(--red)">${past} past due</span>`);
-  if (week) bits.push(`<span style="color:var(--amber)">${week} this week</span>`);
+  if (past) bits.push(`<span class="hot">${past} past due</span>`);
+  if (week) bits.push(`<span class="warm">${week} this week</span>`);
   if (rows) bits.push(rows.length ? `${rows.filter(taskIsOpen).length} open of ${rows.length}` : "none assigned");
   return bits.join(" · ") || (RADAR.t ? "nothing due" : "");
 }
@@ -1890,8 +1955,8 @@ function renderTasks(s) {
   const body = document.getElementById("tasksBody");
   if (!body) return;
   const rows = taskCache[s.id];
-  if (!rows) { body.innerHTML = '<div class="pad dimtxt">Loading tasks…</div>'; return; }
-  if (!rows.length) { body.innerHTML = '<div class="pad dimtxt">No tasks assigned to you on this show.</div>'; return; }
+  if (!rows) { body.innerHTML = '<div class="none">Loading tasks…</div>'; return; }
+  if (!rows.length) { body.innerHTML = '<div class="none">No tasks assigned to you on this show.</div>'; return; }
   const rank = c => { const i = TASK_CAT_ORDER.indexOf(c); return i < 0 ? 9 : i; };
   const cats = [...new Set(rows.map(r => r.cat))].sort((a, b) => rank(a) - rank(b));
   body.innerHTML = cats.map(cat => {
@@ -1954,27 +2019,22 @@ async function markAllDone(s, cat) {
   }
 }
 
-function setupTasks(s) {
-  const head = document.getElementById("tasksHead"), body = document.getElementById("tasksBody");
-  if (!head || !body) return;
-  const show = async () => {
-    head.classList.remove("collapsed"); head.setAttribute("aria-expanded", "true"); body.hidden = false;
-    renderTasks(s);
-    if (!taskCache[s.id]) {
-      try { await loadTasks(s, false); }
-      catch (e) { if (selectedId === s.id) body.innerHTML = `<div class="pad" style="color:var(--red)">Couldn't load tasks: ${esc(e.message)}</div>`; return; }
-      if (selectedId !== s.id) return;
-      renderTasks(s);
-      const ts = document.getElementById("tasksSum"); if (ts) ts.innerHTML = tasksSummary(s);
-    }
-  };
-  const toggle = () => {
-    if (body.hidden) { tasksOpen[s.id] = true; show(); }
-    else { tasksOpen[s.id] = false; body.hidden = true; head.classList.add("collapsed"); head.setAttribute("aria-expanded", "false"); }
-  };
-  head.addEventListener("click", toggle);
-  head.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+// The task list loads the first time its row is opened.
+async function openTasks(s) {
+  const body = document.getElementById("tasksBody");
+  if (!body) return;
+  renderTasks(s);
+  if (taskCache[s.id]) return;
+  try { await loadTasks(s, false); }
+  catch (e) { if (selectedId === s.id) body.innerHTML = `<div class="none hot">Couldn't load tasks: ${esc(e.message)}</div>`; return; }
+  if (selectedId !== s.id) return;
+  renderTasks(s);
+  const ts = document.getElementById("tasksSum"); if (ts) ts.innerHTML = tasksSummary(s);
+}
 
+function setupTasks(s) {
+  const body = document.getElementById("tasksBody");
+  if (!body) return;
   body.addEventListener("click", ev => {
     const all = ev.target.closest(".tkall");
     if (all) {
@@ -2006,10 +2066,7 @@ function setupTasks(s) {
       dot.setAttribute("aria-expanded", "true");
     }
   });
-
-  if (tasksOpen[s.id]) show();
 }
-
 // ════════════════════════════════════════════════
 // FILES — view + upload (worker /upload → KV → Airtable)
 // ════════════════════════════════════════════════
@@ -2030,6 +2087,8 @@ async function loadFiles(s, force) {
       };
     }
     const recs = filesCache[s.id].recs;
+    const fsum = document.getElementById("filesSum");
+    if (fsum) fsum.textContent = recs.length ? recs.length + (recs.length === 1 ? " file" : " files") : "none yet";
     if (!recs.length) { el.innerHTML = '<div class="pad" style="color:var(--dim)">No files yet. Upload drawings, photos, or docs.</div>'; return; }
     el.innerHTML = recs.map(r => {
       const f = r.fields;
@@ -2043,7 +2102,7 @@ async function loadFiles(s, force) {
           ${esc(a.filename || "file")} <span style="color:var(--dim)">${a.size ? Math.round(a.size / 1024) + " KB" : ""}</span>
         </a>`;
       }).join("") || '<span style="color:var(--dim)">(no attachment)</span>';
-      return `<div style="padding:9px 12px;border-bottom:1px solid var(--line)">
+      return `<div style="padding:9px 0;border-bottom:1px solid var(--line)">
         <div style="display:flex;gap:10px;align-items:baseline;margin-bottom:5px">
           <b>${esc(f["Name"] || "Untitled")}</b>
           ${f["Notes"] ? `<span style="color:var(--dim);font-size:12px">${esc(f["Notes"])}</span>` : ""}
@@ -2358,8 +2417,7 @@ async function tryPin() {
 document.getElementById("pinBtn").addEventListener("click", tryPin);
 document.getElementById("pinInput").addEventListener("keydown", e => { if (e.key === "Enter") tryPin(); });
 document.getElementById("refreshBtn").addEventListener("click", loadAll);
-document.getElementById("backBtn").addEventListener("click", () =>
-  document.getElementById("main").classList.remove("show-detail"));
+document.getElementById("backBtn").addEventListener("click", () => selectShow("radar"));
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden && lastLoad && Date.now() - lastLoad > 10 * 60 * 1000) loadAll();
 });

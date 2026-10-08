@@ -1,7 +1,9 @@
-# Show Ops Dashboard — SETUP (updated 2026-10-08, build r9)
+# Show Ops Dashboard — SETUP (updated 2026-10-08, build r10)
 
 **Live:** https://fuse-dashboard-proxy.iqlarodework.workers.dev/ — served by Cloudflare, PIN-gated (enforced; enter once per device).
 Data is fetched live from Airtable on every open. No daily regeneration. No push needed for data changes.
+
+**Full documentation** (architecture, Radar rules, Airtable queries, runbook, testing, changelog, handoff): `~/Documents/Work Shortcut/Work Shortcut/docs/show-ops-dashboard/`. Start with `HANDOFF.md`. All documentation is saved there; update its `CHANGELOG.md` and `HANDOFF.md` with every change.
 
 ## Rules for Claude — read before touching anything
 
@@ -31,6 +33,10 @@ Data is fetched live from Airtable on every open. No daily regeneration. No push
 - Per show: key dates (Booth Ship → Travel Out) + countdown, `URGENT_DAYS = 5` flag, crew (tap-to-call/email), AM contact, emails (new-mail count, latest senders/subjects, Gmail + reply-all links), Files (upload/delete via worker), Dropbox / AV Binder / InfoDoc / Airtable links, weather (open-meteo), .ics export.
 - Meeting Notes: Granola notes land in worker KV via `POST /notes` from the 7 AM sync. Never touches Airtable.
 - Shows auto-archive 7 days after Timeline End.
+
+## Layout: the Brief (r10, 2026-10-08)
+
+The home view (`selectedId === "radar"`) is the Brief: a headline ("N things need you."), one line of context, and only the red (sev 3) items. Everything else is a closed row with a one-line summary, built with `acc(id, label, summary, body)`; open state is remembered per device in `localStorage ui_open`. Show pages follow the same pattern (status sentence, red items, dates, links, then rows). On a phone the sidebar is hidden and the show list sits inside the Brief. Rule for changes: new information gets a row and a summary, not a spot on the first screen. Details: `ARCHITECTURE.md` in the docs folder.
 
 ## Radar (added 2026-10-08, r9)
 
