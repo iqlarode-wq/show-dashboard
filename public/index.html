@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-08 r10.1 (Brief layout; remote-oversight override) -->
+<!-- build: 2026-10-09 r11 (Resolve / Snooze / In progress on every flag; synced across devices) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -130,7 +130,21 @@
   .hero p { color: var(--dim); max-width: 64ch; }
   .hero-a { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
   .src { font-size: 11.5px; color: var(--faint); }
-  .hero-a .src { margin-left: 4px; }
+  .hero-s { margin-top: 10px; }
+  /* Actions on a catch: Resolve / Snooze / In progress. Snooze choices and the note box open in place. */
+  .fa { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
+  .fa.wide { flex-basis: 100%; }
+  .hero-a:has(.fa.wide) > [data-go] { display: none; }
+  .fa textarea { flex-basis: 100%; width: 100%; min-height: 58px; background: var(--bg); color: var(--text); border: 1px solid var(--line2); border-radius: 8px; padding: 9px 10px; font: inherit; resize: vertical; }
+  .fa textarea:focus { outline: none; border-color: var(--accent); }
+  .fa-l { font-size: 12.5px; color: var(--dim); margin-right: 2px; }
+  .fa-h { flex-basis: 100%; font-size: 11.5px; color: var(--faint); }
+  .fa-m { flex-basis: 100%; font-size: 12px; }
+  .nts { margin: 4px 0 8px; border-left: 2px solid var(--line2); padding-left: 10px; }
+  .nt { display: flex; flex-wrap: wrap; gap: 2px 10px; align-items: baseline; padding: 3px 0; font-size: 13px; }
+  .nt b { font-weight: 600; font-size: 11.5px; color: var(--dim); flex: none; font-variant-numeric: tabular-nums; }
+  .nt span { flex: 1; min-width: 12ch; white-space: pre-wrap; }
+  .nt .btn { min-height: 0; padding: 2px 8px; font-size: 11.5px; color: var(--amber); }
   .btn { background: none; border: 1px solid var(--line2); border-radius: 8px; color: var(--text); font-size: 12.5px; font-weight: 600; padding: 6px 12px; min-height: 32px; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; }
   .btn:hover { border-color: var(--dim); }
   .btn.pri { background: var(--text); color: var(--bg); border-color: var(--text); }
@@ -165,7 +179,11 @@
   .pip { width: 7px; height: 7px; border-radius: 50%; flex: none; transform: translateY(-1px); }
   .s3 > .cl-h .pip { background: var(--red); } .s2 > .cl-h .pip { background: var(--amber); } .s1 > .cl-h .pip { border: 1.5px solid var(--faint); }
   .cl-t { flex: 1; min-width: 0; }
-  .cl-t b { font-weight: 600; color: var(--dim); margin-right: 6px; }
+  .cl-t b { font-weight: 600; color: var(--dim); margin-right: 8px; }
+  .cl-n { display: block; color: var(--dim); font-size: 12.5px; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .cl.open .cl-n { display: none; }
+  .cl.progress > .cl-h .pip { background: var(--accent); border: none; }
+  .cl.snoozed > .cl-h .pip, .cl.resolved > .cl-h .pip { background: none; border: 1.5px solid var(--faint); }
   .cl-d { flex: none; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
   .cl-b { padding: 0 8px 12px 25px; }
   .cl-b p { color: var(--dim); max-width: 64ch; margin-bottom: 6px; }
@@ -353,7 +371,6 @@
     .bhead { font-size: 28px; }
     .sh-h { font-size: 25px; }
     .hero h3 { font-size: 17px; }
-    .hero-a .src { flex-basis: 100%; margin: 2px 0 0; }
     .acc-h { padding: 16px 0; }
     .srow { padding: 12px 10px; }
     .arch-btn { display: none !important; }
@@ -691,7 +708,7 @@ function applyData(events, positions, mails, fromCache) {
   computeRadar();
   renderList();
   renderStats();
-  renderDetail();
+  if (!flagEditing()) renderDetail();
   const up = document.getElementById("updated");
   if (fromCache) { up.textContent = "Cached — refreshing…"; up.classList.add("stale"); }
   else {
@@ -734,7 +751,7 @@ async function loadAll() {
         SHOWS.forEach(s => { s.meetings = nd.shows[s.id] || []; });
         computeRadar();
         renderList(); renderStats();
-        if (!notesEditing()) renderDetail();
+        if (!notesEditing() && !flagEditing()) renderDetail();
       })
       .catch(() => {});
 
@@ -962,10 +979,11 @@ function whenTxt(s) {
   return dl.ship ? `Ships in ${d}d` : `Load-in ${d}d`;
 }
 function showCounts(id) {
-  const o = { n3: 0, n2: 0, n1: 0, ack: 0 };
+  const o = { n3: 0, n2: 0, n1: 0, prog: 0, snz: 0, ack: 0 };
   RADAR.catches.forEach(c => {
     if (c.showId !== id) return;
-    if (isAcked(c)) o.ack++; else o["n" + c.sev]++;
+    const st = stOf(c);
+    if (st === "resolved") o.ack++; else if (st === "snoozed") o.snz++; else if (st === "progress") o.prog++; else o["n" + c.sev]++;
   });
   return o;
 }
@@ -974,10 +992,11 @@ function showRow(s, opts) {
   const st = stateOf(s);
   const k = showCounts(s.id);
   const checked = !!RADAR.t;
-  const dot = st === "done" ? "" : k.n3 ? " s3" : k.n2 ? " s2" : checked ? " s0" : "";
+  const dot = st === "done" ? "" : k.n3 ? " s3" : (k.n2 || k.prog) ? " s2" : checked ? " s0" : "";
   const bits = [s.travel ? "Travel" : "Remote"];
   if (st === "done") bits.push(esc(agoTxt(s.tlEnd)) + (k.n1 ? " · tasks still open" : ""));
   else if (k.n3) bits.push(`<span class="hot">${k.n3} need${k.n3 === 1 ? "s" : ""} you</span>`);
+  else if (k.prog) bits.push(`${k.prog} in progress`);
   else if (k.n2) bits.push(`${k.n2} to watch`);
   else if (checked) bits.push("On track");
   const nNew = newMailCount(s);
@@ -1030,7 +1049,7 @@ function wireShowList(root) {
 }
 
 function renderList() {
-  const n3 = openCatches().filter(c => c.sev === 3).length;
+  const n3 = RADAR.catches.filter(c => c.sev === 3 && isOpenC(c)).length;
   const list = document.getElementById("list");
   list.innerHTML =
     `<div class="nav${selectedId === "radar" ? " sel" : ""}" data-id="radar" tabindex="0" role="button">${ic("radar")}<span>Brief</span>${n3 ? `<span class="cnt" title="${n3} need${n3 === 1 ? "s" : ""} you">${n3}</span>` : ""}</div>
@@ -1054,8 +1073,9 @@ function showStatusHtml(s) {
   }
   if (RADAR.loading && !RADAR.t) return `<span class="dimtxt">Checking…</span>`;
   const k = showCounts(s.id);
-  if (k.n3) return `<b class="hot">${k.n3} thing${k.n3 === 1 ? "" : "s"} need${k.n3 === 1 ? "s" : ""} you.</b>${k.n2 ? ` <span class="dimtxt">${k.n2} more to watch.</span>` : ""}`;
-  if (k.n2) return `<b>Nothing needs you.</b> <span class="dimtxt">${k.n2} to watch.</span>`;
+  const rest = [k.prog ? `${k.prog} in progress.` : "", k.n2 ? `${k.n2} ${k.n3 ? "more " : ""}to watch.` : ""].filter(Boolean).join(" ");
+  if (k.n3) return `<b class="hot">${k.n3} thing${k.n3 === 1 ? "" : "s"} need${k.n3 === 1 ? "s" : ""} you.</b>${rest ? ` <span class="dimtxt">${rest}</span>` : ""}`;
+  if (rest) return `<b>Nothing needs you.</b> <span class="dimtxt">${rest}</span>`;
   return `<b class="good">On track.</b> <span class="dimtxt">Nothing flagged.</span>`;
 }
 function crewSummary(s) {
@@ -1251,29 +1271,136 @@ const TASK_CAT_ORDER = ["rechEuafECj32ks0I", "recU899JCkjcTgPbc", "rec0d87nt85oP
 const TASK_STATUSES = ["Not Started", "In Process", "Done", "Not Needed"];
 
 let RADAR = { t: 0, loading: false, errs: [], extra: {}, tasks: [], xpos: [], analyst: [], catches: [] };
-let _ack = {};
-try { _ack = JSON.parse(localStorage.getItem("radar_ack") || "{}") || {}; } catch (e) { _ack = {}; }
+// ── What Iq has done about each catch ──
+// FLAGS[key] = { st: "resolved" | "snoozed" | "progress" | "open", t, until?, notes?: [{ t, text, at }] }
+//   resolved  hidden until the facts change (the key changes, so the catch comes back as new)
+//   snoozed   hidden until `until`
+//   progress  stays in view under "In progress" with his notes; leaves the "needs you" count
+//   open      back to normal (kept as a record so the choice syncs to his other devices)
+// Stored in this browser and mirrored to the worker (/flags) so phone and laptop agree.
+// A note's `at` is 1 once it is also in the show's PM Notes in Airtable, 0 if that write failed.
+let FLAGS = {};
+try { FLAGS = JSON.parse(localStorage.getItem("flag_state") || "{}") || {}; } catch (e) { FLAGS = {}; }
+try {   // carry over acknowledgements from before r11
+  const old = JSON.parse(localStorage.getItem("radar_ack") || "null");
+  if (old) {
+    Object.keys(old).forEach(k => { if (!FLAGS[k]) FLAGS[k] = { st: "resolved", t: +old[k] || Date.now() }; });
+    localStorage.setItem("flag_state", JSON.stringify(FLAGS));
+    localStorage.removeItem("radar_ack");
+  }
+} catch (e) {}
+let flagMsg = null;        // { key, text, ok } — one-line result shown under the item just acted on
 const taskCache = {};      // eventId -> [task rows] (full list, lazy-loaded when the panel opens)
-const foldOpen = {};       // fold-out id -> open (so acknowledging one item doesn't snap the list shut)
+const foldOpen = {};       // fold-out id -> open (so acting on one item doesn't snap the list shut)
 const fold = (id, label, inner, defOpen) => {
   const open = id in foldOpen ? foldOpen[id] : !!defOpen;
   return `<details class="sub" data-fold="${id}"${open ? " open" : ""}><summary>${label}</summary>${inner}</details>`;
 };
 
-const isAcked = c => !!_ack[c.key];
+function stOf(c) {
+  const f = FLAGS[c.key];
+  if (!f || !f.st || f.st === "open") return "open";
+  if (f.st === "snoozed" && !(f.until > Date.now())) return "open";   // snooze ran out
+  return f.st;
+}
+const isAcked = c => { const s = stOf(c); return s === "resolved" || s === "snoozed"; };   // out of view
+const isProg = c => stOf(c) === "progress";
+const isOpenC = c => stOf(c) === "open";
 const openCatches = () => RADAR.catches.filter(c => !isAcked(c));
 const catchesFor = id => RADAR.catches.filter(c => c.showId === id);
-function sevOf(id) {
-  let m = 0, n = 0;
-  RADAR.catches.forEach(c => { if (c.showId === id && !isAcked(c) && c.sev >= 2) { n++; if (c.sev > m) m = c.sev; } });
-  return { m, n };
+const flagEditing = () => !!document.querySelector(".fa textarea");
+
+function persistFlags() {
+  try { localStorage.setItem("flag_state", JSON.stringify(FLAGS)); } catch (e) {}
 }
-function toggleAck(key) {
-  if (_ack[key]) delete _ack[key]; else _ack[key] = Date.now();
-  // forget acknowledgements for catches that no longer exist (keeps the store small)
+function setFlag(key, st, extra) {
+  const prev = FLAGS[key] || {};
+  const e = Object.assign({}, extra || {}, { st, t: Math.max(Date.now(), (prev.t || 0) + 1) });   // always newer than what it replaces
+  if (prev.notes && !e.notes) e.notes = prev.notes;          // notes survive a change of state
+  FLAGS[key] = e;
+  // forget choices about catches that stopped existing a month ago (keeps the store small)
   const live = new Set(RADAR.catches.map(c => c.key));
-  if (RADAR.t && !RADAR.loading) Object.keys(_ack).forEach(k => { if (!live.has(k) && Date.now() - _ack[k] > 30 * 86400000) delete _ack[k]; });
-  try { localStorage.setItem("radar_ack", JSON.stringify(_ack)); } catch (e) {}
+  if (RADAR.t && !RADAR.loading) Object.keys(FLAGS).forEach(k => { if (!live.has(k) && Date.now() - (FLAGS[k].t || 0) > 30 * 86400000) delete FLAGS[k]; });
+  persistFlags();
+  pushFlags({ [key]: e });
+}
+// Take anything newer from the other device. Returns true if something changed here.
+function adoptFlags(remote) {
+  let changed = false;
+  Object.keys(remote || {}).forEach(k => {
+    const r = remote[k];
+    if (r && r.t && (!FLAGS[k] || r.t > (FLAGS[k].t || 0))) { FLAGS[k] = r; changed = true; }
+  });
+  if (changed) persistFlags();
+  return changed;
+}
+async function pushFlags(items) {
+  try {
+    const r = await fetch(`${WORKER}/flags?key=${encodeURIComponent(pin())}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ items }) });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d && d.items && adoptFlags(d.items) && !flagEditing()) refreshRadarViews();
+  } catch (e) {}   // offline or route missing: the choice still holds on this device
+}
+async function loadFlags() {
+  try {
+    const r = await fetch(`${WORKER}/flags?key=${encodeURIComponent(pin())}`);
+    if (!r.ok) return;
+    const d = await r.json();
+    const remote = (d && d.items) || {};
+    adoptFlags(remote);
+    const mine = {};
+    Object.keys(FLAGS).forEach(k => { if (!remote[k] || (FLAGS[k].t || 0) > (remote[k].t || 0)) mine[k] = FLAGS[k]; });
+    if (Object.keys(mine).length) pushFlags(mine);
+  } catch (e) {}
+}
+
+// A note on an in-progress item is also appended to the show's PM Notes in Airtable (Iq's own tap).
+// The current value is re-read first so nobody else's edit is overwritten.
+async function appendPmNote(c, text) {
+  const s = SHOWS.find(x => x.id === c.showId);
+  if (!s) return false;
+  const recs = await api(EVENTS_TBL, { filterByFormula: `RECORD_ID()='${s.id}'`, "fields[]": ["PM Notes"] });
+  const cur = recs[0] ? String(recs[0].fields["PM Notes"] || "") : String(s.pmNotes || "");
+  const next = (cur.trim() ? cur.replace(/\s+$/, "") + "\n" : "") + `${fmtD(today0())} · ${c.title}: ${text}`;
+  await api(EVENTS_TBL, {}, "PATCH", s.id, { fields: { "PM Notes": next } });
+  s.pmNotes = next;
+  const ev = RAW && RAW.events.find(e => e.id === s.id);
+  if (ev) ev.fields["PM Notes"] = next;
+  try { localStorage.setItem("dash_cache", JSON.stringify({ t: lastLoad, ...RAW })); } catch (e) {}
+  return true;
+}
+// Mark in progress (or add another note). The dashboard keeps the note either way; Airtable is best effort and says so.
+async function markProgress(key, text) {
+  const c = RADAR.catches.find(x => x.key === key);
+  if (!c) return;
+  const notes = ((FLAGS[key] && FLAGS[key].notes) || []).slice();
+  let note = null;
+  if (text) { note = { t: Date.now(), text }; notes.push(note); }
+  setFlag(key, "progress", { notes });
+  clOpen[key] = 1;
+  flagMsg = null;
+  refreshRadarViews();
+  if (!note || !c.showId) return;
+  try {
+    await appendPmNote(c, text);
+    note.at = 1;
+    flagMsg = { key, ok: true, text: "Note saved here and to PM notes in Airtable." };
+  } catch (e) {
+    note.at = 0;
+    flagMsg = { key, ok: false, text: "Note saved here. Airtable didn't take it: " + e.message };
+  }
+  setFlag(key, "progress", { notes });
+  if (!flagEditing()) { refreshRadarViews(); if (selectedId === c.showId && !notesEditing()) { const v = document.getElementById("notesView"); const s = SHOWS.find(x => x.id === c.showId); if (v && s && s.pmNotes) v.innerHTML = esc(s.pmNotes); } }
+}
+async function retryNote(key, t) {
+  const c = RADAR.catches.find(x => x.key === key), f = FLAGS[key];
+  const note = f && (f.notes || []).find(n => String(n.t) === String(t));
+  if (!c || !note) return;
+  try { await appendPmNote(c, note.text); note.at = 1; flagMsg = { key, ok: true, text: "Note is now in PM notes in Airtable." }; }
+  catch (e) { flagMsg = { key, ok: false, text: "Airtable still didn't take it: " + e.message }; }
+  setFlag(key, f.st, { notes: f.notes, until: f.until });
+  refreshRadarViews();
 }
 function saveRadarCache() {
   try {
@@ -1345,6 +1472,8 @@ async function loadRadar(events, positions) {
     .then(d => { if (d && Array.isArray(d.items)) RADAR.analyst = d.items; })
     .catch(() => {}));
 
+  jobs.push(loadFlags());   // resolve / snooze / in-progress choices made on the other device
+
   await Promise.all(jobs);
   RADAR.loading = false; RADAR.errs = errs; RADAR.t = Date.now();
   saveRadarCache();
@@ -1355,6 +1484,7 @@ async function loadRadar(events, positions) {
 // Radar data arrived or changed: repaint without disturbing whatever the user has open.
 function refreshRadarViews() {
   renderList(); renderStats();
+  if (flagEditing()) return;     // a note is being typed: leave the page alone until it's saved or cancelled
   if (selectedId === "radar") { renderDetail(); return; }
   const s = SHOWS.find(x => x.id === selectedId);
   if (s) refreshShowRadar(s);
@@ -1641,6 +1771,26 @@ function computeRadar() {
 // everything else that opens to the why, the source and the actions.
 const clOpen = {};         // catch key -> expanded this session
 const HERO_MAX = 5;
+const SNOOZES = [[1, "1 day"], [7, "1 week"], [30, "1 month"]];
+const dayStamp = t => fmtD(new Date(t));
+
+// What can be done with a catch, by where it stands. Every button carries data-act; one listener per .fa handles them.
+function actionsHtml(c, extra) {
+  const st = stOf(c);
+  const b = (act, label, cls) => `<button class="btn${cls ? " " + cls : ""}" data-act="${act}">${label}</button>`;
+  const btns = st === "open" ? b("resolve", "Resolve") + b("snooze", "Snooze") + b("progress", "In progress")
+    : st === "progress" ? b("resolve", "Resolve") + b("snooze", "Snooze") + b("note", "Add note") + b("reopen", "Not in progress", "ghost")
+    : st === "snoozed" ? b("reopen", "Wake now") + b("resolve", "Resolve")
+    : b("reopen", "Reopen");
+  const m = flagMsg && flagMsg.key === c.key ? `<span class="fa-m ${flagMsg.ok ? "good" : "hot"}">${esc(flagMsg.text)}</span>` : "";
+  return `<span class="fa" data-key="${esc(c.key)}">${btns}${extra || ""}${m}</span>`;
+}
+function notesHtml(c) {
+  const f = FLAGS[c.key], notes = (f && f.notes) || [];
+  if (!notes.length) return "";
+  return `<div class="nts">` + notes.map(n =>
+    `<div class="nt"><b>${esc(dayStamp(n.t))}</b><span>${esc(n.text)}</span>${n.at === 0 ? `<button class="btn ghost" data-act="retry" data-arg="${n.t}">Not in Airtable · retry</button>` : ""}</div>`).join("") + `</div>`;
+}
 function heroHtml(c, withShow) {
   const kick = [withShow && c.show ? esc(c.show) : "", esc(c.cat)].filter(Boolean).join(" · ");
   return `<article class="hero">
@@ -1649,9 +1799,9 @@ function heroHtml(c, withShow) {
     ${c.detail ? `<p>${esc(c.detail)}</p>` : ""}
     <div class="hero-a">
       ${withShow && c.showId ? `<button class="btn pri" data-go="${c.showId}">Open show</button>` : ""}
-      <button class="btn" data-ack="${esc(c.key)}" title="Hide until the facts change">Acknowledge</button>
-      ${c.src ? `<span class="src">${esc(c.src)}</span>` : ""}
+      ${actionsHtml(c)}
     </div>
+    ${c.src ? `<div class="src hero-s">${esc(c.src)}</div>` : ""}
   </article>`;
 }
 function heroesHtml(arr, withShow, foldId) {
@@ -1661,15 +1811,20 @@ function heroesHtml(arr, withShow, foldId) {
     (rest.length ? fold(foldId, `${rest.length} more that need${rest.length === 1 ? "s" : ""} you`, `<div class="heroes" style="margin-top:0">${rest.map(c => heroHtml(c, withShow)).join("")}</div>`, false) : "");
 }
 function catchLine(c, withShow) {
-  const acked = isAcked(c), o = !!clOpen[c.key];
-  return `<div class="cl s${c.sev}${acked ? " acked" : ""}${o ? " open" : ""}" data-cl="${esc(c.key)}">
-    <button class="cl-h" aria-expanded="${o}"><span class="pip"></span><span class="cl-t">${esc(c.title)}</span>${c.when ? `<span class="cl-d">${esc(dueTxt(c.when))}</span>` : ""}</button>
+  const st = stOf(c), f = FLAGS[c.key] || {}, o = !!clOpen[c.key];
+  const notes = f.notes || [], last = notes[notes.length - 1];
+  const right = st === "progress" ? "since " + dayStamp(notes.length ? notes[0].t : f.t)
+    : st === "snoozed" ? "back " + dayStamp(f.until)
+    : st === "resolved" ? "resolved " + dayStamp(f.t)
+    : c.when ? dueTxt(c.when) : "";
+  return `<div class="cl s${c.sev}${st === "open" ? "" : " " + st}${st === "resolved" || st === "snoozed" ? " acked" : ""}${o ? " open" : ""}" data-cl="${esc(c.key)}">
+    <button class="cl-h" aria-expanded="${o}"><span class="pip"></span><span class="cl-t">${withShow && c.show ? `<b>${esc(c.show)}</b>` : ""}${esc(c.title)}${st === "progress" && last ? `<span class="cl-n">${esc(last.text)}</span>` : ""}</span>${right ? `<span class="cl-d">${esc(right)}</span>` : ""}</button>
     <div class="cl-b"${o ? "" : " hidden"}>
       ${c.detail ? `<p>${esc(c.detail)}</p>` : ""}
+      ${notesHtml(c)}
       ${c.src ? `<div class="src">${esc(c.cat)} · ${esc(c.src)}</div>` : ""}
       <div class="cl-a">
-        <button class="btn" data-ack="${esc(c.key)}">${acked ? "Put back" : "Acknowledge"}</button>
-        ${withShow && c.showId ? `<button class="btn ghost" data-go="${c.showId}">Open show</button>` : ""}
+        ${actionsHtml(c, withShow && c.showId ? `<button class="btn ghost" data-go="${c.showId}">Open show</button>` : "")}
       </div>
     </div>
   </div>`;
@@ -1688,6 +1843,42 @@ function groupedLines(arr) {
     return head + cs.map(c => catchLine(c, false)).join("");
   }).join("");
 }
+
+// One tap for Resolve; Snooze and In progress open in place (no pop-up to chase on a phone).
+function flagAct(fa, act, arg) {
+  const key = fa.dataset.key;
+  const done = () => { flagMsg = null; refreshRadarViews(); };
+  if (act === "resolve") { delete clOpen[key]; setFlag(key, "resolved"); return done(); }
+  if (act === "reopen") { setFlag(key, "open"); return done(); }
+  if (act === "snz") {
+    const d = today0(); d.setDate(d.getDate() + (+arg || 1));
+    delete clOpen[key]; setFlag(key, "snoozed", { until: +d }); return done();
+  }
+  if (act === "cancel") return done();
+  if (act === "retry") { retryNote(key, arg); return; }
+  if (act === "snooze") {
+    fa.classList.add("wide");
+    fa.innerHTML = `<span class="fa-l">Snooze for</span>` + SNOOZES.map(([n, l]) => `<button class="btn" data-act="snz" data-arg="${n}">${l}</button>`).join("") + `<button class="btn ghost" data-act="cancel">Cancel</button>`;
+    return;
+  }
+  if (act === "progress" || act === "note") {
+    const c = RADAR.catches.find(x => x.key === key);
+    fa.classList.add("wide");
+    fa.innerHTML = `<textarea rows="2" placeholder="${act === "note" ? "Add a note" : "What's happening? (optional)"}" aria-label="Note"></textarea>
+      <button class="btn pri" data-act="save">${act === "note" ? "Add note" : "Mark in progress"}</button><button class="btn ghost" data-act="cancel">Cancel</button>
+      <span class="fa-h">${c && c.showId ? "The note stays on this item and is added to the show's PM notes in Airtable." : "The note stays on this item."}</span>`;
+    const ta = fa.querySelector("textarea");
+    ta.focus();
+    ta.addEventListener("keydown", e => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) { e.preventDefault(); flagAct(fa, "save"); } if (e.key === "Escape") flagAct(fa, "cancel"); });
+    return;
+  }
+  if (act === "save") {
+    const ta = fa.querySelector("textarea");
+    const text = ta ? ta.value.trim() : "";
+    if (ta) ta.remove();                    // so the repaint guard no longer sees an open editor
+    markProgress(key, text);
+  }
+}
 function wireCatches(root) {
   if (!root) return;
   root.querySelectorAll("details[data-fold]").forEach(d => d.addEventListener("toggle", () => { foldOpen[d.dataset.fold] = d.open; }));
@@ -1697,11 +1888,11 @@ function wireCatches(root) {
     row.querySelector(".cl-b").hidden = !o;
     if (o) clOpen[row.dataset.cl] = 1; else delete clOpen[row.dataset.cl];
   }));
-  root.querySelectorAll("[data-ack]").forEach(b => b.addEventListener("click", e => {
+  root.querySelectorAll(".fa").forEach(fa => fa.addEventListener("click", e => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
     e.stopPropagation();
-    delete clOpen[b.dataset.ack];
-    toggleAck(b.dataset.ack);
-    refreshRadarViews();
+    flagAct(fa, b.dataset.act, b.dataset.arg);
   }));
   root.querySelectorAll("[data-go]").forEach(el => {
     const go = () => selectShow(el.dataset.go);
@@ -1745,24 +1936,30 @@ function preflight(s) {
 
 // ── Show page: the Radar pieces ──
 function showHeroesHtml(s) {
-  return heroesHtml(catchesFor(s.id).filter(c => c.sev === 3 && !isAcked(c)), false, "s-more-" + s.id);
+  return heroesHtml(catchesFor(s.id).filter(c => c.sev === 3 && isOpenC(c)), false, "s-more-" + s.id);
 }
 function showWatchSum(s) {
   if (RADAR.loading && !RADAR.t) return "checking…";
   const k = showCounts(s.id);
   const bits = [];
+  if (k.prog) bits.push(`<span class="new">${k.prog} in progress</span>`);
   if (k.n2) bits.push(`${k.n2} to watch`);
   if (k.n1) bits.push(`${k.n1} FYI`);
-  if (k.ack) bits.push(`${k.ack} acknowledged`);
+  if (k.snz) bits.push(`${k.snz} snoozed`);
+  if (k.ack) bits.push(`${k.ack} resolved`);
   return bits.join(" · ") || "nothing flagged";
 }
 function showWatchHtml(s) {
   const cs = catchesFor(s.id);
-  const act = cs.filter(c => !isAcked(c)), acked = cs.filter(isAcked);
-  const main = act.filter(c => c.sev === 2), fyi = act.filter(c => c.sev === 1);
-  return (main.map(c => catchLine(c, false)).join("") || `<div class="none">Nothing to watch on this show.</div>`) +
-    (fyi.length ? fold("s-fyi", `FYI · ${fyi.length}`, fyi.map(c => catchLine(c, false)).join(""), false) : "") +
-    (acked.length ? fold("s-ack", `Acknowledged · ${acked.length}`, acked.map(c => catchLine(c, false)).join(""), false) : "");
+  const by = st => cs.filter(c => stOf(c) === st);
+  const open = by("open"), prog = by("progress"), snz = by("snoozed"), res = by("resolved");
+  const main = open.filter(c => c.sev === 2), fyi = open.filter(c => c.sev === 1);
+  const lines = arr => arr.map(c => catchLine(c, false)).join("");
+  return (prog.length ? `<div class="grp-h" style="cursor:default">In progress <span>${prog.length}</span></div>` + lines(prog) + (main.length ? `<div class="grp-h" style="cursor:default">To watch <span>${main.length}</span></div>` : "") : "") +
+    (lines(main) || (prog.length ? "" : `<div class="none">Nothing to watch on this show.</div>`)) +
+    (fyi.length ? fold("s-fyi", `FYI · ${fyi.length}`, lines(fyi), false) : "") +
+    (snz.length ? fold("s-snz", `Snoozed · ${snz.length}`, lines(snz), false) : "") +
+    (res.length ? fold("s-ack", `Resolved · ${res.length}`, lines(res), false) : "");
 }
 
 // ── Run of show: to-scale strip of every active show plus where I am ──
@@ -1886,7 +2083,8 @@ function nextUp() {
 }
 function renderRadarHome(el) {
   const g = showGroups();
-  const open = openCatches(), acked = RADAR.catches.filter(isAcked);
+  const by = st => RADAR.catches.filter(c => stOf(c) === st);
+  const open = by("open"), prog = by("progress"), snz = by("snoozed"), res = by("resolved");
   const g3 = open.filter(c => c.sev === 3), g2 = open.filter(c => c.sev === 2), g1 = open.filter(c => c.sev === 1);
   const nAct = g.active.length;
   const firstRun = RADAR.loading && !RADAR.t;
@@ -1899,27 +2097,37 @@ function renderRadarHome(el) {
     : "Nothing needs you right now.";
   const sub = !SHOWS.length ? "Nothing is assigned to you in Airtable."
     : firstRun ? "Running the cross-checks."
-    : [g2.length ? `<b>${g2.length}</b> ${g3.length ? "more " : ""}to watch across ${nShows2} show${nShows2 === 1 ? "" : "s"}.`
+    : [prog.length ? `<b>${prog.length}</b> in progress.` : "",
+       g2.length ? `<b>${g2.length}</b> ${g3.length ? "more " : ""}to watch across ${nShows2} show${nShows2 === 1 ? "" : "s"}.`
                  : `${nAct} active show${nAct === 1 ? "" : "s"}, nothing else flagged.`,
-       next ? `Next: ${esc(next)}.` : ""].join(" ");
+       next ? `Next: ${esc(next)}.` : ""].filter(Boolean).join(" ");
   const checked = RADAR.loading ? "checking…" : RADAR.t ? "checked " + new Date(RADAR.t).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : "";
   const warn = RADAR.errs.length ? `<div class="rwarn">Some checks couldn't load this time: ${esc(RADAR.errs.join(", "))}. Everything else is current. Refresh to retry.</div>` : "";
 
   const ag = agendaItems(14);
   const travelN = g.active.filter(s => s.travel).length;
   const last = g.active.reduce((m, s) => s.tlEnd && (!m || s.tlEnd > m) ? s.tlEnd : m, null);
+  const lines = arr => arr.map(c => catchLine(c, true)).join("");
   const rows = [];
   if (SHOWS.length) {
+    if (prog.length) {
+      const lastNote = prog.map(c => { const n = (FLAGS[c.key].notes || []); return n[n.length - 1]; }).filter(Boolean).sort((a, b) => b.t - a.t)[0];
+      rows.push(acc("home.prog", "In progress", `${prog.length}${lastNote ? " · latest note " + esc(dayStamp(lastNote.t)) : ""}`, lines(prog)));
+    }
     rows.push(acc("home.watch", "On watch", g2.length ? `${g2.length} across ${nShows2} show${nShows2 === 1 ? "" : "s"}` : "nothing",
       groupedLines(g2) || `<div class="none">Nothing to watch.</div>`));
     rows.push(acc("home.agenda", "Next 14 days", ag.length ? `${ag.length} date${ag.length === 1 ? "" : "s"}${next ? " · next: " + esc(next) : ""}` : "nothing scheduled", agendaHtml(14)));
     rows.push(acc("home.timeline", "Run of show", `${nAct} active${travelN ? ` · you travel on ${travelN}` : ""}${last ? " · through " + esc(fmtD(last)) : ""}`,
       `<div class="tlwrap">${timelineHtml()}</div><div class="tlkey"><span><i class="k-t"></i>you travel</span><span><i class="k-r"></i>remote</span><span><i class="k-d"></i>show days</span><span><i class="k-s"></i>booth ships</span></div>`));
     if (g1.length) rows.push(acc("home.fyi", "FYI", `${g1.length} low-priority`, groupedLines(g1)));
-    if (acked.length) rows.push(acc("home.ack", "Acknowledged", `${acked.length} hidden until the facts change`, groupedLines(acked)));
+    if (snz.length) {
+      const soon = snz.map(c => FLAGS[c.key].until).sort((a, b) => a - b)[0];
+      rows.push(acc("home.snz", "Snoozed", `${snz.length} · next back ${esc(dayStamp(soon))}`, lines(snz.slice().sort((a, b) => FLAGS[a.key].until - FLAGS[b.key].until))));
+    }
+    if (res.length) rows.push(acc("home.ack", "Resolved", `${res.length} · back only if the facts change`, lines(res)));
     rows.push(acc("home.about", "What gets checked", "on every load",
       `<p class="about">RentalWorks dates against Airtable. Crew status. The same crew's bookings on other shows. Milestones that land while you're away. Flight and hotel notes. InfoDoc. Drawings. Your tasks. What was said on calls against what Airtable says. Gaps in logged email.</p>
-       <p class="about" style="margin-top:8px">Red needs a decision from you. Amber is worth a look. Acknowledge hides an item until the facts behind it change, then it comes back.</p>`));
+       <p class="about" style="margin-top:8px">Red needs a decision from you. Amber is worth a look. <b>Resolve</b> clears an item; it only comes back if the facts behind it change. <b>Snooze</b> hides it for a day, a week or a month. <b>In progress</b> takes it off the "needs you" count and keeps it in view with your note, which is also added to the show's PM notes in Airtable. These choices follow you between phone and laptop.</p>`));
   }
 
   el.innerHTML = `

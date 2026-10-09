@@ -1,4 +1,4 @@
-# Show Ops Dashboard — SETUP (updated 2026-10-08, build r10.1)
+# Show Ops Dashboard — SETUP (updated 2026-10-09, build r11)
 
 **Live:** https://fuse-dashboard-proxy.iqlarodework.workers.dev/ — served by Cloudflare, PIN-gated (enforced; enter once per device).
 Data is fetched live from Airtable on every open. No daily regeneration. No push needed for data changes.
@@ -52,7 +52,7 @@ Radar is the home view (first row of the list; `selectedId === "radar"`). It is 
   - EventPositions for every non-Staff crew member on a still-running show, `Timeline End` from yesterday on. This is how cross-show double-bookings, Away blocks and Iq's own whereabouts are found. Cancelled event types and Empty positions are ignored.
   - `GET /radar` on the worker (analyst catches, see below).
 - **Rules** (sev 3 = needs action, 2 = watch, 1 = FYI): booth ship within `URGENT_DAYS`; Airtable vs RentalWorks date mismatch; crew pencilled / not confirmed / Empty; crew double-booked, away, or on a same-day turnaround; ship / prep / load-in landing while Iq is Away; no flight-hotel note within 14 days of travel; "NO prep booked" notes; show not Confirmed with crew confirmed; no booth number; Show Start equal to Load-in; drawing not Done; InfoDoc email not sent within 10 days of travel; email gap after a real thread; tasks past due or due this week; Granola `dateFlags`; analyst catches.
-- **Acknowledge** (the tick) hides a catch in this browser only (`localStorage radar_ack`). Keys include the underlying values, so a catch comes back if its facts change.
+- **Resolve / Snooze / In progress** (r11): every flag has these three actions. State is kept per flag key in `localStorage flag_state` and mirrored to the worker (`GET/POST /flags`, KV `DASH_NOTES` key `flags_index`, merge per key, newest wins) so phone and laptop agree. Keys include the underlying values, so a resolved flag comes back if its facts change. A note typed under In progress is appended to the show's `PM Notes` in Airtable (Iq's own tap; the field is re-read first). Details: `RADAR.md` in the docs folder.
 - **Run of show** and **Next 14 days** are drawn from the same data. Iq's lane comes from his EventPositions, including Away.
 - **Analyst catches**: `POST /radar?key=<PIN>` with `{"generatedAt":"<ISO>","items":[{"id","showId","sev":1-3,"title","detail","src","when":"YYYY-MM-DD","expires":"YYYY-MM-DD"}]}` stores judgement-call catches in KV (`DASH_NOTES` key `radar_index`). Write it the same way the Granola sync writes `/notes` (from the open dashboard tab, using the PIN in localStorage). Always set `expires`. Never touches Airtable.
 - Cache: `localStorage dash_radar` gives an instant paint on reopen, same as `dash_cache`.

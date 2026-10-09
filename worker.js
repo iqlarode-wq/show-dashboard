@@ -5,7 +5,7 @@
 //   AIRTABLE_PAT — Airtable personal access token (existing)
 //   DASH_PIN     — shared PIN; every request must include ?key=<PIN>.
 //                  If DASH_PIN is not set, requests are allowed (pre-migration mode).
-// KV Namespaces: TEMP_FILES (temporary file upload storage), DASH_NOTES (Granola notes + Radar analyst catches)
+// KV Namespaces: TEMP_FILES (temporary file upload storage), DASH_NOTES (Granola notes, Radar analyst catches, flag state)
 //
 // Deploy: npx wrangler deploy   (then: npx wrangler secret put DASH_PIN)
 // Or paste this file into the Cloudflare dashboard editor and add the
@@ -213,6 +213,37 @@ export default {
         return new Response(JSON.stringify({ error: 'Method not allowed' }), {
           status: 405, headers: { ...cors, 'Content-Type': 'application/json' }
         });
+      }
+
+      // ═══ Flag state: what Iq did about each dashboard flag (resolved / snoozed / in progress + notes) ═══
+      // GET returns the whole map. POST {items:{key:entry}} merges per key, newest `t` wins, so
+      // phone and laptop can both write without clobbering each other. Nothing touches Airtable.
+      if (url.pathname === '/flags') {
+        const json = (o, status) => new Response(JSON.stringify(o), { status: status || 200, headers: { ...cors, 'Content-Type': 'application/json' } });
+        let cur;
+        try { cur = JSON.parse((await env.DASH_NOTES.get('flags_index')) || '{}'); } catch (e) { cur = {}; }
+        if (!cur || typeof cur.items !== 'object' || !cur.items) cur = { items: {} };
+        if (request.method === 'GET') return json(cur);
+        if (request.method === 'POST') {
+          const body = await request.text();
+          if (body.length > 200000) return json({ error: 'too large' }, 413);
+          let parsed;
+          try { parsed = JSON.parse(body); } catch (e) { parsed = null; }
+          if (!parsed || typeof parsed.items !== 'object' || !parsed.items || Array.isArray(parsed.items)) {
+            return json({ error: 'expected JSON with an items object' }, 400);
+          }
+          const ok = ['resolved', 'snoozed', 'progress', 'open'];
+          for (const [k, v] of Object.entries(parsed.items)) {
+            if (k.length > 400 || !v || typeof v !== 'object' || typeof v.t !== 'number' || !ok.includes(v.st)) continue;
+            if (!cur.items[k] || v.t > (cur.items[k].t || 0)) cur.items[k] = v;
+          }
+          const cutoff = Date.now() - 180 * 86400000;   // forget choices untouched for six months
+          for (const k of Object.keys(cur.items)) if ((cur.items[k].t || 0) < cutoff) delete cur.items[k];
+          cur.updatedAt = new Date().toISOString();
+          await env.DASH_NOTES.put('flags_index', JSON.stringify(cur));
+          return json(cur);
+        }
+        return json({ error: 'Method not allowed' }, 405);
       }
 
       // ═══ Delete a file record (Files table ONLY — cannot touch any other table) ═══
