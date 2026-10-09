@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-09 r11 (Resolve / Snooze / In progress on every flag; synced across devices) -->
+<!-- build: 2026-10-09 r11.1 (Resolve / Snooze / In progress on every flag; synced across devices) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -1854,7 +1854,11 @@ function flagAct(fa, act, arg) {
     const d = today0(); d.setDate(d.getDate() + (+arg || 1));
     delete clOpen[key]; setFlag(key, "snoozed", { until: +d }); return done();
   }
-  if (act === "cancel") return done();
+  if (act === "cancel") {
+    const ta = fa.querySelector("textarea");
+    if (ta) ta.remove();                    // the repaint guard skips the page while a note box is open, so close it first
+    return done();
+  }
   if (act === "retry") { retryNote(key, arg); return; }
   if (act === "snooze") {
     fa.classList.add("wide");
