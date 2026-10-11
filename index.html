@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-09 r11.1 (Resolve / Snooze / In progress on every flag; synced across devices) -->
+<!-- build: 2026-10-11 r12 (Notes: action items are a checkable to-do list, synced across devices; files open in a zoomable viewer) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -267,6 +267,34 @@
   .mtag.spec { color: var(--green); background: var(--green-t); }
   .mtag.ment { color: var(--dim); background: var(--dim-t); }
   .flagdot { color: var(--amber); flex: none; }
+  .mtg .opn { font-size: 11px; font-weight: 600; color: var(--amber); white-space: nowrap; flex: none; font-variant-numeric: tabular-nums; }
+  .mtg .opn.done { color: var(--faint); }
+  .mtg .ai ul { list-style: none; padding: 0; }
+  .td { display: grid; grid-template-columns: 22px minmax(0,1fr); gap: 0 10px; align-items: start; padding: 5px 0; }
+  .tdb { width: 22px; height: 22px; border-radius: 50%; border: 1.5px solid var(--line2); background: none; cursor: pointer; display: grid; place-items: center; color: var(--bg); padding: 0; margin-top: 1px; }
+  .tdb:hover { border-color: var(--accent); }
+  .tdb .ic { width: 12px; height: 12px; stroke-width: 2.2; vertical-align: 0; }
+  .td.mine .tdb { border-color: var(--accent); }
+  .td.done .tdb { background: var(--green); border-color: var(--green); }
+  .td .t { font-size: 13px; line-height: 1.45; }
+  .td .t .who { font-weight: 600; }
+  .td.mine .t .who { color: var(--accent); }
+  .td.done .t { color: var(--faint); text-decoration: line-through; }
+  .td .t .ts { font-size: 11px; color: var(--faint); text-decoration: none; display: inline-block; margin-left: 6px; }
+  /* file viewer (r12) */
+  #fv { position: fixed; inset: 0; z-index: 1000; background: rgba(8,10,12,.94); display: none; flex-direction: column; }
+  #fv.on { display: flex; }
+  #fv .fvbar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line); background: var(--panel); flex: none; }
+  #fv .fvbar .nm { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  #fv .fvbar .pct { font-size: 12px; color: var(--dim); min-width: 42px; text-align: center; font-variant-numeric: tabular-nums; }
+  #fv .fvbar .btn { min-height: 36px; min-width: 36px; padding: 0 10px; font-size: 15px; }
+  #fv .fvbar a.btn { text-decoration: none; display: inline-grid; place-items: center; font-size: 12.5px; }
+  #fv .stage { flex: 1; min-height: 0; position: relative; overflow: hidden; touch-action: none; }
+  #fv .stage img { position: absolute; left: 0; top: 0; transform-origin: 0 0; user-select: none; -webkit-user-drag: none; cursor: grab; max-width: none; }
+  #fv .stage.drag img { cursor: grabbing; }
+  #fv .stage iframe { width: 100%; height: 100%; border: none; background: #fff; }
+  #fv .stage .nope { position: absolute; inset: 0; display: grid; place-items: center; color: var(--dim); text-align: center; padding: 24px; font-size: 14px; line-height: 1.6; }
+  #fv .stage .nope .btn { margin-top: 10px; display: inline-block; text-decoration: none; }
   .mtg .body { display: none; padding: 2px 0 12px; }
   .mtg.open .body { display: block; }
   .mtg .rel { color: var(--faint); font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin-bottom: 5px; }
@@ -1001,7 +1029,7 @@ function showRow(s, opts) {
   else if (checked) bits.push("On track");
   const nNew = newMailCount(s);
   if (nNew) bits.push(`<span class="new">${nNew} new email${nNew === 1 ? "" : "s"}</span>`);
-  if (newMtgCount(s)) bits.push(`<span class="new">new call notes</span>`);
+  if (newMtgCount(s)) bits.push(`<span class="new">new notes</span>`);
   const btn = o.restore ? `<button class="restore-btn" data-restore="${s.id}" title="Restore show">Restore</button>`
     : `<button class="arch-btn" data-arch="${s.id}" title="Archive show" aria-label="Archive ${esc(s.title)}">✕</button><span class="wn${st === "live" ? " live" : ""}">${esc(whenTxt(s))}</span>`;
   return `<div class="srow${s.id === selectedId ? " sel" : ""}" data-id="${s.id}" tabindex="0" role="button" title="${esc(s.title)} · ${esc(fmtRange(s.tlStart, s.tlEnd))}">
@@ -1128,8 +1156,10 @@ function renderDetail() {
   const mtgs = (s.meetings || []).slice().sort((a, b) => (parseDate(b.date) || 0) - (parseDate(a.date) || 0));
   const mtgFlagsTotal = mtgFlagCount(s);
   const mtgRows = mtgs.map((m, i) => {
-    const ai = (m.actionItems || []).length
-      ? `<div class="ai"><div class="h">Action items</div><ul>${m.actionItems.map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>` : "";
+    const items = m.actionItems || [];
+    const nOpen = items.filter(x => !todoDone(todoKey(m, x))).length;
+    const ai = items.length
+      ? `<div class="ai"><div class="h">Action items</div><ul>${items.map(x => todoLine(m, x)).join("")}</ul></div>` : "";
     const flags = (m.dateFlags || []).map(fl => `<div class="dflag">${esc(fl.text)}</div>`).join("");
     const tagCls = m.matchType === "show-specific" ? "spec" : "ment";
     const tagTxt = m.matchType === "show-specific" ? "THIS SHOW" : "MENTIONED";
@@ -1138,6 +1168,7 @@ function renderDetail() {
         <span class="mtag ${tagCls}">${tagTxt}</span>
         <span class="ttl">${esc(m.title)}</span>
         ${(m.dateFlags || []).length ? `<span class="flagdot" title="date conflict">${ic("flag")}</span>` : ""}
+        ${items.length ? `<span class="opn${nOpen ? "" : " done"}">${nOpen ? nOpen + " open" : "all done"}</span>` : ""}
         <span class="dt mono">${m.date ? fmtD(parseDate(m.date)) : ""}</span>
       </div>
       <div class="body">
@@ -1148,7 +1179,7 @@ function renderDetail() {
     </div>`;
   }).join("");
   const mtgSum = mtgs.length
-    ? `${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${mtgFlagsTotal ? ` · <span class="warm">${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${newMtgCount(s) ? ` · <span class="new">new</span>` : ""} · latest ${esc(fmtD(parseDate(mtgs[0].date)) || "")}`
+    ? `${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${todoSumHtml(s)}${mtgFlagsTotal ? ` · <span class="warm">${mtgFlagsTotal} date flag${mtgFlagsTotal === 1 ? "" : "s"}</span>` : ""}${newMtgCount(s) ? ` · <span class="new">new</span>` : ""} · latest ${esc(fmtD(parseDate(mtgs[0].date)) || "")}`
     : "none yet";
 
   // ── Emails ──
@@ -1218,7 +1249,7 @@ function renderDetail() {
       ${acc("show.tasks", "My tasks", `<span id="tasksSum">${tasksSummary(s)}</span>`, `<div id="tasksBody"></div>`)}
       ${acc("show.mail", "Emails", mailSum, `<div id="mailList">${mailRows || '<div class="none">No emails linked in Airtable.</div>'}</div>
         <div class="mailfoot"><a href="https://mail.google.com/mail/u/0/#search/${gmailQ}" target="_blank" rel="noopener">Search in Gmail ↗</a></div>`)}
-      ${acc("show.mtg", "Call notes", mtgSum, mtgs.length ? mtgRows : '<div class="none">No call notes matched to this show yet. The notes sync pulls from Granola.</div>')}
+      ${acc("show.mtg", "Notes", mtgSum, mtgs.length ? mtgRows : '<div class="none">No notes matched to this show yet. The notes sync pulls from Granola.</div>')}
       ${acc("show.files", "Files", `<span id="filesSum"></span>`, `<div class="barrow"><button class="btn" id="uploadBtn">${ic("up")} Upload</button><span id="fileMsg" class="src"></span><input id="fileInput" type="file" multiple style="display:none"></div>
         <div id="filesList"><div class="none">Loading files…</div></div>`)}
       ${acc("show.pm", "PM notes", pmFirst ? esc(pmFirst.length > 70 ? pmFirst.slice(0, 68) + "…" : pmFirst) : s.clientNotes ? "client notes only" : "none", notesBody)}
@@ -1233,6 +1264,12 @@ function renderDetail() {
     const tg = () => hd.parentElement.classList.toggle("open");
     hd.addEventListener("click", tg);
     hd.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); tg(); } });
+  });
+  const mtgBody = accBody("show.mtg");
+  if (mtgBody) mtgBody.addEventListener("click", ev => {
+    const b = ev.target.closest(".tdb"); if (!b) return;
+    ev.preventDefault(); ev.stopPropagation();
+    todoToggle(s, b.closest(".td"));
   });
 
   // "new" badges clear when the section is actually looked at, not when the page is opened
@@ -1310,6 +1347,59 @@ const openCatches = () => RADAR.catches.filter(c => !isAcked(c));
 const catchesFor = id => RADAR.catches.filter(c => c.showId === id);
 const flagEditing = () => !!document.querySelector(".fa textarea");
 
+// ── To-dos from the Granola notes (r12) ──
+// Every action item in a meeting note is a checkable line. Done state lives in FLAGS under a
+// "todo|<meeting id>|<normalised text>" key (st "resolved" = done, "open" = not), so it rides the
+// same /flags sync as the flag choices and agrees on phone and laptop. Keyed by meeting, not show,
+// so an ops-call item attached to three shows is one tick. Never touches Airtable.
+const todoNorm = t => String(t || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim().slice(0, 120);
+const todoKey = (m, text) => `todo|${m.id || m.title || "?"}|${todoNorm(text)}`;
+const todoDone = key => !!(FLAGS[key] && FLAGS[key].st === "resolved");
+const todoMine = text => /^\s*(iq|iqral)\b\s*[:\-–—]/i.test(String(text || ""));
+function todoSplit(text) {   // "Dan: send the file" → ["Dan", "send the file"]; no owner → ["", text]
+  const m = /^\s*([A-Z][\w.' &\/-]{0,28}?)\s*[:\-–—]\s+(.+)$/.exec(String(text || ""));
+  return m ? [m[1], m[2]] : ["", String(text || "")];
+}
+function todoLine(m, text) {
+  const key = todoKey(m, text), done = todoDone(key), mine = todoMine(text), [who, what] = todoSplit(text);
+  return `<li class="td${done ? " done" : ""}${mine ? " mine" : ""}" data-key="${esc(key)}">
+    <button class="tdb" aria-pressed="${done}" aria-label="${done ? "Mark not done" : "Mark done"}">${done ? ic("check") : ""}</button>
+    <div class="t">${who ? `<span class="who">${esc(who)}</span> ` : ""}${esc(what)}</div>
+  </li>`;
+}
+function todoCounts(s) {
+  let open = 0, mine = 0, total = 0;
+  (s.meetings || []).forEach(m => (m.actionItems || []).forEach(x => {
+    total++;
+    if (todoDone(todoKey(m, x))) return;
+    open++; if (todoMine(x)) mine++;
+  }));
+  return { open, mine, total };
+}
+function todoSumHtml(s) {
+  const c = todoCounts(s);
+  if (!c.total) return "";
+  if (!c.open) return ` · <span class="good">all ${c.total} to-dos done</span>`;
+  return ` · <span class="${c.mine ? "warm" : ""}">${c.open} to-do${c.open === 1 ? "" : "s"} open${c.mine ? ` (${c.mine} yours)` : ""}</span>`;
+}
+function todoToggle(s, li) {
+  if (!li) return;
+  const key = li.dataset.key, done = !todoDone(key);
+  setFlag(key, done ? "resolved" : "open");
+  li.classList.toggle("done", done);
+  const b = li.querySelector(".tdb");
+  if (b) { b.innerHTML = done ? ic("check") : ""; b.setAttribute("aria-pressed", String(done)); b.setAttribute("aria-label", done ? "Mark not done" : "Mark done"); }
+  // keep the per-meeting count and the row summary honest without repainting the page
+  const mtg = li.closest(".mtg");
+  if (mtg) {
+    const n = mtg.querySelectorAll(".td:not(.done)").length, o = mtg.querySelector(".opn");
+    if (o) { o.textContent = n ? n + " open" : "all done"; o.classList.toggle("done", !n); }
+  }
+  const mtgs = (s.meetings || []).slice().sort((a, b) => (parseDate(b.date) || 0) - (parseDate(a.date) || 0));
+  const fl = mtgFlagCount(s);
+  accSum("show.mtg", `${mtgs.length} note${mtgs.length === 1 ? "" : "s"}${todoSumHtml(s)}${fl ? ` · <span class="warm">${fl} date flag${fl === 1 ? "" : "s"}</span>` : ""}${newMtgCount(s) ? ` · <span class="new">new</span>` : ""} · latest ${esc(fmtD(parseDate(mtgs[0].date)) || "")}`);
+}
+
 function persistFlags() {
   try { localStorage.setItem("flag_state", JSON.stringify(FLAGS)); } catch (e) {}
 }
@@ -1320,18 +1410,20 @@ function setFlag(key, st, extra) {
   FLAGS[key] = e;
   // forget choices about catches that stopped existing a month ago (keeps the store small)
   const live = new Set(RADAR.catches.map(c => c.key));
-  if (RADAR.t && !RADAR.loading) Object.keys(FLAGS).forEach(k => { if (!live.has(k) && Date.now() - (FLAGS[k].t || 0) > 30 * 86400000) delete FLAGS[k]; });
+  if (RADAR.t && !RADAR.loading) Object.keys(FLAGS).forEach(k => { if (!k.startsWith("todo|") && !live.has(k) && Date.now() - (FLAGS[k].t || 0) > 30 * 86400000) delete FLAGS[k]; });
   persistFlags();
   pushFlags({ [key]: e });
 }
 // Take anything newer from the other device. Returns true if something changed here.
 function adoptFlags(remote) {
-  let changed = false;
+  let changed = false, todo = false;
   Object.keys(remote || {}).forEach(k => {
     const r = remote[k];
-    if (r && r.t && (!FLAGS[k] || r.t > (FLAGS[k].t || 0))) { FLAGS[k] = r; changed = true; }
+    if (r && r.t && (!FLAGS[k] || r.t > (FLAGS[k].t || 0))) { FLAGS[k] = r; changed = true; if (k.startsWith("todo|")) todo = true; }
   });
   if (changed) persistFlags();
+  // a to-do ticked on the other device: repaint the show page so the Notes row agrees
+  if (todo && selectedId !== "radar" && !notesEditing() && !flagEditing()) renderDetail();
   return changed;
 }
 async function pushFlags(items) {
@@ -2330,7 +2422,7 @@ async function loadFiles(s, force) {
       const when = f["Created"] ? fmtD(parseDate(f["Created"])) : "";
       const links = atts.map(a => {
         const img = a.thumbnails && a.thumbnails.large && String(a.type || "").startsWith("image/");
-        return `<a href="${esc(a.url)}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:12.5px;margin:0 8px 6px 0">
+        return `<a href="${esc(a.url)}" class="fvo" data-type="${esc(a.type || "")}" data-name="${esc(a.filename || "file")}" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:6px;padding:7px 12px;font-size:12.5px;margin:0 8px 6px 0">
           ${img ? `<img src="${esc(a.thumbnails.small.url)}" alt="" style="height:24px;border-radius:3px">` : ic("file")}
           ${esc(a.filename || "file")} <span style="color:var(--dim)">${a.size ? Math.round(a.size / 1024) + " KB" : ""}</span>
         </a>`;
@@ -2356,6 +2448,8 @@ function setupFiles(s) {
   if (_fl && !_fl.dataset.delWired) {
     _fl.dataset.delWired = "1";
     _fl.addEventListener("click", async (ev) => {
+      const fo = ev.target.closest(".fvo");
+      if (fo) { ev.preventDefault(); openViewer(fo.href, fo.dataset.type, fo.dataset.name); return; }
       const b = ev.target.closest(".fdel");
       if (!b) return;
       ev.preventDefault();
@@ -2430,6 +2524,118 @@ function setupFiles(s) {
 }
 
 // ════════════════════════════════════════════════
+// FILE VIEWER (r12) — files open in an overlay instead of a new tab.
+// Images: wheel / pinch to zoom, drag to pan, +/−/fit. PDFs: the browser's own viewer in a frame
+// (it has its own zoom). Anything else can't be shown inline, so the overlay offers Open / Download.
+// "Open ↗" is always there as the escape hatch (iPhone Safari shows only page 1 of a framed PDF).
+let FV = null;
+function fvEl() {
+  if (FV) return FV;
+  const d = document.createElement("div");
+  d.id = "fv";
+  d.innerHTML = `<div class="fvbar">
+      <span class="nm" id="fvName"></span>
+      <button class="btn ghost" id="fvMinus" aria-label="Zoom out">−</button>
+      <span class="pct" id="fvPct"></span>
+      <button class="btn ghost" id="fvPlus" aria-label="Zoom in">+</button>
+      <button class="btn ghost" id="fvFit" aria-label="Fit to screen">Fit</button>
+      <a class="btn ghost" id="fvOpen" target="_blank" rel="noopener">Open ↗</a>
+      <button class="btn ghost" id="fvClose" aria-label="Close">✕</button>
+    </div><div class="stage" id="fvStage"></div>`;
+  document.body.appendChild(d);
+  FV = d;
+  d.querySelector("#fvClose").addEventListener("click", closeViewer);
+  d.addEventListener("click", e => { if (e.target === d.querySelector("#fvStage") || e.target.classList.contains("nope")) closeViewer(); });
+  document.addEventListener("keydown", e => { if (d.classList.contains("on") && e.key === "Escape") closeViewer(); });
+  d.querySelector("#fvPlus").addEventListener("click", () => fvZoomBy(1.25));
+  d.querySelector("#fvMinus").addEventListener("click", () => fvZoomBy(1 / 1.25));
+  d.querySelector("#fvFit").addEventListener("click", () => fvFit());
+  return d;
+}
+const fvS = { img: null, k: 1, x: 0, y: 0, fit: 1, mode: "" };
+function fvApply() {
+  if (!fvS.img) return;
+  fvS.img.style.transform = `translate(${fvS.x}px,${fvS.y}px) scale(${fvS.k})`;
+  const p = document.getElementById("fvPct"); if (p) p.textContent = Math.round(fvS.k / fvS.fit * 100) + "%";
+}
+function fvFit() {
+  const st = document.getElementById("fvStage"), im = fvS.img;
+  if (!im || !im.naturalWidth) return;
+  const k = Math.min(st.clientWidth / im.naturalWidth, st.clientHeight / im.naturalHeight, 1);
+  fvS.fit = k; fvS.k = k;
+  fvS.x = (st.clientWidth - im.naturalWidth * k) / 2; fvS.y = (st.clientHeight - im.naturalHeight * k) / 2;
+  fvApply();
+}
+function fvZoomAt(f, cx, cy) {   // zoom about a point on the stage so what's under the finger stays put
+  const nk = Math.min(Math.max(fvS.k * f, fvS.fit * 0.5), fvS.fit * 12);
+  const r = nk / fvS.k;
+  fvS.x = cx - (cx - fvS.x) * r; fvS.y = cy - (cy - fvS.y) * r; fvS.k = nk;
+  fvApply();
+}
+function fvZoomBy(f) {
+  if (fvS.mode === "img") { const st = document.getElementById("fvStage"); fvZoomAt(f, st.clientWidth / 2, st.clientHeight / 2); }
+}
+function openViewer(url, type, name) {
+  const d = fvEl(), st = d.querySelector("#fvStage");
+  d.querySelector("#fvName").textContent = name || "";
+  d.querySelector("#fvOpen").href = url;
+  st.innerHTML = ""; st.className = "stage"; fvS.img = null; fvS.mode = "";
+  const t = String(type || "").toLowerCase(), isImg = t.startsWith("image/"), isPdf = t === "application/pdf" || /\.pdf($|\?)/i.test(name || "");
+  d.querySelectorAll("#fvPlus,#fvMinus,#fvFit,#fvPct").forEach(e => { e.style.display = isImg ? "" : "none"; });
+  if (isImg) {
+    fvS.mode = "img";
+    const im = new Image();
+    im.alt = name || ""; im.draggable = false;
+    im.onload = () => { fvS.img = im; fvFit(); };
+    im.src = url; st.appendChild(im);
+    fvWire(st);
+  } else if (isPdf) {
+    fvS.mode = "pdf";
+    const f = document.createElement("iframe"); f.src = url; f.title = name || "PDF"; st.appendChild(f);
+  } else {
+    st.innerHTML = `<div class="nope">This kind of file can't be shown here.<br><span class="src">${esc(name || "")}</span><br><a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open ↗</a></div>`;
+  }
+  d.classList.add("on");
+  document.body.style.overflow = "hidden";
+}
+function closeViewer() {
+  if (!FV) return;
+  FV.classList.remove("on");
+  FV.querySelector("#fvStage").innerHTML = "";
+  fvS.img = null; fvS.mode = "";
+  document.body.style.overflow = "";
+}
+function fvWire(st) {
+  if (st.dataset.wired) return;
+  st.dataset.wired = "1";
+  st.addEventListener("wheel", e => {
+    if (fvS.mode !== "img") return;
+    e.preventDefault();
+    const r = st.getBoundingClientRect();
+    fvZoomAt(e.deltaY < 0 ? 1.12 : 1 / 1.12, e.clientX - r.left, e.clientY - r.top);
+  }, { passive: false });
+  const pts = new Map(); let pinch0 = 0, k0 = 1, last = null;
+  st.addEventListener("pointerdown", e => {
+    if (fvS.mode !== "img") return;
+    st.setPointerCapture(e.pointerId); pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 1) { last = { x: e.clientX, y: e.clientY }; st.classList.add("drag"); }
+    if (pts.size === 2) { const [a, b] = [...pts.values()]; pinch0 = Math.hypot(a.x - b.x, a.y - b.y); k0 = fvS.k; }
+  });
+  st.addEventListener("pointermove", e => {
+    if (!pts.has(e.pointerId)) return;
+    pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (pts.size === 2) {
+      const [a, b] = [...pts.values()], d = Math.hypot(a.x - b.x, a.y - b.y), r = st.getBoundingClientRect();
+      if (pinch0) { const target = k0 * d / pinch0; fvZoomAt(target / fvS.k, (a.x + b.x) / 2 - r.left, (a.y + b.y) / 2 - r.top); }
+    } else if (last) {
+      fvS.x += e.clientX - last.x; fvS.y += e.clientY - last.y; last = { x: e.clientX, y: e.clientY }; fvApply();
+    }
+  });
+  const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch0 = 0; if (!pts.size) { last = null; st.classList.remove("drag"); } else { const [a] = [...pts.values()]; last = { x: a.x, y: a.y }; } };
+  st.addEventListener("pointerup", up); st.addEventListener("pointercancel", up);
+  st.addEventListener("dblclick", e => { if (fvS.mode !== "img") return; const r = st.getBoundingClientRect(); if (fvS.k > fvS.fit * 1.05) fvFit(); else fvZoomAt(2.5, e.clientX - r.left, e.clientY - r.top); });
+}
+
 // NOTES — edit PM Notes, save back to Airtable
 // ════════════════════════════════════════════════
 function setupNotes(s) {

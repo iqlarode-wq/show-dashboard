@@ -1,4 +1,4 @@
-# Show Ops Dashboard — SETUP (updated 2026-10-09, build r11)
+# Show Ops Dashboard — SETUP (updated 2026-10-11, build r12 — built, awaiting review/push)
 
 **Live:** https://fuse-dashboard-proxy.iqlarodework.workers.dev/ — served by Cloudflare, PIN-gated (enforced; enter once per device).
 Data is fetched live from Airtable on every open. No daily regeneration. No push needed for data changes.
@@ -76,3 +76,9 @@ Enforced via the `DASH_PIN` secret on the worker. To rotate: `npx wrangler secre
 ## Day-to-day
 
 Nothing. Open the URL — it's always current. ↻ re-pulls; the page also auto-refreshes when you return after 10+ minutes away.
+
+## Notes to-dos and file viewer (r12, 2026-10-11)
+
+- The "Notes" row (was "Call notes") shows the Granola notes; every action item is a checkable to-do. Ticks are stored in `localStorage flag_state` under `todo|<meeting id>|<text>` keys and synced through the existing `/flags` route — no new worker route, nothing written to Airtable. Items starting `Iq:` are marked as his.
+- Files open in an overlay (`openViewer`): images zoom/pan, PDFs use the browser's viewer in a frame, other types get Open ↗. iPhone Safari shows only page 1 of a framed PDF — Open ↗ for the rest.
+- Tests: `test-harness/r12_test.mjs` in the docs folder, plus the full `run.mjs all`.
