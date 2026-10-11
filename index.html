@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-11 r12 (Notes: action items are a checkable to-do list, synced across devices; files open in a zoomable viewer) -->
+<!-- build: 2026-10-11 r13 (AV Binder link can be added or changed on the show page; saves to the Events record in Airtable) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -224,6 +224,16 @@
   .links a, .links button { background: none; border: none; color: var(--text); cursor: pointer; padding: 4px 0; font-weight: 600; display: inline-flex; gap: 6px; align-items: center; }
   .links a:hover, .links button:hover { color: var(--accent); }
   .links .arr { color: var(--faint); font-weight: 400; }
+  .links .lk { display: inline-flex; align-items: center; gap: 2px; }
+  .links .lk .ed { color: var(--faint); padding: 4px 6px; min-height: 0; }
+  .links .lk .ed:hover { color: var(--accent); }
+  .links .lk .ed .ic { width: 12px; height: 12px; }
+  .links .add { color: var(--dim); font-weight: 500; }
+  .avbform { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 10px 0 0; }
+  .avbform input { flex: 1 1 260px; min-width: 0; min-height: 36px; background: var(--panel2); border: 1px solid var(--line2); border-radius: 7px; color: var(--text); padding: 0 10px; font-size: 13px; }
+  .avbform input:focus { outline: none; border-color: var(--accent); }
+  .avbform .msg { flex-basis: 100%; font-size: 12px; color: var(--dim); }
+  .avbform .msg.bad { color: var(--red); }
   #shHero .heroes { margin-top: 22px; }
 
   .pf { display: flex; flex-wrap: wrap; gap: 7px; }
@@ -484,8 +494,8 @@ async function api(table, params, method, recordId, body) {
   }
   qs.append("key", pin());
   const base = `${WORKER}/v0/${BASE}/${encodeURIComponent(table)}` + (recordId ? `/${recordId}` : "");
-  if (method === "PATCH") {
-    const res = await fetch(`${base}?${qs}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  if (method === "PATCH" || method === "POST") {
+    const res = await fetch(`${base}?${qs}`, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
     if (res.status === 401) { const e = new Error("PIN rejected"); e.auth = true; throw e; }
     const data = await res.json();
     if (!res.ok || data.error) throw new Error((data.error && (data.error.message || data.error)) || ("HTTP " + res.status));
@@ -1199,10 +1209,15 @@ function renderDetail() {
     ? `${s.mailTotal}${s.mailMeta[0] && s.mailMeta[0].date ? " · last " + esc(agoTxt(s.mailMeta[0].date)) : ""}${nNew ? ` · <span class="new">${nNew} new</span>` : ""}`
     : "none logged";
 
-  const linkBtns = Object.entries(s.links).filter(([, u]) => u)
+  // AV Binder is the one link Iq fills in himself (r13): a pencil next to it, or "Add AV Binder link" if empty.
+  const linkBtns = Object.entries(s.links).filter(([k, u]) => u && k !== "AV Binder")
     .map(([k, u]) => `<a href="${esc(u)}" target="_blank" rel="noopener">${k} <span class="arr">↗</span></a>`).join("")
+    + (s.links["AV Binder"]
+        ? `<span class="lk"><a href="${esc(s.links["AV Binder"])}" target="_blank" rel="noopener">AV Binder <span class="arr">↗</span></a><button class="ed" id="avbEdit" aria-label="Change AV Binder link" title="Change link">${ic("edit")}</button></span>`
+        : `<button class="add" id="avbEdit">${ic("edit")} Add AV Binder link</button>`)
     + `<a href="https://airtable.com/${BASE}/${EVENTS_TBL}/${s.id}" target="_blank" rel="noopener">Airtable <span class="arr">↗</span></a>`
     + `<button id="icsBtn">${ic("cal")} Add to calendar</button>`;
+  const avbForm = `<form id="avbForm" class="avbform" hidden autocomplete="off"><input id="avbUrl" type="text" inputmode="url" spellcheck="false" placeholder="Paste the AV Binder link (https://…)" value="${esc(s.links["AV Binder"] || "")}"><button class="btn" type="submit" id="avbSave">Save to Airtable</button><button class="btn ghost" type="button" id="avbCancel">Cancel</button><span class="msg" id="avbMsg"></span></form>`;
 
   const mapsQ = encodeURIComponent([s.venue, s.address].filter(Boolean).join(", "));
   const pmFirst = String(s.pmNotes || "").trim().split(/\n/)[0];
@@ -1240,7 +1255,7 @@ function renderDetail() {
 
     <div class="datebar">${dateCells || '<div class="d"><div class="k">Dates</div><div class="v">TBD</div></div>'}</div>
     <div id="wx"></div>
-    <div class="links">${linkBtns}</div>
+    <div class="links">${linkBtns}</div>${avbForm}
 
     <div class="accs">
       ${acc("show.watch", "On watch", showWatchSum(s), showWatchHtml(s))}
@@ -1283,6 +1298,7 @@ function renderDetail() {
 
   wireCatches(document.getElementById("shHero"));
   wireCatches(accBody("show.watch"));
+  setupAvBinder(s);
   setupTasks(s);
   document.getElementById("icsBtn").addEventListener("click", () => downloadIcs(s));
   setupNotes(s);
@@ -2634,6 +2650,35 @@ function fvWire(st) {
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch0 = 0; if (!pts.size) { last = null; st.classList.remove("drag"); } else { const [a] = [...pts.values()]; last = { x: a.x, y: a.y }; } };
   st.addEventListener("pointerup", up); st.addEventListener("pointercancel", up);
   st.addEventListener("dblclick", e => { if (fvS.mode !== "img") return; const r = st.getBoundingClientRect(); if (fvS.k > fvS.fit * 1.05) fvFit(); else fvZoomAt(2.5, e.clientX - r.left, e.clientY - r.top); });
+}
+
+// AV BINDER LINK (r13) — Iq pastes the link on the show page; it is written to the Events record's
+// "AV Binder Live Link" field through the worker (his own tap, same path as PM notes). Blank + Save clears it.
+function setupAvBinder(s) {
+  const btn = document.getElementById("avbEdit"), form = document.getElementById("avbForm");
+  if (!btn || !form) return;
+  const inp = document.getElementById("avbUrl"), msg = document.getElementById("avbMsg"), sb = document.getElementById("avbSave");
+  btn.addEventListener("click", () => { form.hidden = !form.hidden; if (!form.hidden) { inp.focus(); inp.select(); } });
+  document.getElementById("avbCancel").addEventListener("click", () => { form.hidden = true; inp.value = s.links["AV Binder"] || ""; msg.textContent = ""; });
+  form.addEventListener("submit", async ev => {
+    ev.preventDefault();
+    let url = inp.value.trim();
+    if (url && !/^https?:\/\//i.test(url)) url = "https://" + url;
+    if (url && !/^https?:\/\/[^\s\/?#]+\.[^\s\/?#]{2,}(?:[\/?#]\S*)?$/i.test(url)) { msg.textContent = "That doesn't look like a link."; msg.className = "msg bad"; return; }
+    sb.disabled = true; sb.textContent = "Saving…"; msg.textContent = ""; msg.className = "msg";
+    try {
+      await api(EVENTS_TBL, {}, "PATCH", s.id, { fields: { "AV Binder Live Link": url || null } });
+      s.links["AV Binder"] = url;
+      const ev = RAW && RAW.events.find(e => e.id === s.id);
+      if (ev) { if (url) ev.fields["AV Binder Live Link"] = url; else delete ev.fields["AV Binder Live Link"]; }
+      try { localStorage.setItem("dash_cache", JSON.stringify({ t: lastLoad, ...RAW })); } catch (e) {}
+      if (!notesEditing() && !flagEditing()) renderDetail();
+      renderList();
+    } catch (e) {
+      msg.textContent = "Couldn't save: " + e.message; msg.className = "msg bad";
+      sb.disabled = false; sb.textContent = "Save to Airtable";
+    }
+  });
 }
 
 // NOTES — edit PM Notes, save back to Airtable
