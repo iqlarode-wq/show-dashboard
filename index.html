@@ -12,7 +12,7 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <title>Show Ops</title>
-<!-- build: 2026-10-11 r13 (AV Binder link can be added or changed on the show page; saves to the Events record in Airtable) -->
+<!-- build: 2026-10-13 r14 (InfoDoc row: live checklist, prepare and preview the crew email, send it from the dashboard the way the Airtable button does) -->
 <style>
   /* Layout idea: the first screen is a sentence and the few things that need a decision.
      Everything else is a closed row with a one-line summary; opening it is the reader's choice,
@@ -237,6 +237,28 @@
   #shHero .heroes { margin-top: 22px; }
 
   .pf { display: flex; flex-wrap: wrap; gap: 7px; }
+  /* InfoDoc (r14) */
+  .idc { display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 0 10px; align-items: baseline; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13px; }
+  .idc:first-child { border-top: none; }
+  .idc .m { font-weight: 700; text-align: center; }
+  .idc.ok .m { color: var(--green); } .idc.bad .m { color: var(--red); } .idc.warn .m { color: var(--amber); }
+  .idc .d { color: var(--dim); }
+  .idc.bad .d { color: var(--text); }
+  .idc a.fix { color: var(--accent); margin-left: 8px; font-size: 12px; cursor: pointer; }
+  .idbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; padding: 12px 0 4px; }
+  .idbar .btn.go { border-color: var(--accent); color: var(--accent); }
+  .idbar .btn.go:disabled { opacity: .45; cursor: not-allowed; }
+  .idbar .btn.send { border-color: var(--green); color: var(--green); font-weight: 600; }
+  .idbar .btn.send.armed { background: var(--green); color: var(--bg); }
+  .idbar .btn:disabled { opacity: .5; cursor: wait; }
+  .idmsg { font-size: 12.5px; color: var(--dim); flex-basis: 100%; }
+  .idmsg.bad { color: var(--red); } .idmsg.good { color: var(--green); }
+  .idprev { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .idprev .hdr { padding: 10px 12px; background: var(--panel2); font-size: 12.5px; display: grid; grid-template-columns: 56px minmax(0,1fr); gap: 4px 10px; }
+  .idprev .hdr b { color: var(--dim); font-weight: 600; }
+  .idprev .hdr .v { word-break: break-word; }
+  .idprev iframe { width: 100%; height: 420px; border: none; background: #fff; display: block; }
+  .idhist { margin-top: 10px; font-size: 12px; color: var(--faint); }
   .pfc { font-size: 12.5px; border: 1px solid var(--line2); border-radius: 999px; padding: 3px 11px; color: var(--dim); white-space: nowrap; }
   .pfc b { font-weight: 600; color: var(--text); margin-left: 6px; }
   .pfc.ok b { color: var(--green); } .pfc.warn b { color: var(--amber); } .pfc.bad b { color: var(--red); }
@@ -1260,6 +1282,7 @@ function renderDetail() {
     <div class="accs">
       ${acc("show.watch", "On watch", showWatchSum(s), showWatchHtml(s))}
       ${acc("show.ready", "Readiness", pf.sum, pf.html)}
+      ${acc("show.infodoc", "InfoDoc", `<span id="idSum">${infodocSumQuick(s)}</span>`, `<div id="idBody"><div class="none">Checking…</div></div>`)}
       ${acc("show.crew", "Crew", crewSummary(s), amRow + crewRows)}
       ${acc("show.tasks", "My tasks", `<span id="tasksSum">${tasksSummary(s)}</span>`, `<div id="tasksBody"></div>`)}
       ${acc("show.mail", "Emails", mailSum, `<div id="mailList">${mailRows || '<div class="none">No emails linked in Airtable.</div>'}</div>
@@ -1292,9 +1315,10 @@ function renderDetail() {
     if (id === "show.mail" && newMailCount(s)) { markSeen(s); renderList(); }
     if (id === "show.mtg" && newMtgCount(s)) { markMtgSeen(s); renderList(); }
     if (id === "show.tasks") openTasks(s);
+    if (id === "show.infodoc") openInfodoc(s);
   };
   wireAcc(el, seen);
-  ["show.mail", "show.mtg", "show.tasks"].forEach(id => { if (isOpen(id)) seen(id); });
+  ["show.mail", "show.mtg", "show.tasks", "show.infodoc"].forEach(id => { if (isOpen(id)) seen(id); });
 
   wireCatches(document.getElementById("shHero"));
   wireCatches(accBody("show.watch"));
@@ -2650,6 +2674,130 @@ function fvWire(st) {
   const up = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch0 = 0; if (!pts.size) { last = null; st.classList.remove("drag"); } else { const [a] = [...pts.values()]; last = { x: a.x, y: a.y }; } };
   st.addEventListener("pointerup", up); st.addEventListener("pointercancel", up);
   st.addEventListener("dblclick", e => { if (fvS.mode !== "img") return; const r = st.getBoundingClientRect(); if (fvS.k > fvS.fit * 1.05) fvFit(); else fvZoomAt(2.5, e.clientX - r.left, e.clientY - r.top); });
+}
+
+// INFODOC (r14) — send the PM InfoDoc email from the show page.
+// The worker does what the Airtable interface button does (see worker.js /infodoc/*). The page only
+// shows the live checklist, asks the worker to prepare (Airtable composes the email), shows the exact
+// To / CC / Subject / body that will go out, and sends on two taps. "Send a test to me" goes to Iq only.
+const ID = {};   // eventId -> { status, draft, t }
+const infodocSumQuick = s => (RADAR.extra[s.id] && RADAR.extra[s.id]["Infodoc Email Sent"]) ? '<span class="good">sent</span>' : "not sent · open to check";
+const idFetch = (path, method) => fetch(`${WORKER}${path}${path.includes("?") ? "&" : "?"}key=${encodeURIComponent(pin())}`, { method: method || "GET" }).then(async r => { const d = await r.json().catch(() => ({})); if (!r.ok || d.error) { const e = new Error(d.error || ("HTTP " + r.status)); e.status = r.status; e.blocks = d.blocks; throw e; } return d; });
+const idSum = (id, html) => accSum(id, html);
+function idChecksHtml(checks) {
+  const fix = { binder: ["#avbEdit", "Add it"], files: ["show.files", "Files"], crew: ["show.crew", "Crew"], email: ["show.crew", "Crew"], empty: ["show.crew", "Crew"], pencilled: ["show.crew", "Crew"] };
+  return checks.map(c => {
+    const cls = c.ok ? "ok" : (c.hard ? "bad" : "warn"), mark = c.ok ? ic("check") : (c.hard ? "✕" : "!");
+    const f = !c.ok && fix[c.id] ? `<a class="fix" data-fix="${fix[c.id][0]}">${fix[c.id][1]} ›</a>` : "";
+    return `<div class="idc ${cls}"><span class="m">${mark}</span><span><span class="l">${esc(c.label)}</span> <span class="d">· ${esc(c.detail)}</span>${f}</span></div>`;
+  }).join("");
+}
+function idHistHtml(h) {
+  if (!h || !h.length) return "";
+  const sent = h.filter(x => x.sent);
+  if (!sent.length) return `<div class="idhist">A draft record exists in Airtable, not sent yet — Prepare reuses it.</div>`;
+  const last = sent[0];
+  return `<div class="idhist">Last sent ${esc(fmtD(parseDate(last.at)) || "")}${last.by ? " by " + esc(last.by) : ""}${sent.length > 1 ? ` · ${sent.length} sends in total` : ""}.</div>`;
+}
+async function openInfodoc(s, force) {
+  const body = document.getElementById("idBody"); if (!body) return;
+  const c = ID[s.id];
+  if (!force && c && c.status && Date.now() - c.t < 60000) { renderInfodoc(s); return; }
+  body.innerHTML = '<div class="none">Checking Airtable…</div>';
+  try {
+    const st = await idFetch(`/infodoc/status?eventId=${s.id}`);
+    ID[s.id] = { status: st, draft: (c && c.draft) || null, sending: !!(c && c.sending), t: Date.now() };
+  } catch (e) {
+    body.innerHTML = `<div class="none hot">Couldn't check: ${esc(e.message)}</div>`;
+    return;
+  }
+  if (selectedId === s.id) renderInfodoc(s);
+}
+function renderInfodoc(s) {
+  const body = document.getElementById("idBody"); if (!body) return;
+  const c = ID[s.id] || {}, st = c.status, d = c.draft;
+  if (!st) { body.innerHTML = '<div class="none">Checking…</div>'; return; }
+  if (c.sending) { body.innerHTML = '<div class="idmsg" style="padding:12px 0">Sending…</div>'; return; }
+  const nBad = st.checks.filter(x => x.hard && !x.ok).length, nWarn = st.checks.filter(x => !x.hard && !x.ok).length;
+  idSum("show.infodoc", st.alreadySent ? `<span class="good">sent</span>${nBad ? ` · ${nBad} missing now` : ""}` : nBad ? `<span class="hot">${nBad} thing${nBad === 1 ? "" : "s"} missing</span>` : `<span class="good">ready to send</span>${nWarn ? ` · ${nWarn} to note` : ""}`);
+  const ready = !nBad;
+  let html = idChecksHtml(st.checks) + idHistHtml(st.history);
+  if (!st.configured) html += `<div class="idmsg bad" style="padding-top:10px">The worker has no send flow configured yet (INFODOC_FLOW_URL). Prepare works; Send will refuse.</div>`;
+  if (!d) {
+    html += `<div class="idbar">
+      <button class="btn go" id="idPrep" ${ready ? "" : "disabled"}>${st.alreadySent ? "Prepare again" : "Prepare email"}</button>
+      <button class="btn ghost" id="idRe">Re-check</button>
+      <span class="idmsg" id="idMsg">${ready ? (st.alreadySent ? "Already sent — preparing again drafts a new email to everyone." : `Drafts the email in Airtable for you to review. Nothing is sent yet. ${st.recipients.length} crew will be on it.`) : "Fix the red items first."}</span>
+    </div>`;
+  } else {
+    const toN = d.to.split(",").map(x => x.trim()).filter(Boolean).length;
+    html += `<div class="idprev">
+      <div class="hdr"><b>To</b><span class="v">${esc(d.to)}</span><b>CC</b><span class="v">${esc(d.cc)}</span><b>From</b><span class="v">${esc(d.fromShown || "ilarode@fuse-tg.com")}</span><b>Subject</b><span class="v">${esc(d.subject)}</span></div>
+      <iframe sandbox="" title="Email preview" srcdoc="${esc(`<!doctype html><meta charset=utf-8><body style="margin:16px;font:14px/1.5 Arial,sans-serif;color:#222;white-space:pre-wrap">${d.body}</body>`)}"></iframe>
+    </div>
+    <div class="idbar">
+      <button class="btn send" id="idSend" data-n="${toN}">Send to ${toN} ${toN === 1 ? "person" : "people"}</button>
+      <button class="btn" id="idTest">Send a test to me</button>
+      <button class="btn ghost" id="idDiscard">Close preview</button>
+      <span class="idmsg" id="idMsg">This is exactly what goes out. Send asks twice.</span>
+    </div>`;
+  }
+  body.innerHTML = html;
+  body.querySelectorAll("[data-fix]").forEach(a => a.addEventListener("click", () => {
+    const t = a.dataset.fix;
+    if (t.startsWith("#")) { const b = document.querySelector(t); if (b) { b.click(); b.scrollIntoView({ block: "center" }); } return; }
+    const sec = document.querySelector(`[data-acc="${t}"]`); if (sec && !sec.classList.contains("open")) sec.querySelector(".acc-h").click();
+    if (sec) sec.scrollIntoView({ block: "start", behavior: "smooth" });
+  }));
+  const msg = () => document.getElementById("idMsg");
+  const say = (t, cls) => { const m = msg(); if (m) { m.textContent = t; m.className = "idmsg" + (cls ? " " + cls : ""); } };
+  const re = document.getElementById("idRe"); if (re) re.addEventListener("click", () => openInfodoc(s, true));
+  const prep = document.getElementById("idPrep");
+  if (prep) prep.addEventListener("click", async () => {
+    prep.disabled = true; prep.textContent = "Preparing…"; say("Creating the draft in Airtable and waiting for it to compose (up to 30 s)…");
+    try {
+      const d = await idFetch(`/infodoc/prepare?eventId=${s.id}${st.alreadySent ? "&force=1" : ""}`, "POST");
+      ID[s.id].draft = d; ID[s.id].status.checks = d.preflight || st.checks; renderInfodoc(s);
+    } catch (e) {
+      if (e.blocks) { ID[s.id].status.checks = e.blocks; ID[s.id].status.blocks = e.blocks.filter(x => x.hard && !x.ok).map(x => x.label); renderInfodoc(s); say(e.message, "bad"); return; }
+      prep.disabled = false; prep.textContent = st.alreadySent ? "Prepare again" : "Prepare email"; say(e.message, "bad");
+    }
+  });
+  const disc = document.getElementById("idDiscard"); if (disc) disc.addEventListener("click", () => { ID[s.id].draft = null; renderInfodoc(s); });
+  const test = document.getElementById("idTest");
+  if (test) test.addEventListener("click", async () => {
+    test.disabled = true; test.textContent = "Sending test…"; say("");
+    try { const r = await idFetch(`/infodoc/send?eventId=${s.id}&recordId=${d.recordId}&test=1`, "POST"); say(`Test sent to ${r.to} (subject starts with TEST). Nothing was marked sent.`, "good"); }
+    catch (e) { say(e.message, "bad"); }
+    test.disabled = false; test.textContent = "Send a test to me";
+  });
+  const send = document.getElementById("idSend");
+  if (send) send.addEventListener("click", async () => {
+    if (send.dataset.armed !== "1") {
+      send.dataset.armed = "1"; send.classList.add("armed"); send.textContent = `Tap again to send to ${send.dataset.n}`;
+      say("Second tap sends it. It goes out from your address, like the Airtable button.");
+      clearTimeout(send._t); send._t = setTimeout(() => { send.dataset.armed = ""; send.classList.remove("armed"); send.textContent = `Send to ${send.dataset.n} ${send.dataset.n === "1" ? "person" : "people"}`; say("This is exactly what goes out. Send asks twice."); }, 5000);
+      return;
+    }
+    clearTimeout(send._t); send.disabled = true; send.textContent = "Sending…"; say(""); ID[s.id].sending = true;
+    const tb = document.getElementById("idTest"), db = document.getElementById("idDiscard"); if (tb) tb.disabled = true; if (db) db.disabled = true;
+    try {
+      const r = await idFetch(`/infodoc/send?eventId=${s.id}&recordId=${d.recordId}`, "POST");
+      if (!RADAR.extra[s.id]) RADAR.extra[s.id] = {};
+      RADAR.extra[s.id]["Infodoc Email Sent"] = true;
+      try { saveRadarCache(); } catch (e) {}
+      ID[s.id] = { status: null, draft: null, t: 0 };
+      computeRadar(); refreshShowRadar(s); renderList();
+      const b = document.getElementById("idBody"); if (b) b.innerHTML = `<div class="idmsg good" style="padding:12px 0">Sent ${esc(new Date().toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }))} to ${esc(r.to)}${r.cc ? " · cc " + esc(r.cc) : ""}. Marked sent in Airtable.</div>`;
+      idSum("show.infodoc", '<span class="good">sent</span>');
+      setTimeout(() => openInfodoc(s, true), 1500);
+    } catch (e) {
+      ID[s.id].sending = false;
+      send.disabled = false; send.dataset.armed = ""; send.classList.remove("armed"); send.textContent = `Send to ${send.dataset.n} ${send.dataset.n === "1" ? "person" : "people"}`;
+      if (tb) tb.disabled = false; if (db) db.disabled = false;
+      say(e.message, "bad");
+    }
+  });
 }
 
 // AV BINDER LINK (r13) — Iq pastes the link on the show page; it is written to the Events record's
