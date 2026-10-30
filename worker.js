@@ -193,7 +193,16 @@ async function infodocStatus(env, eventId) {
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const composed = r => !!(r && r.fields && r.fields['Subject'] && r.fields['Message Body'] && r.fields['Email To']);
-const draftOf = (r, pre) => ({ recordId: r.id, to: r.fields['Email To'] || '', cc: r.fields['Email CC'] || '', from: r.fields['Email From'] || '', subject: r.fields['Subject'] || '', body: r.fields['Message Body'] || '', sent: !!r.fields['Email Sent'], preflight: pre });
+// Iq's standing rule (2026-10-30): he is never on the To line and appears exactly once, on CC.
+// Applied in one place so the preview and the actual send always match.
+const splitClean = v => { const seen = new Set(); return String(v || '').split(',').map(x => x.trim()).filter(x => x && !seen.has(x.toLowerCase()) && seen.add(x.toLowerCase())); };
+const shapeRecipients = (f, from) => {
+  const me = String(from || '').toLowerCase();
+  const to = splitClean(f['Email To']).filter(x => x.toLowerCase() !== me).join(', ');
+  const cc = [from].concat(splitClean(f['Email CC']).filter(x => x.toLowerCase() !== me)).join(', ');
+  return { to, cc };
+};
+const draftOf = (r, pre, from) => { const sh = shapeRecipients(r.fields || {}, from); return { recordId: r.id, to: sh.to, cc: sh.cc, from: r.fields['Email From'] || '', subject: r.fields['Subject'] || '', body: r.fields['Message Body'] || '', sent: !!r.fields['Email Sent'], preflight: pre }; };
 
 // Reuse an unsent record for this show if there is one; otherwise create one and let Airtable compose it.
 async function infodocPrepare(env, eventId, force) {
@@ -217,7 +226,7 @@ async function infodocPrepare(env, eventId, force) {
     rec = await at(env, '/' + INFODOC_TABLE + '/' + rec.id);
   }
   if (!composed(rec)) throw fail('Airtable did not compose the email in time (record ' + rec.id + ' is there, nothing was sent). Try Prepare again in a minute.', 504);
-  return Object.assign(draftOf(rec, pre.checks), { created, recipients: pre.recipients });
+  return Object.assign(draftOf(rec, pre.checks, env.INFODOC_FROM || INFODOC_FROM_DEFAULT), { created, recipients: pre.recipients });
 }
 
 // Send exactly what the record holds, the way the Airtable button does. Marks sent only after the flow said yes.
@@ -229,9 +238,9 @@ async function infodocSend(env, eventId, recordId, test) {
   if (!(f['Event'] || []).includes(eventId)) throw fail('That email record belongs to a different show.', 409);
   if (!composed(rec)) throw fail('The email record is not composed yet.', 409);
   if (f['Email Sent'] && !test) throw fail('This email record was already sent. Prepare again to send a new one.', 409);
-  const clean = v => { const seen = new Set(); return String(v || '').split(',').map(x => x.trim()).filter(x => x && !seen.has(x.toLowerCase()) && seen.add(x.toLowerCase())).join(', '); };
-  const to = test ? from : clean(f['Email To']);
-  const cc = test ? '' : clean(f['Email CC']);
+  const sh = shapeRecipients(f, from);
+  const to = test ? from : sh.to;
+  const cc = test ? '' : sh.cc;
   if (!to) throw fail('No recipients on the email record.', 409);
   const subject = (test ? 'TEST — ' : '') + String(f['Subject'] || '');
   const payload = { To: to, cc: cc, From: from, Subject: subject, Body: String(f['Message Body'] || ''), Attachments: [[]], AttachmentName: [] };

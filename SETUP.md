@@ -1,4 +1,4 @@
-# Show Ops Dashboard — SETUP (updated 2026-10-13, build r14 — built, awaiting push + secret + test email)
+# Show Ops Dashboard — SETUP (updated 2026-10-30, build r14.1 — built, awaiting push + secret + test email)
 
 **Live:** https://fuse-dashboard-proxy.iqlarodework.workers.dev/ — served by Cloudflare, PIN-gated (enforced; enter once per device).
 Data is fetched live from Airtable on every open. No daily regeneration. No push needed for data changes.
@@ -89,4 +89,4 @@ The AV Binder entry in a show's links strip has a pencil (or reads "Add AV Binde
 
 ## InfoDoc send (r14, 2026-10-13)
 
-Show page → InfoDoc row: live checklist (AV Binder, files, InfoDoc link, crew emails, no Empty/Pencilled), Prepare (worker creates the Send Infodoc Email record, Airtable's own automation composes it), preview, Send (two taps) or Send a test to me. Worker routes `/infodoc/status|prepare|send`. Needs the `INFODOC_FLOW_URL` secret: `npx wrangler secret put INFODOC_FLOW_URL < .secrets/infodoc-flow-url.txt` (`.secrets/` is git-ignored). Tests: `test-harness/infodoc_worker_test.mjs` and `r14_test.mjs`.
+Show page → InfoDoc row: live checklist (AV Binder, files, InfoDoc link, crew emails, no Empty/Pencilled), Prepare (worker creates the Send Infodoc Email record, Airtable's own automation composes it), preview, Send (two taps) or Send a test to me. Worker routes `/infodoc/status|prepare|send`. r14.1 (2026-10-30): `shapeRecipients()` in worker.js enforces Iq's rule — never on To, exactly once on CC — in both preview and send. Needs the `INFODOC_FLOW_URL` secret: `npx wrangler secret put INFODOC_FLOW_URL < .secrets/infodoc-flow-url.txt` (`.secrets/` is git-ignored). Tests: `test-harness/infodoc_worker_test.mjs` and `r14_test.mjs`.
