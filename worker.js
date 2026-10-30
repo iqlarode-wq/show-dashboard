@@ -155,7 +155,7 @@ async function infodocPreflight(env, eventId) {
   const ev = await at(env, '/' + EVENTS_TABLE + '/' + eventId);
   const f = ev.fields || {};
   const pos = (await at(env, '/' + POSITIONS_TABLE + '?' + qs({ filterByFormula: `FIND('${eventId}',ARRAYJOIN({id (from Event)}))`, 'fields[]': ['Name (from Crew)', 'Email (from Crew)', 'Status', 'Short Name (from Roles)'] }))).records || [];
-  const files = (await at(env, '/' + FILES_TABLE + '?' + qs({ filterByFormula: `FIND('${eventId}',ARRAYJOIN({id (from Events)}))`, 'fields[]': ['Name', 'File', 'Link'], maxRecords: 100 }))).records || [];
+  const files = (await at(env, '/' + FILES_TABLE + '?' + qs({ filterByFormula: `FIND('${eventId}',ARRAYJOIN({id (from Events)}))`, 'fields[]': ['Name', 'File'], maxRecords: 100 }))).records || [];
   const crew = pos.map(p => {
     const pf = p.fields || {}, role = first(pf['Short Name (from Roles)']) || '';
     return { name: String(first(pf['Name (from Crew)']) || '').replace(/^\*/, '').trim(), email: String(first(pf['Email (from Crew)']) || '').trim(), status: String(pf['Status'] || '').trim(), role, staff: role === 'Staff' };
